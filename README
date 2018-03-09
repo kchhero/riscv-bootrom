@@ -1,0 +1,14 @@
+0. bootrom build environment
+   Need modify riscv-toolchain path in bootrom/setenv
+   
+1. bootrom build
+   $ cd bootrom
+   $ source setenv
+   $ make
+
+2. qemu run
+   $ ~/RISC-V/nexell/riscv-qemu/build/riscv64-softmmu/qemu-system-riscv64 -S -s -m 1024 -bios bootrom.bin -nographic
+
+3. connect gdb
+   $ riscv64-unknown-elf-gdb riscv-bootrom/bootrom/bootrom.elf
+

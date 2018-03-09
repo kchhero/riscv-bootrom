@@ -1,0 +1,74 @@
+;; -*- mode: emacs-lisp; coding: emacs-mule; -*-
+;; --------------------------------------------------------------------------
+;; Desktop File for Emacs
+;; --------------------------------------------------------------------------
+;; Created Fri Feb 23 18:16:02 2018
+;; Desktop file format version 206
+;; Emacs version 24.5.1
+
+;; Global section:
+(setq desktop-saved-frameset [frameset 1 (23183 56274 634586 964000) (desktop . "206") "suker@suker-machine" nil nil ((((font-backend xft x) (font . "-SRC-Hack-normal-normal-normal-*-13-*-*-*-m-0-iso10646-1") (font-parameter) (border-width . 0) (internal-border-width . 0) (right-divider-width . 0) (bottom-divider-width . 0) (vertical-scroll-bars . right) (foreground-color . "#ffffff") (background-color . "#002451") (mouse-color . "black") (border-color . "#003f8e") (screen-gamma) (line-spacing) (left-fringe . 8) (right-fringe . 8) (scroll-bar-foreground) (scroll-bar-background) (menu-bar-lines . 1) (tool-bar-lines . 1) (title) (wait-for-wm . t) (fullscreen . fullheight) (tool-bar-position . top) (icon-type . t) (auto-raise) (auto-lower) (cursor-type . box) (scroll-bar-width . 10) (alpha) (horizontal-scroll-bars . t) (display-type . color) (background-mode . dark) (cursor-color . "#ff9da4") (sticky) (environment) (frameset--id . "669E-C744-839C-9D84") (frameset--mini t . t) (height . 74) (width . 190) (modeline . t) (minibuffer . t) (unsplittable) (left . 2553) (top . 32) (icon-name) (visibility . t) (display . ":0") (explicit-name)) ((min-height . 4) (min-width . 20) (min-height-ignore . 2) (min-width-ignore . 12) (min-height-safe . 1) (min-width-safe . 4) (min-pixel-height . 68) (min-pixel-width . 160) (min-pixel-height-ignore . 34) (min-pixel-width-ignore . 96) (min-pixel-height-safe . 17) (min-pixel-width-safe . 32)) hc (pixel-width . 1546) (pixel-height . 1245) (total-width . 193) (total-height . 73) (normal-height . 1.0) (normal-width . 1.0) (combination-limit) (leaf (pixel-width . 773) (pixel-height . 1245) (total-width . 96) (total-height . 73) (normal-height . 1.0) (normal-width . 0.5) (buffer "sd.c" (selected . t) (hscroll . 0) (fringes 8 8 nil) (margins nil) (scroll-bars 10 2 t nil) (vscroll . 0) (dedicated) (point . 4890) (start . 4384))) (leaf (last . t) (pixel-width . 773) (pixel-height . 1245) (total-width . 97) (total-height . 73) (normal-height . 1.0) (normal-width . 0.5) (buffer "riscv" (selected) (hscroll . 0) (fringes 8 8 nil) (margins nil) (scroll-bars 10 2 t nil) (vscroll . 0) (dedicated) (point . 494) (start . 1)))))])
+(setq desktop-missing-file-warning nil)
+(setq tags-file-name "/home/suker/RISC-V/nexell/riscv-bootrom/TAGS")
+(setq tags-table-list '("/home/suker/RISC-V/nexell/riscv-bootrom/TAGS" "/home/suker/RISC-V/nexell/riscv-qemu/TAGS"))
+(setq search-ring '("clint" "cpu_riscv_read" "cpu_riscv_read_rtc" "nexell" "cpu_riscv_" "sifive" "cpu_riscv_read_rtc" "riscv" "target" "cpu_riscv_read_rtc" "cpu_riscv" "CMD18" "sifive_mmio" "SPI" "sys_mem" "xip"))
+(setq regexp-search-ring nil)
+(setq register-alist nil)
+(setq file-name-history '("~/RISC-V/nexell/riscv-bootrom/sdboot/" "~/RISC-V/nexell/riscv-qemu/target/riscv/" "~/RISC-V/nexell/riscv-qemu/target/riscv/cpu.h" "~/RISC-V/nexell/riscv-bootrom/xip/Makefile.backup" "~/RISC-V/nexell/riscv-bootrom/sdboot/Makefile.backup" "~/RISC-V/nexell/riscv-qemu/" "~/RISC-V/nexell/riscv-qemu/include/hw/riscv/nexell_swallow.h" "~/RISC-V/nexell/riscv-qemu/include/hw/riscv/nexell_swallow.h.u300" "~/RISC-V/nexell/riscv-qemu/hw/riscv/nexell_swallow.c" "~/RISC-V/nexell/riscv-qemu/hw/riscv/nexell_swallow.c.u300" "~/RISC-V/nexell/riscv-qemu/include/hw/riscv/nexell_swallow.h" "~/RISC-V/nexell/riscv-qemu/hw/riscv/nexell_swallow.c" "~/RISC-V/nexell/riscv-qemu/hw/riscv/" "~/RISC-V/nexell/riscv-bootrom/" "~/.emacs" "~/RISC-V/nexell/riscv-bootrom/sdboot/sd.c" "~/RISC-V/nexell/riscv-bootrom/sdboot/sd.c.32" "~/RISC-V/nexell/riscv-qemu/hw/riscv/nexell_clint.c" "~/RISC-V/nexell/riscv-qemu/hw/riscv/nexell_uart.c" "~/RISC-V/nexell/riscv-qemu/hw/riscv/nexell_prci.c" "~/RISC-V/nexell/riscv-qemu/hw/riscv/nexell_plic.c" "~/RISC-V/nexell/riscv-qemu/" "~/RISC-V/nexell/riscv-qemu/include/hw/riscv/nexell_uart.h" "~/RISC-V/nexell/riscv-qemu/include/hw/riscv/nexell_prci.h" "~/RISC-V/nexell/riscv-qemu/include/hw/riscv/nexell_plic.h" "~/RISC-V/nexell/riscv-qemu/include/hw/riscv/nexell_clint.h" "~/RISC-V/nexell/riscv-qemu/hw/riscv/nexell_swallow.c" "~/RISC-V/nexell/riscv-qemu/include/hw/riscv/nexell_swallow.h" "~/RISC-V/nexell/riscv-qemu/include/hw/riscv/nexell.h" "~/RISC-V/nexell/riscv-qemu/hw/riscv/nexell_v0_01.c" "~/RISC-V/" "~/RISC-V/nexell/riscv-bootrom/" "~/RISC-V/nexell/riscv-bootrom/sdboot/" "~/RISC-V/nexell/riscv-bootrom/" "~/RISC-V/nexell/riscv-bootrom/README" "~/RISC-V/nexell/riscv-bootrom/bootrom/setenv" "~/RISC-V/nexell/riscv-bootrom/" "~/RISC-V/nexell/riscv-qemu/" "~/repoUploadRISCV/riscv-tools/riscv-nexell-configs/tcl/target/nexell-nxp4330.cfg" "~/repoUploadRISCV/riscv-tools/riscv-nexell-configs/tcl/board/nexell-arm.cfg" "~/repoUploadRISCV/riscv-tools/" "~/repoUploadRISCV/riscv-tools/riscv-nexell-configs/" "~/RISC-V/nexell/riscv-tools/riscv-openocd/" "~/.emacs"))
+
+;; Buffer section -- buffers listed in same order as in buffer list:
+(desktop-create-buffer 206
+  "/home/suker/RISC-V/nexell/riscv-bootrom/sdboot/sd.c"
+  "sd.c"
+  'c-mode
+  '(abbrev-mode flycheck-mode function-args-mode)
+  4890
+  '(4760 nil)
+  nil
+  nil
+  '((buffer-file-coding-system . undecided-unix)))
+
+(desktop-create-buffer 206
+  nil
+  "riscv"
+  'dired-mode
+  nil
+  494
+  '(nil nil)
+  t
+  '("/home/suker/RISC-V/nexell/riscv-qemu/hw/riscv/")
+  nil)
+
+(desktop-create-buffer 206
+  nil
+  "RISC-V"
+  'dired-mode
+  nil
+  330
+  '(nil nil)
+  t
+  '("/home/suker/RISC-V/")
+  nil)
+
+(desktop-create-buffer 206
+  nil
+  "hw"
+  'dired-mode
+  nil
+  2348
+  '(234 nil)
+  t
+  '("/home/suker/RISC-V/riscv-qemu/hw/")
+  nil)
+
+(desktop-create-buffer 206
+  nil
+  "riscv-qemu"
+  'dired-mode
+  nil
+  5354
+  '(468 nil)
+  t
+  '("/home/suker/RISC-V/riscv-qemu/")
+  nil)
+

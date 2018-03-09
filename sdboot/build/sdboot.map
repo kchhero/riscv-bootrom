@@ -1,0 +1,158 @@
+
+Memory Configuration
+
+Name             Origin             Length             Attributes
+debug_ctrl       0x0000000000000000 0x0000000000000100 xrw
+error_mem        0x0000000000003000 0x0000000000001000 rw
+test_ctrl        0x0000000000004000 0x0000000000001000 rw
+maskrom_mem      0x0000000000001000 0x0000000000002000 xr
+clint_ctrl       0x0000000002000000 0x0000000000010000 rw
+plic_ctrl        0x000000000c000000 0x0000000004000000 rw
+axi_pcie_host_1_00_a_ctrl 0x0000000050000000 0x0000000004000000 rw
+uart_ctrl        0x0000000010013000 0x0000000000001000 rw
+spi_ctrl         0x0000000010014000 0x0000000000001000 rw
+gpio_ctrl        0x0000000010012000 0x0000000000001000 rw
+memory_mem       0x0000000080000000 0x0000000040000000 xrw
+*default*        0x0000000000000000 0xffffffffffffffff
+
+Linker script and memory map
+
+LOAD /tmp/cc26wdxF.o
+LOAD /tmp/cc1ZzE15.o
+LOAD /tmp/ccdTxYEw.o
+                [!provide]                        PROVIDE (_ram, ORIGIN (memory_mem))
+                [!provide]                        PROVIDE (_ram_end, (_ram + LENGTH (memory_mem)))
+
+.text           0x0000000000001000      0x658
+                [!provide]                        PROVIDE (_ftext, .)
+ *(.text.init)
+ .text.init     0x0000000000001000       0x94 /tmp/cc26wdxF.o
+                0x0000000000001000                _prog_start
+ *(.text.unlikely .text.unlikely.*)
+ *(.text .text.* .gnu.linkonce.t.*)
+ .text          0x0000000000001094        0x0 /tmp/cc26wdxF.o
+ .text          0x0000000000001094       0xfa /tmp/cc1ZzE15.o
+ .text.startup  0x000000000000118e      0x32c /tmp/cc1ZzE15.o
+                0x000000000000118e                main
+ .text          0x00000000000014ba      0x15e /tmp/ccdTxYEw.o
+                0x00000000000014ba                kputs
+                0x00000000000014fe                kprintf
+                [!provide]                        PROVIDE (_etext, .)
+                0x0000000000001658                . = (. + 0x40)
+ *fill*         0x0000000000001618       0x40 
+
+.eh_frame       0x0000000000001658        0x0
+ *(.eh_frame)
+
+.rodata         0x0000000000001658      0x228
+ *(.rodata .rodata.* .gnu.linkonce.r.*)
+ .rodata        0x0000000000001658        0x4 /tmp/cc26wdxF.o
+ *fill*         0x000000000000165c        0x4 
+ .rodata.str1.8
+                0x0000000000001660      0x1c8 /tmp/cc1ZzE15.o
+                                        0x1c5 (size before relaxing)
+ .rodata        0x0000000000001828       0x58 /tmp/ccdTxYEw.o
+
+.rela.dyn       0x0000000000001880        0x0
+ .rela.text.init
+                0x0000000000001880        0x0 /tmp/cc26wdxF.o
+ .rela.text     0x0000000000001880        0x0 /tmp/cc26wdxF.o
+ .rela.text.startup
+                0x0000000000001880        0x0 /tmp/cc26wdxF.o
+
+.srodata        0x0000000000001880        0x0
+ *(.srodata.cst16)
+ *(.srodata.cst8)
+ *(.srodata.cst4)
+ *(.srodata.cst2)
+ *(.srodata.*)
+
+.data           0x0000000000001880        0x0
+ *(.data .data.* .gnu.linkonce.d.*)
+ .data          0x0000000000001880        0x0 /tmp/cc26wdxF.o
+ .data          0x0000000000001880        0x0 /tmp/cc1ZzE15.o
+ .data          0x0000000000001880        0x0 /tmp/ccdTxYEw.o
+ *(.tohost)
+
+.sdata
+ *(.sdata .sdata.* .gnu.linkonce.s.*)
+                [!provide]                        PROVIDE (_data, ADDR (.rodata))
+                [!provide]                        PROVIDE (_data_lma, LOADADDR (.rodata))
+                [!provide]                        PROVIDE (_edata, .)
+
+.bss            0x0000000080000000        0x0
+                [!provide]                        PROVIDE (_fbss, .)
+                [!provide]                        PROVIDE (__global_pointer$, (. + 0x7c0))
+ *(.sbss .sbss.* .gnu.linkonce.sb.*)
+ *(.bss .bss.* .gnu.linkonce.b.*)
+ .bss           0x0000000080000000        0x0 /tmp/cc26wdxF.o
+ .bss           0x0000000080000000        0x0 /tmp/cc1ZzE15.o
+ .bss           0x0000000080000000        0x0 /tmp/ccdTxYEw.o
+                0x0000000080000000                . = ALIGN (0x8)
+                0x0000000080000000                PROVIDE (_ebss, .)
+                [!provide]                        PROVIDE (_end, .)
+                0x0000000080100000                PROVIDE (_sp, ALIGN ((MIN ((ORIGIN (memory_mem) + LENGTH (memory_mem)), (_ebss + 0x100000)) - 0x7), 0x8))
+                [!provide]                        PROVIDE (_heap_end, (_sp - 0x800))
+
+.stack          0x0000000080000000        0x0
+                0x0000000000000001                ASSERT ((_sp >= (_ebss + 0x1000)), Error: No room left for the heap and stack)
+OUTPUT(build/sdboot.elf elf64-littleriscv)
+
+.debug_line     0x0000000000000000      0x7eb
+ .debug_line    0x0000000000000000       0x79 /tmp/cc26wdxF.o
+ .debug_line    0x0000000000000079      0x48c /tmp/cc1ZzE15.o
+ .debug_line    0x0000000000000505      0x2e6 /tmp/ccdTxYEw.o
+
+.debug_info     0x0000000000000000     0x133c
+ .debug_info    0x0000000000000000       0x22 /tmp/cc26wdxF.o
+ .debug_info    0x0000000000000022      0xef1 /tmp/cc1ZzE15.o
+ .debug_info    0x0000000000000f13      0x429 /tmp/ccdTxYEw.o
+
+.debug_abbrev   0x0000000000000000      0x37b
+ .debug_abbrev  0x0000000000000000       0x12 /tmp/cc26wdxF.o
+ .debug_abbrev  0x0000000000000012      0x1f2 /tmp/cc1ZzE15.o
+ .debug_abbrev  0x0000000000000204      0x177 /tmp/ccdTxYEw.o
+
+.debug_aranges  0x0000000000000000       0xb0
+ .debug_aranges
+                0x0000000000000000       0x40 /tmp/cc26wdxF.o
+ .debug_aranges
+                0x0000000000000040       0x40 /tmp/cc1ZzE15.o
+ .debug_aranges
+                0x0000000000000080       0x30 /tmp/ccdTxYEw.o
+
+.debug_str      0x0000000000000000      0x1e6
+ .debug_str     0x0000000000000000       0x42 /tmp/cc26wdxF.o
+ .debug_str     0x0000000000000042      0x14c /tmp/cc1ZzE15.o
+                                        0x1b8 (size before relaxing)
+ .debug_str     0x000000000000018e       0x58 /tmp/ccdTxYEw.o
+                                        0x186 (size before relaxing)
+
+.debug_ranges   0x0000000000000000      0x370
+ .debug_ranges  0x0000000000000000       0x40 /tmp/cc26wdxF.o
+ .debug_ranges  0x0000000000000040      0x290 /tmp/cc1ZzE15.o
+ .debug_ranges  0x00000000000002d0       0xa0 /tmp/ccdTxYEw.o
+
+.debug_loc      0x0000000000000000      0xd81
+ .debug_loc     0x0000000000000000      0x8cd /tmp/cc1ZzE15.o
+ .debug_loc     0x00000000000008cd      0x4b4 /tmp/ccdTxYEw.o
+
+.comment        0x0000000000000000       0x11
+ .comment       0x0000000000000000       0x11 /tmp/cc1ZzE15.o
+                                         0x12 (size before relaxing)
+ .comment       0x0000000000000011       0x12 /tmp/ccdTxYEw.o
+
+.debug_frame    0x0000000000000000       0xc8
+ .debug_frame   0x0000000000000000       0x78 /tmp/cc1ZzE15.o
+ .debug_frame   0x0000000000000078       0x50 /tmp/ccdTxYEw.o
+
+Cross Reference Table
+
+Symbol                                            File
+_prog_start                                       /tmp/cc26wdxF.o
+kprintf                                           /tmp/ccdTxYEw.o
+                                                  /tmp/cc1ZzE15.o
+kputs                                             /tmp/ccdTxYEw.o
+                                                  /tmp/cc1ZzE15.o
+main                                              /tmp/cc1ZzE15.o
+                                                  /tmp/cc26wdxF.o

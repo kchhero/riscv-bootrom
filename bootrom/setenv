@@ -1,0 +1,7 @@
+#!/bin/bash
+
+export RISCV_TOOLCHAIN=/home/suker/riscv-toolchain/bin/
+#export RISCV_GCC=/home/suker/riscv-toolchain/bin/riscv64-unknown-elf-gcc
+#export RISCV_OBJCOPY=/home/suker/riscv-toolchain/bin/riscv64-unknown-elf-objcopy
+
+export PATH=$PATH:$RISCV_TOOLCHAIN
