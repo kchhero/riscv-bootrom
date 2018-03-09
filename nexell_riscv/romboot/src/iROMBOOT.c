@@ -72,8 +72,9 @@ unsigned int iROMBOOT(unsigned int OrgBootOption)
 #if 1
         OrgBootOption = SDBOOT;
 #endif
+        NXBL0FN *pbl0fn = Getbl0fnPtr();
 	unsigned int option = OrgBootOption & 0x1FF;
-        unsigned int soption = 0;
+        //unsigned int soption = 0;
 
 #ifdef DEBUG
         REG32(uart, UART_REG_TXCTRL) = UART_TXEN;
@@ -141,7 +142,6 @@ unsigned int iROMBOOT(unsigned int OrgBootOption)
 #endif
 
 #ifndef QEMU_RISCV
-        NXBL0FN *pbl0fn = Getbl0fnPtr();
 	// external usb boot is top priority, always first checked.
 	if ((OrgBootOption & 0x7 << BOOTMODE) == (USBBOOT << BOOTMODE)) {
                 pbl0fn->_dprintf("force usb boot\r\n");
@@ -198,7 +198,7 @@ lastboot:
 	} else
 		goto lastboot;
 #else
-        iSDXCBOOT(1);
+        pbl0fn->iSDXCBOOT(1);
 	while (1);
 	return 0;
 #endif
