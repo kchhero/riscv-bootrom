@@ -297,21 +297,21 @@ typedef enum
 //AUTO_CMD_STAT_R
 typedef enum
 {
-  NX_SDMMC_AUTO_CMD12_NOT_EXEC       =   1UL<<0,  //0           //Auto CMD12 Not Executed
-  NX_SDMMC_AUTO_CMD_TOUT_ERR         =   1UL<<1,  //1           //Auto CMD Timeout Error
-  NX_SDMMC_AUTO_CMD_CRC_ERR          =   1UL<<2,  //2           //Auto CMD CRC Error
-  NX_SDMMC_AUTO_CMD_EBIT_ERR         =   1UL<<3,  //3           //Auto CMD End Bit Error
-  NX_SDMMC_AUTO_CMD_IDX_ERR          =   1UL<<4,  //4           //Auto CMD Index Error
-  NX_SDMMC_AUTO_CMD_RESP_ERR         =   1UL<<5,  //5           //Auto CMD Response Error
-  NX_SDMMC_RSVD_6                    =   1UL<<6,  //6           //Reserved
-  NX_SDMMC_CMD_NOT_ISSUED_AUTO_CMD12 =   1UL<<7,  //7           //Command Not Issued By Auto CMD12
-  NX_SDMMC_RSVD_15_8                 = 255UL<<8,  //15:8        //Reserved
+  NX_SDMMC_AUTO_CMD12_NOT_EXEC       =  1UL<<0,  //0           //Auto CMD12 Not Executed
+  NX_SDMMC_AUTO_CMD_TOUT_ERR         =  1UL<<1,  //1           //Auto CMD Timeout Error
+  NX_SDMMC_AUTO_CMD_CRC_ERR          =  1UL<<2,  //2           //Auto CMD CRC Error
+  NX_SDMMC_AUTO_CMD_EBIT_ERR         =  1UL<<3,  //3           //Auto CMD End Bit Error
+  NX_SDMMC_AUTO_CMD_IDX_ERR          =  1UL<<4,  //4           //Auto CMD Index Error
+  NX_SDMMC_AUTO_CMD_RESP_ERR         =  1UL<<5,  //5           //Auto CMD Response Error
+  NX_SDMMC_RSVD_6                    =  1UL<<6,  //6           //Reserved
+  NX_SDMMC_CMD_NOT_ISSUED_AUTO_CMD12 =  1UL<<7,  //7           //Command Not Issued By Auto CMD12
+  NX_SDMMC_RSVD_15_8                 =  1UL<<8,  //15:8        //Reserved
 } NX_SDMMC_AUTO_CMD_STAT_R;
 
 // HOST_CTRL2_R
 typedef enum
 {
-  NX_SDMMC_HOST_CTRL2_UHS_MODE_SEL        =   7UL<<0,    //2:0        //UHS Mode/eMMC Speed Mode Select
+  NX_SDMMC_HOST_CTRL2_UHS_MODEL_SEL       =   1UL<<0,    //2:0        //UHS Mode/eMMC Speed Mode Select
   NX_SDMMC_HOST_CTRL2_SIGNALING_EN        =   1UL<<3,    //3          //1.8V Signaling Enable
   NX_SDMMC_HOST_CTRL2_DRV_STRENGTH_SEL    =   3UL<<4,    //5:4        //Driver Strength Select
   NX_SDMMC_HOST_CTRL2_EXEC_TUNING         =   1UL<<6,    //6          //Execute Tuning

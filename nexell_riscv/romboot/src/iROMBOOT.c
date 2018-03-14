@@ -161,7 +161,7 @@ unsigned int iROMBOOT(unsigned int OrgBootOption)
 			Result = pbl0fn->iUSBBOOT(option);
 			break;
 		case SDBOOT:	// iSDHCBOOT (SD/MMC/eSD/eMMC)
-			Result = pbl0fn->iSDXCBOOT(option);
+			Result = pbl0fn->iSDMMCBOOT(option);
 			break;
 		}
 
@@ -177,7 +177,7 @@ unsigned int iROMBOOT(unsigned int OrgBootOption)
 
                 pbl0fn->_dprintf("update boot\r\n");
 
-		Result = pbl0fn->iSDXCBOOT(option);
+		Result = pbl0fn->iSDMMCBOOT(option);
 
 		if (Result)
 			break;
@@ -198,7 +198,7 @@ lastboot:
 	} else
 		goto lastboot;
 #else
-        pbl0fn->iSDXCBOOT(1);
+        pbl0fn->iSDMMCBOOT(1);
 	while (1);
 	return 0;
 #endif

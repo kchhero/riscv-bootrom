@@ -77,35 +77,35 @@ extern CBOOL iUSBBOOT(U32);
 	/* sdmmc boot                                      */
 	/*=================================================*/
 
-extern CBOOL NX_SDMMC_SetClock(SDXCBOOTSTATUS *, CBOOL, U32);
-extern U32 NX_SDMMC_SendCommandInternal(SDXCBOOTSTATUS *, NX_SDMMC_COMMAND *);
-extern U32 NX_SDMMC_SendStatus(SDXCBOOTSTATUS *);
-extern U32 NX_SDMMC_SendCommand(SDXCBOOTSTATUS *, NX_SDMMC_COMMAND *);
-extern U32 NX_SDMMC_SendAppCommand(SDXCBOOTSTATUS *, NX_SDMMC_COMMAND *);
-extern CBOOL NX_SDMMC_IdentifyCard(SDXCBOOTSTATUS *);
-extern CBOOL NX_SDMMC_SelectCard(SDXCBOOTSTATUS *);
-extern CBOOL NX_SDMMC_SetCardDetectPullUp(SDXCBOOTSTATUS *, CBOOL);
-extern CBOOL NX_SDMMC_SetBusWidth(SDXCBOOTSTATUS *, U32);
-extern CBOOL NX_SDMMC_SetBlockLength(SDXCBOOTSTATUS *, U32);
-extern CBOOL NX_SDMMC_Init(SDXCBOOTSTATUS *);
-extern CBOOL NX_SDMMC_Terminate(SDXCBOOTSTATUS *);
-extern CBOOL NX_SDMMC_Open(SDXCBOOTSTATUS *, U32);
-extern CBOOL NX_SDMMC_Close(SDXCBOOTSTATUS *);
-extern CBOOL NX_SDMMC_ReadSectorData(SDXCBOOTSTATUS *, U32, U32 *);
-extern CBOOL NX_SDMMC_ReadSectors(SDXCBOOTSTATUS *, U32, U32, U32 *);
-extern CBOOL NX_SDMMC_ReadBootSector(SDXCBOOTSTATUS *, U32, U32 *);
-extern CBOOL SDMMCBOOT(SDXCBOOTSTATUS *, U32);
+extern CBOOL NX_SDMMC_SetClock(SDMMCBOOTSTATUS *, CBOOL, U32);
+extern U32 NX_SDMMC_SendCommandInternal(SDMMCBOOTSTATUS *, NX_SDMMC_COMMAND *);
+extern U32 NX_SDMMC_SendStatus(SDMMCBOOTSTATUS *);
+extern U32 NX_SDMMC_SendCommand(SDMMCBOOTSTATUS *, NX_SDMMC_COMMAND *);
+extern U32 NX_SDMMC_SendAppCommand(SDMMCBOOTSTATUS *, NX_SDMMC_COMMAND *);
+extern CBOOL NX_SDMMC_IdentifyCard(SDMMCBOOTSTATUS *);
+extern CBOOL NX_SDMMC_SelectCard(SDMMCBOOTSTATUS *);
+extern CBOOL NX_SDMMC_SetCardDetectPullUp(SDMMCBOOTSTATUS *, CBOOL);
+extern CBOOL NX_SDMMC_SetBusWidth(SDMMCBOOTSTATUS *, U32);
+extern CBOOL NX_SDMMC_SetBlockLength(SDMMCBOOTSTATUS *, U32);
+extern void  NX_SDMMC_Init(SDMMCBOOTSTATUS *);
+extern CBOOL NX_SDMMC_Terminate(SDMMCBOOTSTATUS *);
+extern CBOOL NX_SDMMC_Open(SDMMCBOOTSTATUS *, U32);
+extern CBOOL NX_SDMMC_Close(SDMMCBOOTSTATUS *);
+extern CBOOL NX_SDMMC_ReadSectorData(SDMMCBOOTSTATUS *, U32, U32 *);
+extern CBOOL NX_SDMMC_ReadSectors(SDMMCBOOTSTATUS *, U32, U32, U32 *);
+extern CBOOL NX_SDMMC_ReadBootSector(SDMMCBOOTSTATUS *, U32, U32 *);
+extern CBOOL SDMMCBOOT(SDMMCBOOTSTATUS *, U32);
 extern void NX_SDPADSetALT(U32);
 extern void NX_SDPADSetGPIO(U32);
-extern U32 iSDXCBOOT(U32);
+extern U32 iSDMMCBOOT(U32);
 
 DSTATUS disk_initialize(U8 drv);
 DSTATUS disk_status(U8 drv);
 DRESULT disk_read(U8 drv, U8 *buff, U32 sector, U8 count, U32 *diskhandle);
 
-extern CBOOL FSBoot(SDXCBOOTSTATUS *, U32);
-extern CBOOL SDMMCFSBOOT(SDXCBOOTSTATUS *, U32);
-extern U32 iSDXCFSBOOT(U32);
+extern CBOOL FSBoot(SDMMCBOOTSTATUS *, U32);
+extern CBOOL SDMMCFSBOOT(SDMMCBOOTSTATUS *, U32);
+extern U32 iSDMMCFSBOOT(U32);
 
 	/*=================================================*/
 extern const unsigned int iv[];
@@ -197,7 +197,7 @@ const NXBL0FN bl0fn = {
 	SDMMCBOOT,
 	NX_SDPADSetALT,
 	NX_SDPADSetGPIO,
-	iSDXCBOOT,
+	iSDMMCBOOT,
 
 	/*=================================================*/
 	&iv,

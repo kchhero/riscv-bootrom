@@ -1,0 +1,804 @@
+/*
+ * Copyright (C) 2018 Nexell Co., All Rights Reserved
+ * Nexell Co. Proprietary & Confidential
+ *
+ * NEXELL INFORMS THAT THIS CODE AND INFORMATION IS PROVIDED "AS IS" BASE
+ * AND WITHOUT WARRANTY OF ANY KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING
+ * BUT NOT LIMITED TO THE IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS
+ * FOR A PARTICULAR PURPOSE.
+ *
+ * Module	: SDMMC
+ * File		: nx_sdmmc.h
+ * Description  :
+ * ReferenceDoc : DesignWare Cores Mobile Storage Host Controller Databook, Version 1.60a
+ * Author	: S/W A, suker
+ * History	: 2018.03.12 Created
+ */
+#ifndef __NX_SDMMC_H__
+#define __NX_SDMMC_H__
+
+#include "nx_type.h"
+
+#ifdef  __cplusplus
+extern "C"
+{
+#endif
+
+/*
+--------------------------------------------------------------
+Read (or Write) Behavior Description
+--------------------------------------------------------------
+RC   -   A read clears this register field.
+RS   -   A read sets this register field.
+RM   -   A read modifies the contents of this register field.
+Wo   -   You can only write to this register once field.
+W1C  -   A write of 1 clears this register field.
+W1S  -   A write of 1 sets this register field.
+W1T  -   A write of 1 toggles this register field.
+W0C  -   A write of 0 clears this register field.
+W0S  -   A write of 0 sets this register field.
+W0T  -   A write of 0 toggles this register field.
+WC   -   Any write clears this register field.
+WS   -   Any write sets this register field.
+WM   -   Any write toggles this register field.
+no Read Behavior attribute    -   You cannot read this register. It is Write-Only.
+no Write Behavior attribute   -   You cannot write to this register. It is Read-Only.
+---------------------------------------------------------------
+
+---------------------------------------------------------------
+Memory Access Description
+---------------------------------------------------------------
+R       -   Read-only register field.
+W       -   Write-only register field.
+R/W     -   Read/write register field.
+R/W1C   -   You can read this register field. Writing 1 clears it.
+RC/W1C  -   Reading this register field clears it. Writing 1 clears it.
+R/Wo    -   You can read this register field. You can only write to it once.
+---------------------------------------------------------------
+*/
+
+
+// BLOCKSIZE_R detail
+typedef struct blocksize_r
+{
+  volatile U16 XFER_BLOCK_SIZE;        //11:0
+                                       //Transfer Block Size, 1:1byte,2:2byte... 0x200:512byte
+  volatile U8  SDMA_VUG_BDARY;         //14:12      SDMA Buffer Boundary
+  volatile U8  RSVD_BLOCKSIZE15;       //15         It always returns 0.
+} NX_SDMMC_BLOCKSIZE_R;
+
+// XFER_MODE_R
+typedef struct xfer_mode_r
+{
+  volatile U8  DMA_ENABLE;             //0          DMA Enable
+                                       //0x1:DMA Data transfer enable, 0x0:Disable
+  volatile U8  BLOCK_COUNT_ENABLE;     //1          Block Count Enable
+  volatile U8  AUTO_CMD_ENABLE;        //3:2        Auto Command Enable
+  volatile U8  DATA_XFER_DIR;          //4          Data Transfer Direction Select
+  volatile U8  MULTI_BLK_SEL;          //5          Multi/Single Block Select
+  volatile U8  RESP_TYPE;              //6          Response Type R1/R5
+  volatile U8  RESP_ERR_CHK_ENABLE;    //7          Response Error Check Enable
+  volatile U8  RESP_INT_DISABLE;       //8          Response Interrupt Disable
+  volatile U8  RSVD;                   //15:9       Reserved
+} NX_SDMMC_XFER_MODE_R;
+
+// CMD_R
+typedef struct cmd_r
+{
+  volatile U8  RESP_TYPE_SELECT;       //1:0        Response Type Select
+  volatile U8  SUB_CMD_FLAG;           //2          Sub Command Flag
+  volatile U8  CMD_CRC_CHK_ENABLE;     //3          Command CRC Check Enable
+  volatile U8  CMD_IDX_CHK_ENABLE;     //4          Command Index Check Enable
+  volatile U8  DATA_PRESENT_SEL;       //5          Data Present Select
+  volatile U8  CMD_TYPE;               //7:6        Command Type
+  volatile U8  CMD_INDEX;              //13:8       Command Index
+  volatile U8  RSVD;                   //15:14      Reserved
+} NX_SDMMC_CMD_R;
+  
+
+// PSTATE_REG
+typedef struct pstate_reg
+{
+  volatile U8  CMD_INHIBIT;            //0           //Command Inhibit (DAT)
+  volatile U8  CMD_INHIBIT_DAT;        //1           //Command Inhibit (DAT)
+  volatile U8  DAT_LINE_ACTIVE;        //2           //DAT Line Active (SD/eMMC Mode only)
+  volatile U8  RE_TUNE_REQ;            //3           //Re-Tuning Request
+  volatile U8  DAT_7_4;                //7:4         //DAT[7:4] Line Signal Level
+  volatile U8  WR_XFER_ACTIVE;         //8           //Write Transfer Active
+  volatile U8  RD_XFER_ACTIVE;         //9           //Read Transfer Active
+  volatile U8  BUF_WR_ENABLE;          //10          //Buffer Write Enable
+  volatile U8  BUF_RD_ENABLE;          //11          //Buffer Read Enable
+  volatile U8  RSVD_15_12;             //15:12       //Reserved
+  volatile U8  CARD_INSERTED;          //16          //Card Inserted
+  volatile U8  CARD_STABLE;            //17          //Card Stable
+  volatile U8  CARD_DETECT_PIN_LEVEL;  //18          //Card Detect Pin Level
+  volatile U8  WR_PROTECT_SW_LVL;      //19          //Write Protect Switch Pin Level
+  volatile U8  DAT_3_0;                //23:20       //DAT[3:0] Line Signal Level
+  volatile U8  CMD_LINE_LVL;           //24          //Command-Line Signal Level
+  volatile U8  HOST_REG_VOL;           //25          //Host Regulator Voltage Stable
+  volatile U8  RSVD_26;                //26          //Reserved
+  volatile U8  CMD_ISSUE_ERR;          //27          //Command Not Issued by Error
+  volatile U8  SUB_CMD_STAT;           //28          //Sub Command Status
+  volatile U8  IN_DORMANT_ST;          //29          //In Dormant Status
+  volatile U8  LANE_SYNC;              //30          //Lane Synchronization
+  volatile U8  UHS2_IF_DETECT;         //31          //UHS-II Interface Detection
+} NX_SDMMC_PSTATE_REG;
+
+// HOST_CTRL1_R
+typedef struct host_ctrl1_r
+{
+  volatile U8  LED_CTRL;               //0           //LED Control
+  volatile U8  DAT_XFER_WIDTH;         //1           //Data Transfer Width
+  volatile U8  HIGH_SPEED_EN;          //2           //High Speed Enable (SD/eMMC Mode only)
+  volatile U8  DMA_SEL;                //4:3         //DMA Select
+  volatile U8  EXT_DAT_XFER;           //5           //Extended Data Transfer Width
+  volatile U8  CARD_DETECT_TEST_LVL;   //6           //Card Detect Test Level
+  volatile U8  CARD_DETECT_SIG_SEL;    //7           //Card Detect Signal Selection
+} NX_SDMMC_HOST_CTRL1_R;
+
+//PWR_CTL_R
+typedef struct pwr_ctrl_r
+{
+  volatile U8  SD_BUS_PWR_VDD1 : 1;    //0           //SD Bus Power for VDD1
+  volatile U8  SD_BUS_VOL_VDD1 : 3;    //3:1         //SD Bus Voltage Select for VDD1/eMMC Bus Voltage Select for VDD
+  volatile U8  SD_BUS_PWR_VDD2 : 1;    //4           //SD Bus Power for VDD2
+                                       /* 0x0 : Power off
+                                          0x1 : Power on */
+  volatile U8  SD_BUS_VOL_VDD2 : 3;    //7:5         //SD Bus Voltage Select for VDD2
+                                       /* 0x7 (NOT_USED7): Not used
+                                          0x6 (NOT_USED6): Not used
+                                          0x5 (V_1_8): 1.8V
+                                          0x4 (V_1_2): Reserved for 1.2V
+                                          0x3 (RSVD3): Reserved
+                                          0x2 (RSVD2): Reserved
+                                          0x1 (RSVD1): Reserved
+                                          0x0 (NO_VDD2): VDD2 Not Supported   */
+} NX_SDMMC_PWR_CTRL_R;
+
+//BGAP_CTRL_R
+typedef struct bgap_ctrl_r
+{
+  volatile U8  STOP_BG_REQ;            //0           //Stop At Block Gap Request
+  volatile U8  CONTINUE_REQ;;          //1           //Continue Request
+  volatile U8  RD_WAIT_CTRL;           //2           //Read Wait Control
+  volatile U8  INT_AT_BGAP;            //3           //Interrupt At Block Gap
+  volatile U8  RSVD_7_4;               //7:4         //Reserved
+} NX_SDMMC_BGAP_CTRL_R;
+
+//WUP_CTRL_R
+typedef struct wup_ctrl_r
+{
+  volatile U8  CARD_INT;               //0           //Wakeup Event Enable on Card Interrupt
+  volatile U8  CARD_INSERT;            //1           //Wakeup Event Enable on SD Card Insertion
+  volatile U8  CARD_REMOVAL;           //2           //Wakeup Event Enable on SD Card Removal, 0:Disable, 1:Enable
+  volatile U8  RSVD_7_3;               //7:3         //Reserved
+} NX_SDMMC_WUP_CTRL_R;
+
+//CLK_CTRL_R 16
+typedef struct clk_ctrl_r
+{
+  volatile U16 INTERNAL_CLK_EN     : 1;    //0           //Internal Clock Enable
+  volatile U16 INTERNAL_CLK_STABLE : 1;    //1           //Internal Clock Stable
+  volatile U16 SD_CLK_EN           : 1;    //2           //SD/eMMC Clock Enable
+  volatile U16 PLL_ENABLE          : 1;    //3           //PLL Enable
+  volatile U16 RSVD_4              : 1;    //4           //Reserved
+  volatile U16 CLK_GEN_SELECT      : 1;    //5           //Clock Generator Select
+  volatile U16 UPPER_FREQ_SEL      : 2;    //7:6         //The upper 2bits of 10-bit SDCLK/RCLK Frequency Select Control
+  volatile U16 FREQ_SEL            : 8;    //15:8        //SDCLK/RCLK Frequency Select
+} NX_SDMMC_CLK_CTRL_R;
+
+//TOUT_CTRL_R
+typedef struct tout_ctrl_r
+{
+  volatile U8  TOUT_CNT  :   4;            //3:0         //Data Timeout Counter Value
+  volatile U8  RSVD_7_4  :   4;            //7:4         //Reserved
+} NX_SDMMC_TOUT_CTRL_R;
+
+//SW_RST_R
+typedef struct sw_rst_r
+{
+  volatile U8  SW_RST_ALL;             //0           //Software Reset For All
+  volatile U8  SW_RST_CMD;             //1           //Software Reset For CMD line
+  volatile U8  SW_RST_DAT;             //2           //Software Reset For DAT line
+  volatile U8  RSVD_7_3;               //7:3         //Reserved, always return 0
+} NX_SDMMC_SW_RST_R;
+
+//NORMAL_INT_STAT_R
+typedef struct normal_int_stat_r
+{
+  volatile U8  CMD_COMPLETE;           //0           //Command Complete
+  volatile U8  XFER_COMPLETE;          //1           //Transfer Complete
+  volatile U8  BGAP_EVENT;             //2           //Block Gap Event
+  volatile U8  DMA_INTERRUPT;          //3           //DMA Interrupt
+  volatile U8  BUF_WR_READY;           //4           //Buffer Write Ready
+  volatile U8  BUF_RD_READY;           //5           //Buffer Read Ready
+  volatile U8  CARD_INSERTION;         //6           //Card Insertion
+  volatile U8  CARD_REMOVAL;           //7           //Card Removal
+  volatile U8  CARD_INTERRUPT;         //8           //Card Interrupt
+  volatile U8  INT_A;                  //9           //INT_A
+  volatile U8  INT_B;                  //10          //INT_B
+  volatile U8  INT_C;                  //11          //INT_C
+  volatile U8  RE_TUNE_EVENT;          //12          //Re-tuning Event
+  volatile U8  FX_EVENT;               //13          //FX Event
+  volatile U8  CQE_EVNET;              //14          //Command Queuing Event
+  volatile U8  ERR_INTERRUPT;          //15          //Error Interrupt, 0(FALSE):No Error, 1(TRUE):Error
+} NX_SDMMC_NORMAL_INT_STAT_R;
+
+//ERROR_INT_STAT_R
+typedef struct error_int_stat_r
+{
+  volatile U8  CMD_TOUT_ERR;           //0           //Command Timeout Error
+  volatile U8  CMD_CRC_ERR;            //1           //Command CRC Error
+  volatile U8  CMD_END_BIT_ERR;        //2           //Command End Bit Error
+  volatile U8  CMD_IDX_ERR;            //3           //Command Index Error
+  volatile U8  DATA_TOUT_ERR;          //4           //Data Timeout Error
+  volatile U8  DATA_CRC_ERR;           //5           //Data CRC Error
+  volatile U8  DATA_END_BIT_ERR;       //6           //Data End Bit Error
+  volatile U8  CUR_LMT_ERR;            //7           //Current Limit Error
+  volatile U8  AUTO_CMD_ERR;           //8           //Auto CMD Error
+  volatile U8  ADMA_ERR;               //9           //ADMA Error
+  volatile U8  TUNING_ERR;             //10          //Tuning Error
+  volatile U8  RESP_ERR;               //11          //Response Error
+  volatile U8  BOOT_ACK_ERR;           //12          //Boot Acknowledgement Error
+  volatile U8  VENDOR_ERR1;            //13          //ERROR_INT_STAT_R resigter
+  volatile U8  VENDOR_ERR2;            //14          //ERROR_INT_STAT_R resigter
+  volatile U8  VENDOR_ERR3;            //15          //ERROR_INT_STAT_R resigter
+} NX_SDMMC_ERROR_INT_STAT_R;
+
+//NORMAL_INT_STAT_EN_R
+typedef struct normal_int_stat_en_r
+{
+  volatile U8  CMD_COMPLETE_STAT_EN;   //0           //Command Complete Status Enable
+  volatile U8  XFER_COMPLETE_STAT_EN;  //1           //Transfer Complete Status Enable
+  volatile U8  BGAP_EVENT_STAT_EN;     //2           //Block Gap Event Status Enable
+  volatile U8  DMA_INTERRUPT_STAT_EN;  //3           //DMA Interrupt Status Enable
+  volatile U8  BUF_WR_READY_STAT_EN;   //4           //Buffer Write Ready Status Enable
+  volatile U8  BUF_RD_READY_STAT_EN;   //5           //Buffer Read Ready Status Enable
+  volatile U8  CARD_INSERTION_STAT_EN; //6           //Card Insertion Status Enable
+  volatile U8  CARD_REMOVAL_STAT_EN;   //7           //Card Removal Status Enable
+  volatile U8  CARD_INTERRUPT_STAT_EN; //8           //Card Interrupt Status Enable
+  volatile U8  INT_A_STAT_EN;          //9           //INT_A Status Enable
+  volatile U8  INT_B_STAT_EN;          //10          //INT_B Status Enable
+  volatile U8  INT_C_STAT_EN;          //11          //INT_C Status Enable
+  volatile U8  RE_TUNE_EVENT_STAT_EN;  //12          //Re-tuning Event Status Enable(UHS-I only)
+  volatile U8  FX_EVENT_STAT_EN;       //13          //FX Event Status Enable
+  volatile U8  CQE_EVNET_STAT_EN;      //14          //CQE Event Status Enable
+  volatile U8  RSVD_15;                //15          //Reserved
+} NX_SDMMC_NORMAL_INT_STAT_EN_R;
+
+//ERROR_INT_STAT_EN_R
+typedef struct error_int_stat_en_r
+{
+  volatile U8  CMD_TOUT_ERR_STAT_EN;           //0           //Command Timeout Error Status Enable (SD/eMMC Mode only)
+  volatile U8  CMD_CRC_ERR_STAT_EN;            //1           //Command CRC Error Status Enable (SD/eMMC Mode only)
+  volatile U8  CMD_END_BIT_ERR_STAT_EN;        //2           //Command End Bit Error Status Enable (SD/eMMC Mode only)
+  volatile U8  CMD_IDX_ERR_STAT_EN;            //3           //Command Index Error Status Enable (SD/eMMC Mode only)
+  volatile U8  DATA_TOUT_ERR_STAT_EN;          //4           //Data Timeout Error Status Enable (SD/eMMC Mode only)
+  volatile U8  DATA_CRC_ERR_STAT_EN;           //5           //Data CRC Error Status Enable (SD/eMMC Mode only)
+  volatile U8  DATA_END_BIT_ERR_STAT_EN;       //6           //Data End Bit Error Status Enable (SD/eMMC Mode only)
+  volatile U8  CUR_LMT_ERR_STAT_EN;            //7           //Current Limit Error Status Enable
+  volatile U8  AUTO_CMD_ERR_STAT_EN;           //8           //Auto CMD Error Status Enable (SD/eMMC Mode only)
+  volatile U8  ADMA_ERR_STAT_EN;               //9           //ADMA Error Status Enable
+  volatile U8  TUNING_ERR_STAT_EN;             //10          //Tuning Error Status Enable (UHS-I Mode only)
+  volatile U8  RESP_ERR_STAT_EN;               //11          //Response Error Status Enable (SD Mode only)
+  volatile U8  BOOT_ACK_ERR_STAT_EN;           //12          //Boot Acknowledgement Error (eMMC Mode only)
+  volatile U8  VENDOR_ERR_STAT_EN1;            //13          //13th bit Error Interrupt Status Enable register Reserved
+  volatile U8  VENDOR_ERR_STAT_EN2;            //14          //14th bit Error Interrupt Status Enable register Reserved
+  volatile U8  VENDOR_ERR_STAT_EN3;            //15          //15th bit Error Interrupt Status Enable register Reserved
+} NX_SDMMC_ERROR_INT_STAT_EN_R;
+
+//NORMAL_INT_SIGNAL_EN_R
+typedef struct normal_int_signal_en_r
+{
+  volatile U8  CMD_COMPLETE_SIGNAL_EN;   //0           //Command Complete Signal Enable
+  volatile U8  XFER_COMPLETE_SIGNAL_EN;  //1           //Transfer Complete Signal Enable
+  volatile U8  BGAP_EVENT_SIGNAL_EN;     //2           //Block Gap Event Signal Enable
+  volatile U8  DMA_INTERRUPT_SIGNAL_EN;  //3           //DMA Interrupt Signal Enable
+  volatile U8  BUF_WR_READY_SIGNAL_EN;   //4           //Buffer Write Ready Signal Enable
+  volatile U8  BUF_RD_READY_SIGNAL_EN;   //5           //Buffer Read Ready Signal Enable
+  volatile U8  CARD_INSERTION_SIGNAL_EN; //6           //Card Insertion Signal Enable
+  volatile U8  CARD_REMOVAL_SIGNAL_EN;   //7           //Card Removal Signal Enable
+  volatile U8  CARD_INTERRUPT_SIGNAL_EN; //8           //Card Interrupt Signal Enable
+  volatile U8  INT_A_SIGNAL_EN;          //9           //INT_A Signal Enable
+  volatile U8  INT_B_SIGNAL_EN;          //10          //INT_B Signal Enable
+  volatile U8  INT_C_SIGNAL_EN;          //11          //INT_C Signal Enable
+  volatile U8  RE_TUNE_EVENT_SIGNAL_EN;  //12          //Re-tuning Event Signal Enable (UHS-I only)
+  volatile U8  FX_EVENT_SIGNAL_EN;       //13          //FX Event Signal Enable
+  volatile U8  CQE_EVNET_SIGNAL_EN;      //14          //CQE Event Signal Enable
+  volatile U8  RSVD_15;                  //15          //Reserved
+} NX_SDMMC_NORMAL_INT_SIGNAL_EN_R;
+
+//ERROR_INT_SIGNAL_EN_R
+typedef struct error_int_signal_en_r
+{
+  volatile U8  CMD_TOUT_ERR_SIGNAL_EN;           //0           //Command Timeout Error Signal Enable (SD/eMMC Mode only)
+  volatile U8  CMD_CRC_ERR_SIGNAL_EN;            //1           //Command CRC Error Signal Enable (SD/eMMC Mode only)
+  volatile U8  CMD_END_BIT_ERR_SIGNAL_EN;        //2           //Command End Bit Error Signal Enable (SD/eMMC Mode only)
+  volatile U8  CMD_IDX_ERR_SIGNAL_EN;            //3           //Command Index Error Signal Enable (SD/eMMC Mode only)
+  volatile U8  DATA_TOUT_ERR_SIGNAL_EN;          //4           //Data Timeout Error Signal Enable (SD/eMMC Mode only)
+  volatile U8  DATA_CRC_ERR_SIGNAL_EN;           //5           //Data CRC Error Signal Enable (SD/eMMC Mode only)
+  volatile U8  DATA_END_BIT_ERR_SIGNAL_EN;       //6           //Data End Bit Error Signal Enable (SD/eMMC Mode only)
+  volatile U8  CUR_LMT_ERR_SIGNAL_EN;            //7           //Current Limit Error Signal Enable
+  volatile U8  AUTO_CMD_ERR_SIGNAL_EN;           //8           //Auto CMD Error Signal Enable (SD/eMMC Mode only)
+  volatile U8  ADMA_ERR_SIGNAL_EN;               //9           //ADMA Error Signal Enable
+  volatile U8  TUNING_ERR_SIGNAL_EN;             //10          //Tuning Error Signal Enable (UHS-I Mode only)
+  volatile U8  RESP_ERR_SIGNAL_EN;               //11          //Response Error Signal Enable (SD Mode only)
+  volatile U8  BOOT_ACK_ERR_SIGNAL_EN;           //12          //Boot Acknowledgement Error (eMMC Mode only)
+  volatile U8  VENDOR_ERR_SIGNAL_EN1;            //13          //14th bit Error Interrupt Signal Enable register Reserved
+  volatile U8  VENDOR_ERR_SIGNAL_EN2;            //14          //15th bit Error Interrupt Signal Enable register Reserved
+  volatile U8  VENDOR_ERR_SIGNAL_EN3;            //15          //16th bit Error Interrupt Signal Enable register Reserved
+} NX_SDMMC_ERROR_INT_SIGNAL_EN_R;
+
+//AUTO_CMD_STAT_R
+typedef struct auto_cmd_stat_r
+{
+  volatile U8  AUTO_CMD12_NOT_EXEC;              //0           //Auto CMD12 Not Executed
+  volatile U8  AUTO_CMD_TOUT_ERR;                //1           //Auto CMD Timeout Error
+  volatile U8  AUTO_CMD_CRC_ERR;                 //2           //Auto CMD CRC Error
+  volatile U8  AUTO_CMD_EBIT_ERR;                //3           //Auto CMD End Bit Error
+  volatile U8  AUTO_CMD_IDX_ERR;                 //4           //Auto CMD Index Error
+  volatile U8  AUTO_CMD_RESP_ERR;                //5           //Auto CMD Response Error
+  volatile U8  RSVD_6;                           //6           //Reserved
+  volatile U8  CMD_NOT_ISSUED_AUTO_CMD12;        //7           //Command Not Issued By Auto CMD12
+  volatile U8  RSVD_15_8;                        //15:8        //Reserved
+} NX_SDMMC_AUTO_CMD_STAT_R;
+
+// HOST_CTRL2_R
+typedef struct host_ctrl2_r
+{
+  volatile U8  UHS_MODEL_SEL;           //2:0        //UHS Mode/eMMC Speed Mode Select
+  volatile U8  SIGNALING_EN;            //3          //1.8V Signaling Enable
+  volatile U8  DRV_STRENGTH_SEL;        //5:4        //Driver Strength Select
+  volatile U8  EXEC_TUNING;             //6          //Execute Tuning
+  volatile U8  SAMPLE_CLK_SEL;          //7          //Sampling Clock Select
+  volatile U8  UHS2_IF_ENABLE;          //8          //UHS-II Interface Enable
+  volatile U8  RSVD_9;                  //9          //Reserved
+  volatile U8  ADMA2_LEN_MODE;          //10         //ADMA2 Length Mode
+  volatile U8  CMD23_ENABLE;            //11         //CMD23 Enable
+  volatile U8  HOST_VER4_ENABLE;        //12         //Host Version 4 Enable
+  volatile U8  ADDRESSING;              //13         //64-bit Addressing, 0(FALSE):32 bits addressing, 1(TRUE):64 bits addressing
+  volatile U8  ASYNC_INT_ENABLE;        //14         //Asynchronous Interrupt Enable
+  volatile U8  PRESET_VAL_ENABLE;       //15         //Preset Value Enable
+} NX_SDMMC_HOST_CTRL2_R;
+
+//CAPABILITIES1_R
+typedef struct capabilities1_r
+{
+  volatile U8  TOUT_CLK_FREQ;           //5:0        //Timeout Clock Frequency
+  volatile U8  RSVD_6;                  //6          //Reserved
+  volatile U8  TOUT_CLK_UNIT;           //7          //Timeout Clock Unit
+  volatile U8  BASE_CLK_FREQ;           //15:8       //Base Clock Frequency for SD clock
+  volatile U8  MAX_BLK_LEN;             //17:16      //Maximum Block Length
+  volatile U8  Embedded_8_BIT;          //18         //8-bit Support for Embedded Device
+  volatile U8  ADMA2_SUPPORT;           //19         //ADMA2 Support
+  volatile U8  RSVD_20;                 //20         //Reserved
+  volatile U8  HIGH_SPEED_SUPPORT;      //21         //High Speed Support
+  volatile U8  SDMA_SUPPORT;            //22         //SDMA Support
+  volatile U8  SUS_RES_SUPPORT;         //23         //Suspense/Resume Support
+  volatile U8  VOLT_33;                 //24         //Voltage Support 3.3V
+  volatile U8  VOLT_30;                 //25         //Voltage Support 3.0V
+  volatile U8  VOLT_18;                 //26         //Voltage Support 1.8V
+  volatile U8  SYS_ADDR_64_V4;          //27         //64-bit System Address Support for V4
+  volatile U8  SYS_ADDR_64_V3;          //28         //64-bit System Address Support for V3
+  volatile U8  ASYNC_INT_SUPPORT;       //29         //Asynchoronous Interrupt Support (SD Mode only)
+  volatile U8  SLOT_TYPE_R;             //31:30      //Slot Type
+} NX_SDMMC_CAPABILITIES1_R;
+
+//CAPABILITIES2_R
+typedef struct capabilities2_r
+{
+  volatile U8  SDR50_SUPPORT;           //0          //SDR50 Support (UHS-I only)
+  volatile U8  SDR104_SUPPORT;          //1          //SDR104 Support (UHS-I only)
+  volatile U8  DDR50_SUPPORT;           //2          //DDR50 Support (UHS-I only)
+  volatile U8  UHS2_SUPPORT;            //3          //UHS-II Support (UHS-I only)
+  volatile U8  DRV_TYPEA;               //4          //Driver Type A Support (UHS-I only) 
+  volatile U8  DRV_TYPEC;               //5          //Driver Type C Support (UHS-I only)
+  volatile U8  DRV_TYPED;               //6          //Driver Type D Support (UHS-I only)
+  volatile U8  RSVD_39;                 //7          //Reserved
+  volatile U8  RETUNE_CNT;              //11:8       //Timer Count for Re-Tuning (UHS-I only)
+  volatile U8  RSVD_44;                 //12         //Reserved
+  volatile U8  USE_TUNING_SDR50;        //13         //Use Tuning for SDR50 (UHS-I only)
+  volatile U8  RE_TUNING_MODES;         //15:14      //Re-Tuning Modes (UHS-I only)
+  volatile U8  CLK_MUL;                 //23:16      //Clock Multiplier
+  volatile U8  RSVD_56_58;              //26:24      //Reserved
+  volatile U8  ADMA3_SUPPORT;           //27         //ADMA3 Support
+  volatile U8  VDD2_18V_SUPPORT;        //28         //1.8V VDD2 Support
+  volatile U8  RSVD_61;                 //29         //Reserved
+  volatile U8  RSVD_62_63;              //31:30      //Reserved
+} NX_SDMMC_CAPABILITIES2_R;
+
+//CURR_CAPABILITIES1_R
+typedef struct curr_capabilities1_r
+{
+  volatile U8  MAX_CUR_33V;             //7:0        //Maximum Current for 3.3V
+  volatile U8  MAX_CUR_30V;             //15:8       //Maximum Current for 3.0V
+  volatile U8  MAX_CUR_18V;             //23:16      //Maximum Current for 1.8V
+  volatile U8  RSVD_31_24;              //31:24      //Reserved
+} NX_SDMMC_CURR_CAPABILITIES1_R;
+
+//CURR_CAPABILITIES2_R
+typedef struct curr_capabilities2_r
+{
+  volatile U8  MAX_CUR_VDD2_18V;        //7:0        //Maximum Current for 1.8V VDD2
+  volatile U32 RSVD_63_40;              //31:8       //Reserved
+} NX_SDMMC_CURR_CAPABILITIES2_R;
+
+//FORCE_AUTO_CMD_STAT_R
+typedef struct force_auto_cmd_stat_r
+{
+  volatile U8  FORCE_AUTO_CMD12_NOT_EXEC;         //0          //Force Event for Auto CMD12 Not Executed
+  volatile U8  FORCE_AUTO_CMD_TOUT_ERR;           //1          //Force Event for Auto CMD Timeout Error
+  volatile U8  FORCE_AUTO_CMD_CRC_ERR;            //2          //Force Event for Auto CMD CRC Error
+  volatile U8  FORCE_AUTO_CMD_EBIT_ERR;           //3          //Force Event for Auto CMD End Bit Error
+  volatile U8  FORCE_AUTO_CMD_IDX_ERR;            //4          //Force Event for Auto CMD Index Error
+  volatile U8  FORCE_AUTO_CMD_RESP_ERR;           //5          //Force Event for Auto CMD Response Error
+  volatile U8  RSVD_6;                            //6          //Reserved
+  volatile U8  FORCE_CMD_NOT_ISSUED_AUTO_CMD12;   //7          //Force Event for Command Not Issued By Auto CMD12 Error
+  volatile U8  RSVD_15_8;                         //15:8       //Reserved
+} NX_SDMMC_FORCE_AUTO_CMD_STAT_R;
+
+//FORCE_ERROR_INT_STAT_R
+typedef struct force_error_int_stat_r
+{
+  volatile U8  XXX;
+} NX_SDMMC_FORCE_ERROR_INT_STAT_R;
+
+/* typedef struct  */
+/* {   */
+/* } ; */
+
+
+
+
+
+
+//HOST_CNTRL_VERS_R
+typedef struct host_cntrl_vers_r
+{
+  volatile U8  SPEC_VERSION_NUM;        //7:0               //Specification Version Number
+  volatile U8  VENDOR_VERSION_NUM;      //15:8              //Vendor Version Number
+} NX_SDMMC_HOST_CNTRL_VERS_R;
+
+
+  // SDMMC Module's Register Map
+typedef struct SnopsysRegisterSet
+{
+  //                                   offset       Description   
+  volatile U32 SDMASA_R;               //0x0        SDMA System Address Register
+  volatile U16 BLOCKSIZE_R;            //0x4        Block Size register
+  volatile U16 BLOCKCOUNT_R;           //0x6        16-bit Block Count Register
+  volatile U32 ARGUMENT_R;             //0x8        Argument Register
+  volatile U16 XFER_MODE_R;            //0xc        Transfer Mode Register
+  volatile U16 CMD_R;                  //0xe        Command Register
+  volatile U32 RESP01_R;               //0x10       Response Register 0/1
+  volatile U32 RESP23_R;               //0x14       Response Register 2/3
+  volatile U32 RESP45_R;               //0x18       Response Register 4/5
+  volatile U32 RESP67_R;               //0x1c       Response Register 6/7
+  volatile U32 BUF_DATA_R;             //0x20       Buffer DataPort Register
+  volatile U32 PSTATE_REG;             //0x24       Present State Register
+  volatile U8  HOST_CTRL1_R;           //0x28       Host Control 1 Register
+  struct pwr_ctrl_r PWR_CTRL_R;        //0x29       Power Control Register
+  volatile U8  BGAP_CTRL_R;            //0x2a       Block Gap Contrl Register
+  volatile U8  WUP_CTRL_R;             //0x2b       Wakeup Contrl Register
+  struct clk_ctrl_r CLK_CTRL_R;        //0x2c       Clock Control Register
+  struct tout_ctrl_r TOUT_CTRL_R;      //0x2e       Timeout Control Register
+  volatile U8  SW_RST_R;               //0x2f       Software Reset Register
+  volatile U16 NORMAL_INT_STAT_R;      //0x30       Normal Interrupt Status Register
+  volatile U32 ERROR_INT_STAT_R;       //0x32       Error Interrupt Status Register
+  volatile U16 NORMAL_INT_STAT_EN_R;   //0x34       Normal Interrupt Status Enable Register
+  volatile U16 ERROR_INT_STAT_EN_R;    //0x36       Error Interrupt Status Enable Register
+  volatile U16 NORMAL_INT_SIGNAL_EN_R; //0x38       Normal Interrupt Signal Enable Register
+  volatile U16 ERROR_INT_SIGNAL_EN_R;  //0x3a       Error Interrupt Signal Enable Register
+  volatile U16 AUTO_CMD_STAT_R;        //0x3c       Auto CMD Status Register
+  volatile U16 HOST_CTRL2_R;           //0x3e       Host Control 2 Register
+  volatile U32 CAPABILITIES1_R;        //0x40       Capabilities 1 Resiger - 0 to 31
+  volatile U32 CAPABILITIES2_R;        //0x44       Capabilities 1 Resiger - 32 to 63
+  volatile U32 CURR_CAPABILITIES1_R;   //0x48       Maximum Current Capabilities Resiger - 0 to 31
+  volatile U32 CURR_CAPABILITIES2_R;   //0x4c       Maximum Current Capabilities Resiger - 31 to 63
+  volatile U16 FORCE_AUTO_CMD_STAT_R;  //0x50       Force Event Register for Auto CMD Error Status register
+  volatile U16 FORCE_ERROR_INT_STAT_R; //0x52       Force Event Register for Error Interrupt Status
+  
+  volatile U16 ADMA_ERR_STAT_R;        //0x54
+  volatile U16 ADMA_SA_LOW_R;          //0x58
+  volatile U16 ADMA_SA_HIGH_R;         //0x5c
+  volatile U16 PRESET_INIT_R;          //0x60
+  volatile U16 PRESET_DS_R;            //0x62
+  volatile U16 PRESET_HS_R;            //0x64
+  volatile U16 PRESET_SDR12_R;         //0x66
+  volatile U16 PRESET_SDR25_R;         //0x68
+  volatile U16 PRESET_SDR50_R;         //0x6a
+  volatile U16 PRESET_SDR104_R;        //0x6c
+  volatile U16 PRESET_DDR50_R;         //0x6e
+  volatile U16 PRESET_UHS2_R;          //0x74
+  volatile U16 ADMA_ID_LOW_R;          //0x78
+  volatile U16 ADMA_ID_HIGH_R;         //0x7c
+  volatile U16 UHS_II_BLOCK_SIZE_R;    //0x80
+  volatile U16 UHS_II_BLOCK_COUNT_R;   //0x84
+  volatile U16 UHS_II_COMMAND_PKT_0_3_R;   //0x88
+  volatile U16 UHS_II_COMMAND_PKT_4_7_R;   //0x8c
+  volatile U16 UHS_II_COMMAND_PKT_8_11_R;  //0x90
+  volatile U16 UHS_II_COMMAND_PKT_12_15_R; //0x94
+  volatile U16 UHS_II_COMMAND_PKT_16_19_R; //0x98
+  volatile U16 UHS_II_XFER_MODE_R;      //0x9c
+  volatile U16 UHS_II_CMD_R;            //0x9e
+  volatile U16 UHS_II_RESP_0_3_R;       //0xa0
+  volatile U16 UHS_II_RESP_4_7_R;       //0xa4
+  volatile U16 UHS_II_RESP_8_11_R;      //0xa8
+  volatile U16 UHS_II_RESP_12_15_R;     //0xac
+  volatile U16 UHS_II_RESP_16_19_R;     //0xb0
+  volatile U16 UHS_II_MSG_SEL_R;        //0xb4
+  volatile U16 UHS_II_MSG_R;            //0xb8
+  volatile U16 UHS_II_DEV_INTR_STATUS_R;//0xbc
+  volatile U16 UHS_II_DEV_SEL_R;        //0xbe
+  volatile U16 UHS_II_DEV_INR_CODE_R;   //0xbf
+  volatile U16 UHS_II_SOFT_RESET_R;     //0xc0
+  volatile U16 UHS_II_TIMER_CNTRL_R;    //0xc2
+  volatile U16 UHS_II_ERR_INTR_STATUS_R;//0xc4
+  volatile U16 UHS_II_ERR_INTR_STATUS_EN_R;  //0xc8
+  volatile U16 UHS_II_ERR_INTR_SIGNAL_EN_R;  //0xcc
+  volatile U16 P_UHS_II_SETTINGS_R;          //0xe0
+  volatile U16 P_UHS_II_HOST_CAPAB;          //0xe2
+  volatile U16 P_UHS_II_TEST;                //0xe4
+  volatile U16 P_EMBEDDED_CNTRL;             //0xe6
+  volatile U16 P_VENDOR_SPECIFIC_AREA;       //0xe8
+  volatile U16 P_VENDOR2_SPECIFIC_AREA;      //0xea
+  volatile U16 SLOT_INTR_STATUS_R;           //0xfc
+  volatile U16 HOST_CNTRL_VERS_R;            //0xfe       //Host Controller Version
+} NX_SDMMC_RegisterSet;
+
+
+#define SD_BUS_VOL_VDD_3_3    0x7    //3.3V(Typical)
+#define SD_BUS_VOL_VDD_3_0    0x6    //3.0V(Typical)
+#define SD_BUS_VOL_VDD_1_8    0x5    //1.8V(Typical)
+#define SD_BUS_VOL_VDD_0      0x4    //Reserved
+
+
+enum
+{
+    TMCLK_2__13 = 0,          // TMCLK x 2^13
+    TMCLK_2__14 = 1,          // TMCLK x 2^14
+    TMCLK_2__15 = 2,          // TMCLK x 2^15
+    TMCLK_2__16 = 3,          // TMCLK x 2^16
+    TMCLK_2__17 = 4,          // TMCLK x 2^17
+    TMCLK_2__18 = 5,          // TMCLK x 2^18
+    TMCLK_2__19 = 6,          // TMCLK x 2^19
+    TMCLK_2__20 = 7,          // TMCLK x 2^20
+    TMCLK_2__21 = 8,          // TMCLK x 2^21
+    TMCLK_2__22 = 9,          // TMCLK x 2^22
+    TMCLK_2__23 = 10,         // TMCLK x 2^23
+    TMCLK_2__24 = 11,         // TMCLK x 2^24
+    TMCLK_2__25 = 12,         // TMCLK x 2^25
+    TMCLK_2__26 = 13,         // TMCLK x 2^26
+    TMCLK_2__27 = 14,         // TMCLK x 2^27
+    TMCLK_NONE = 15,          // Reserved
+};
+
+enum
+{
+  SPEC_VERSION_NUM1 = 0,       //0x0 SD Host Controller Specification Version 1.00
+  SPEC_VERSION_NUM2 = 1,       //0x1 SD Host Controller Specification Version 2.00
+  SPEC_VERSION_NUM3 = 2,       //0x2 SD Host Controller Specification Version 3.00
+  SPEC_VERSION_NUM4 = 3,       //0x3 SD Host Controller Specification Version 4.00
+  SPEC_VERSION_NUM4_1 = 4,     //0x4 SD Host Controller Specification Version 4.10
+  SPEC_VERSION_NUM4_2 = 5,     //0x5 SD Host Controller Specification Version 4.20
+};
+
+
+
+  
+/// @brief  SDMMC clock phase shift
+typedef enum
+{
+	NX_SDMMC_CLOCK_SHIFT_0          = 0,
+	NX_SDMMC_CLOCK_SHIFT_90         = 1,
+	NX_SDMMC_CLOCK_SHIFT_180        = 2,
+	NX_SDMMC_CLOCK_SHIFT_270        = 3
+} NX_SDMMC_CLKSHIFT;
+
+typedef enum
+{
+	NX_SDMMC_CLOCK_SOURCE_0		= 0,
+	NX_SDMMC_CLOCK_SOURCE_1		= 1,
+	NX_SDMMC_CLOCK_SOURCE_2		= 2,
+	NX_SDMMC_CLOCK_SOURCE_3		= 3,
+} NX_SDMMC_CLOCK_SOURCE;
+
+//------------------------------------------------------------------------------
+/// @brief  SDMMC Module's MACRO
+//------------------------------------------------------------------------------
+#define NX_SDMMC_MAX_BIU_DATASIZE   (1UL<<12)
+
+//------------------------------------------------------------------------------
+/// @brief  To remove following waring on RVDS compiler
+//          Warning : #66-D: enumeration value is out of "int" range
+//------------------------------------------------------------------------------
+//#ifdef __arm
+//#pragma diag_remark 66      // disable #66 warining
+//#endif
+
+//------------------------------------------------------------------------------
+/// @name   Module Interface
+//------------------------------------------------------------------------------
+//@{
+CBOOL   NX_SDMMC_Initialize( void );
+U32     NX_SDMMC_GetNumberOfModule( void );
+//@}
+
+//------------------------------------------------------------------------------
+/// @name   Basic Interface
+//------------------------------------------------------------------------------
+//@{
+U32     NX_SDMMC_GetPhysicalAddress( U32 ModuleIndex );
+U32     NX_SDMMC_GetSizeOfRegisterSet( void );
+
+void    NX_SDMMC_SetBaseAddress( U32 ModuleIndex, void* BaseAddress );
+void*    NX_SDMMC_GetBaseAddress( U32 ModuleIndex );
+
+CBOOL   NX_SDMMC_OpenModule( U32 ModuleIndex );
+CBOOL   NX_SDMMC_CloseModule( U32 ModuleIndex );
+
+CBOOL   NX_SDMMC_CheckBusy( U32 ModuleIndex );
+CBOOL   NX_SDMMC_CanPowerDown( U32 ModuelIndex );
+//@}
+
+//------------------------------------------------------------------------------
+/// @name   Interrupt Interface
+//------------------------------------------------------------------------------
+//@{
+S32     NX_SDMMC_GetInterruptNumber( U32 ModuleIndex );
+
+void    NX_SDMMC_SetInterruptEnable( U32 ModuleIndex, S32 IntNum, CBOOL Enable );
+CBOOL   NX_SDMMC_GetInterruptEnable( U32 ModuleIndex, S32 IntNum );
+CBOOL   NX_SDMMC_GetInterruptPending( U32 ModuleIndex, S32 IntNum );
+void    NX_SDMMC_ClearInterruptPending( U32 ModuleIndex, S32 IntNum );
+
+void    NX_SDMMC_SetInterruptEnableAll( U32 ModuleIndex, CBOOL Enable );
+CBOOL   NX_SDMMC_GetInterruptEnableAll( U32 ModuleIndex );
+CBOOL   NX_SDMMC_GetInterruptPendingAll( U32 ModuleIndex );
+void    NX_SDMMC_ClearInterruptPendingAll( U32 ModuleIndex );
+S32     NX_SDMMC_GetInterruptPendingNumber( U32 ModuleIndex );
+
+void    NX_SDMMC_SetInterruptEnable32( U32 ModuleIndex, U32 EnableFlag );
+U32     NX_SDMMC_GetInterruptEnable32( U32 ModuleIndex );
+U32     NX_SDMMC_GetInterruptPending32( U32 ModuleIndex );
+void    NX_SDMMC_ClearInterruptPending32( U32 ModuleIndex, U32 PendingFlag );
+//@}
+
+//------------------------------------------------------------------------------
+/// @name   Clock Control Interface
+//------------------------------------------------------------------------------
+//@{
+U32     NX_SDMMC_GetClockNumber( U32 ModuleIndex );
+U32     NX_SDMMC_GetResetNumber( U32 ModuleIndex );
+//@}
+
+//------------------------------------------------------------------------------
+/// @name   Module customized operations
+//------------------------------------------------------------------------------
+//@{
+void    NX_SDMMC_SetPowerEnable( U32 ModuleIndex, U32 PowerIndex, CBOOL Enable );
+CBOOL   NX_SDMMC_GetPowerEnable( U32 ModuleIndex, U32 PowerIndex );
+
+void    NX_SDMMC_AbortReadData( U32 ModuleIndex );
+void    NX_SDMMC_SendIRQResponse( U32 ModuleIndex );
+void    NX_SDMMC_SetReadWait( U32 ModuleIndex, CBOOL bAssert );
+
+//void    NX_SDMMC_ResetDMA( U32 ModuleIndex );
+//CBOOL   NX_SDMMC_IsResetDMA( U32 ModuleIndex );
+void    NX_SDMMC_ResetDMAC( U32 ModuleIndex );
+void    NX_SDMMC_SetDMAMode( U32 ModuleIndex, CBOOL Enable );
+void    NX_SDMMC_SetUseInternalDMAC( U32 ModuleIndex, CBOOL Enable );
+CBOOL   NX_SDMMC_IsDMAReq( U32 ModuleIndex );
+CBOOL   NX_SDMMC_IsDMAAck( U32 ModuleIndex );
+
+void    NX_SDMMC_ResetFIFO( U32 ModuleIndex );
+CBOOL   NX_SDMMC_IsResetFIFO( U32 ModuleIndex );
+void    NX_SDMMC_ResetController( U32 ModuleIndex );
+CBOOL   NX_SDMMC_IsResetController( U32 ModuleIndex );
+
+void    NX_SDMMC_SetClockSource( U32 ModuleIndex, NX_SDMMC_CLOCK_SOURCE ClkSrc );
+NX_SDMMC_CLOCK_SOURCE    NX_SDMMC_GetClockSource( U32 ModuleIndex );
+void    NX_SDMMC_SetOutputClockDivider( U32 ModuleIndex, U32 divider );
+U32     NX_SDMMC_GetOutputClockDivider( U32 ModuleIndex );
+void    NX_SDMMC_SetLowPowerClockMode( U32 ModuleIndex, CBOOL Enable );
+CBOOL   NX_SDMMC_GetLowPowerClockMode( U32 ModuleIndex );
+void    NX_SDMMC_SetOutputClockEnable( U32 ModuleIndex, CBOOL Enable );
+CBOOL   NX_SDMMC_GetOutputClockEnable( U32 ModuleIndex );
+
+void    NX_SDMMC_SetDriveClockShiftPhase( U32 ModuleIndex, NX_SDMMC_CLKSHIFT ClockShift );
+NX_SDMMC_CLKSHIFT   NX_SDMMC_GetDriveClockShiftPhase( U32 ModuleIndex );
+void    NX_SDMMC_SetSampleClockShiftPhase( U32 ModuleIndex, NX_SDMMC_CLKSHIFT ClockShift );
+NX_SDMMC_CLKSHIFT   NX_SDMMC_GetSampleClockShiftPhase( U32 ModuleIndex );
+void    NX_SDMMC_SetDriveClockDelay( U32 ModuleIndex, U32 Delay );
+U32     NX_SDMMC_GetDriveClockDelay( U32 ModuleIndex );
+void    NX_SDMMC_SetSampleClockDelay( U32 ModuleIndex, U32 Delay );
+U32     NX_SDMMC_GetSampleClockDelay( U32 ModuleIndex );
+
+void    NX_SDMMC_SetDataTimeOut( U32 ModuleIndex, U32 dwTimeOut );
+U32     NX_SDMMC_GetDataTimeOut( U32 ModuleIndex );
+void    NX_SDMMC_SetResponseTimeOut( U32 ModuleIndex, U32 dwTimeOut );
+U32     NX_SDMMC_GetResponseTimeOut( U32 ModuleIndex );
+
+void    NX_SDMMC_SetDataBusWidth( U32 ModuleIndex, U32 width );
+U32     NX_SDMMC_GetDataBusWidth( U32 ModuleIndex );
+
+void    NX_SDMMC_SetBlockSize( U32 ModuleIndex, U32 SizeInByte );
+U32     NX_SDMMC_GetBlockSize( U32 ModuleIndex );
+void    NX_SDMMC_SetByteCount( U32 ModuleIndex, U32 SizeInByte );
+U32     NX_SDMMC_GetByteCount( U32 ModuleIndex );
+
+void    NX_SDMMC_SetCommandArgument( U32 ModuleIndex, U32 argument );
+void    NX_SDMMC_SetCommand( U32 ModuleIndex, U32 Cmd, U32 flag );
+void    NX_SDMMC_StartCommand( U32 ModuleIndex );
+CBOOL   NX_SDMMC_IsCommandBusy( U32 ModuleIndex );
+
+U32     NX_SDMMC_GetShortResponse( U32 ModuleIndex );
+void    NX_SDMMC_GetLongResponse( U32 ModuleIndex, U32 *pLongResponse );
+U32     NX_SDMMC_GetAutoStopResponse( U32 ModuleIndex );
+U32     NX_SDMMC_GetResponseIndex( U32 ModuleIndex );
+
+void    NX_SDMMC_SetFIFORxThreshold( U32 ModuleIndex, U32 Threshold );
+U32     NX_SDMMC_GetFIFORxThreshold( U32 ModuleIndex );
+void    NX_SDMMC_SetFIFOTxThreshold( U32 ModuleIndex, U32 Threshold );
+U32     NX_SDMMC_GetFIFOTxThreshold( U32 ModuleIndex );
+
+
+U32     NX_SDMMC_GetFIFOCount( U32 ModuleIndex );
+CBOOL   NX_SDMMC_IsFIFOFull( U32 ModuleIndex );
+CBOOL   NX_SDMMC_IsFIFOEmpty( U32 ModuleIndex );
+CBOOL   NX_SDMMC_IsFIFOTxThreshold( U32 ModuleIndex );
+CBOOL   NX_SDMMC_IsFIFORxThreshold( U32 ModuleIndex );
+
+U32     NX_SDMMC_GetDataTransferSize( U32 ModuleIndex );
+U32     NX_SDMMC_GetFIFOTransferSize( U32 ModuleIndex );
+
+void    NX_SDMMC_SetData( U32 ModuleIndex, U32 dwData );
+U32     NX_SDMMC_GetData( U32 ModuleIndex );
+void    NX_SDMMC_SetData32( U32 ModuleIndex, const U32 *pdwData );
+void    NX_SDMMC_GetData32( U32 ModuleIndex, U32 *pdwData );
+volatile U32*   NX_SDMMC_GetDataPointer( U32 ModuleIndex );
+
+/* CBOOL   NX_SDMMC_MakeBIU( NX_SDMMC_BIUConfig *pBIUC, NX_SDMMC_BIU *pBIU ); */
+/* void    NX_SDMMC_GetDataBIU( U32 ModuleIndex, NX_SDMMC_BIU *pBIU ); */
+/* void    NX_SDMMC_SetDataBIU( U32 ModuleIndex, NX_SDMMC_BIU *pBIU ); */
+void    NX_SDMMC_PollDemand( U32 ModuleIndex );
+
+U32     NX_SDMMC_GetDMACStatus( U32 ModuleIndex );
+void    NX_SDMMC_SetDMACStatus( U32 ModuleIndex, U32 SetData );
+void    NX_SDMMC_SetDMACIntEnable( U32 ModuleIndex, U32 IntFlag );
+U32     NX_SDMMC_GetDMACIntEnable( U32 ModuleIndex );
+CBOOL   NX_SDMMC_GetDMACResetStatus( U32 ModuleIndex );
+void    NX_SDMMC_SetDMACBurstLength( U32 ModuleIndex, U32 BurstLength );
+void    NX_SDMMC_SetIDMACEnable( U32 ModuleIndex, CBOOL bEnable );
+CBOOL   NX_SDMMC_GetIDMACEnable( U32 ModuleIndex );
+
+void    NX_SDMMC_SetDescSkipLen( U32 ModuleIndex, U32 uLength );
+U32     NX_SDMMC_GetDescSkipLen( U32 ModuleIndex );
+void    NX_SDMMC_ResetIDMAC( U32 ModuleIndex );
+CBOOL   NX_SDMMC_IsResetIDMAC( U32 ModuleIndex );
+void    NX_SDMMC_SetDebounce( U32 ModuleIndex, U32 uDebounce );
+U32     NX_SDMMC_GetDebounce( U32 ModuleIndex );
+CBOOL   NX_SDMMC_IsIDMACSupported( U32 ModuleIndex );
+
+void    NX_SDMMC_SetCardVoltage( U32 ModuleIndex, U32 VolBase, U32 VolOffset);
+U32     NX_SDMMC_GetCardVoltage( U32 ModuleIndex, U32 VolBase);
+
+CBOOL   NX_SDMMC_IsDataTransferBusy( U32 ModuleIndex );
+CBOOL   NX_SDMMC_IsCardDataBusy( U32 ModuleIndex );
+CBOOL   NX_SDMMC_IsCardPresent( U32 ModuleIndex );
+
+void    NX_SDMMC_SetDDRMode( U32 ModuleIndex, CBOOL Enable );
+CBOOL   NX_SDMMC_GetDDRMode( U32 ModuleIndex );
+void    NX_SDMMC_SetVoltageMode( U32 ModuleIndex, CBOOL Enable );
+CBOOL   NX_SDMMC_GetVoltageMode( U32 ModuleIndex );
+
+  //NX_SDMMC_CMDFSM NX_SDMMC_GetCommandFSM( U32 ModuleIndex );
+//@}
+
+
+#ifdef  __cplusplus
+}
+#endif
+
+#endif  // __NX_SDMMC_H__
+

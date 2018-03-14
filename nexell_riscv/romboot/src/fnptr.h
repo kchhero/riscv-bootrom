@@ -25,7 +25,7 @@
 #include "include/nx_alive.h"
 
 #include "iUSBBOOT.h"
-#include "iSDHCBOOT.h"
+#include "iSDMMCBOOT.h"
 
 #include "include/nx_sss.h"
 
@@ -97,27 +97,27 @@ typedef struct{
 	/* sdmmc boot                                      */
 	/*=================================================*/
 
-	int (*NX_SDMMC_SetClock)(SDXCBOOTSTATUS *, int, unsigned int);
-	unsigned int (*NX_SDMMC_SendCommandInternal)(SDXCBOOTSTATUS *, NX_SDMMC_COMMAND *);
-	unsigned int (*NX_SDMMC_SendStatus)(SDXCBOOTSTATUS *);
-	unsigned int (*NX_SDMMC_SendCommand)(SDXCBOOTSTATUS *, NX_SDMMC_COMMAND *);
-	unsigned int (*NX_SDMMC_SendAppCommand)(SDXCBOOTSTATUS *, NX_SDMMC_COMMAND *);
-	int (*NX_SDMMC_IdentifyCard)(SDXCBOOTSTATUS *);
-	int (*NX_SDMMC_SelectCard)(SDXCBOOTSTATUS *);
-	int (*NX_SDMMC_SetCardDetectPullUp)(SDXCBOOTSTATUS *, int);
-	int (*NX_SDMMC_SetBusWidth)(SDXCBOOTSTATUS *, unsigned int);
-	int (*NX_SDMMC_SetBlockLength)(SDXCBOOTSTATUS *, unsigned int);
-	int (*NX_SDMMC_Init)(SDXCBOOTSTATUS *);
-	int (*NX_SDMMC_Terminate)(SDXCBOOTSTATUS *);
-	int (*NX_SDMMC_Open)(SDXCBOOTSTATUS *, unsigned int);
-	int (*NX_SDMMC_Close)(SDXCBOOTSTATUS *);
-	int (*NX_SDMMC_ReadSectorData)(SDXCBOOTSTATUS *, unsigned int, unsigned int *);
-	int (*NX_SDMMC_ReadSectors)(SDXCBOOTSTATUS *, unsigned int, unsigned int, unsigned int *);
-	int (*NX_SDMMC_ReadBootSector)(SDXCBOOTSTATUS *, unsigned int, unsigned int *);
-	int (*SDMMCBOOT)(SDXCBOOTSTATUS *, unsigned int);
+	int (*NX_SDMMC_SetClock)(SDMMCBOOTSTATUS *, int, unsigned int);
+	unsigned int (*NX_SDMMC_SendCommandInternal)(SDMMCBOOTSTATUS *, NX_SDMMC_COMMAND *);
+	unsigned int (*NX_SDMMC_SendStatus)(SDMMCBOOTSTATUS *);
+	unsigned int (*NX_SDMMC_SendCommand)(SDMMCBOOTSTATUS *, NX_SDMMC_COMMAND *);
+	unsigned int (*NX_SDMMC_SendAppCommand)(SDMMCBOOTSTATUS *, NX_SDMMC_COMMAND *);
+	int (*NX_SDMMC_IdentifyCard)(SDMMCBOOTSTATUS *);
+	int (*NX_SDMMC_SelectCard)(SDMMCBOOTSTATUS *);
+	int (*NX_SDMMC_SetCardDetectPullUp)(SDMMCBOOTSTATUS *, int);
+	int (*NX_SDMMC_SetBusWidth)(SDMMCBOOTSTATUS *, unsigned int);
+	int (*NX_SDMMC_SetBlockLength)(SDMMCBOOTSTATUS *, unsigned int);
+	void (*NX_SDMMC_Init)(SDMMCBOOTSTATUS *);
+	int (*NX_SDMMC_Terminate)(SDMMCBOOTSTATUS *);
+	int (*NX_SDMMC_Open)(SDMMCBOOTSTATUS *, unsigned int);
+	int (*NX_SDMMC_Close)(SDMMCBOOTSTATUS *);
+	int (*NX_SDMMC_ReadSectorData)(SDMMCBOOTSTATUS *, unsigned int, unsigned int *);
+	int (*NX_SDMMC_ReadSectors)(SDMMCBOOTSTATUS *, unsigned int, unsigned int, unsigned int *);
+	int (*NX_SDMMC_ReadBootSector)(SDMMCBOOTSTATUS *, unsigned int, unsigned int *);
+	int (*SDMMCBOOT)(SDMMCBOOTSTATUS *, unsigned int);
 	void (*NX_SDPADSetALT)(unsigned int);
 	void (*NX_SDPADSetGPIO)(unsigned int);
-	unsigned int (*iSDXCBOOT)(unsigned int);
+	unsigned int (*iSDMMCBOOT)(unsigned int);
 
         /*=================================================*/
 	const unsigned int (*iv)[];

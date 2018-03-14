@@ -31,9 +31,9 @@
 
 #include "include/nx_gpio.h"
 
-#include "include/nx_sdmmc.h"
+#include "include/nx_sdmmc_1_6.h"
 
-#include "iSDHCBOOT.h"
+#include "iSDMMCBOOT.h"
 
 #include "include/nx_chip_iomux.h"
 #include "include/nx_chip_sfr.h"
