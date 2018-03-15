@@ -31,7 +31,7 @@
 
 #include "include/nx_gpio.h"
 
-#include "include/nx_sdmmc_1_6.h"
+#include "include/nx_sdmmc.h"
 
 #include "iSDMMCBOOT.h"
 
@@ -62,7 +62,7 @@ const struct cmu_device_clk sdmmcclk[3][3] = {
 	}
 };
 
-struct NX_SDMMC_RegisterSet * const pgSDXCReg[3] =
+struct NX_SDMMC_RegisterSet * const pgSDMMCReg[3] =
 {
   (struct NX_SDMMC_RegisterSet *)PHY_BASEADDR_SDMMC0_MODULE,
   (struct NX_SDMMC_RegisterSet *)PHY_BASEADDR_SDMMC1_MODULE,
@@ -71,87 +71,87 @@ struct NX_SDMMC_RegisterSet * const pgSDXCReg[3] =
 
 
 //------------------------------------------------------------------------------
-CBOOL NX_SDMMC_Init(SDXCBOOTSTATUS *pSDXCBootStatus)
+CBOOL NX_SDMMC_Init(SDMMCBOOTSTATUS *pSDMMCBootStatus)
 {
-	U32 i = pSDXCBootStatus->SDPort;
-	register struct NX_SDMMC_RegisterSet * const pSDXCReg = pgSDXCReg[i];
+	U32 i = pSDMMCBootStatus->SDPort;
+	register struct NX_SDMMC_RegisterSet * const pSDMMCReg = pgSDMMCReg[i];
 
         NXBL0FN *pbl0fn = Getbl0fnPtr();
 
 #ifdef DEBUG
         pbl0fn->kputs("------------------------------------");
         pbl0fn->_dprintf("[SUKER-bootrom] %s : NX_SDMMC_Init address = 0x%x\n",__func__,pbl0fn->NX_SDMMC_Init);      
-        pbl0fn->_dprintf("[SUKER-bootrom] %s : pSDXCReg = 0x%x\n",__func__,pSDXCReg);
+        pbl0fn->_dprintf("[SUKER-bootrom] %s : pSDMMCReg = 0x%x\n",__func__,pSDMMCReg);
         pbl0fn->_dprintf("[SUKER-bootrom] %s : NX_SDMMC_RegisterSet size = 0x%x\n",__func__,sizeof(struct NX_SDMMC_RegisterSet));        
 
-        pbl0fn->_dprintf("[SUKER-bootrom] %s : pSDXCBootStatus->SDPort = 0x%x\n",__func__,pSDXCBootStatus->SDPort);
+        pbl0fn->_dprintf("[SUKER-bootrom] %s : pSDMMCBootStatus->SDPort = 0x%x\n",__func__,pSDMMCBootStatus->SDPort);
 #endif
 
 #if !defined(QEMU_RISCV)        
         pbl0fn->setdeviceclock(&sdmmcclk[i][0], 2, 1);
 #endif
-	pSDXCReg->PWREN = 0 << 0;	// Set Power Disable
+	pSDMMCReg->PWREN = 0 << 0;	// Set Power Disable
 
-	pSDXCReg->CLKENA = NX_SDXC_CLKENA_LOWPWR;// low power mode & clock disable
+	pSDMMCReg->CLKENA = NX_SDMMC_CLKENA_LOWPWR;// low power mode & clock disable
 
-	pSDXCReg->TIEDRVPHASE   = NX_SDMMC_CLOCK_SHIFT_180 << 8;
-	pSDXCReg->TIESMPPHASE   = NX_SDMMC_CLOCK_SHIFT_0  << 8;
+	pSDMMCReg->TIEDRVPHASE   = NX_SDMMC_CLOCK_SHIFT_180 << 8;
+	pSDMMCReg->TIESMPPHASE   = NX_SDMMC_CLOCK_SHIFT_0  << 8;
 
-	pSDXCReg->CLKSRC = 0;	// prescaler 0
-	pSDXCReg->CLKDIV = (SDCLK_DIVIDER_WORK >> 1) << 8 |
+	pSDMMCReg->CLKSRC = 0;	// prescaler 0
+	pSDMMCReg->CLKDIV = (SDCLK_DIVIDER_WORK >> 1) << 8 |
 			(SDCLK_DIVIDER_ENUM >> 1) << 0;	// 2*n divider (0 : bypass)
 	// fifo mode, not read wait(only use sdio mode)
-	pSDXCReg->CTRL &= ~(NX_SDXC_CTRL_DMAMODE_EN | NX_SDXC_CTRL_READWAIT);
+	pSDMMCReg->CTRL &= ~(NX_SDMMC_CTRL_DMAMODE_EN | NX_SDMMC_CTRL_READWAIT);
 	// Reset the controller & DMA interface & FIFO
-	pSDXCReg->CTRL = NX_SDXC_CTRL_DMARST |
-			NX_SDXC_CTRL_FIFORST |
-			NX_SDXC_CTRL_CTRLRST;
+	pSDMMCReg->CTRL = NX_SDMMC_CTRL_DMARST |
+			NX_SDMMC_CTRL_FIFORST |
+			NX_SDMMC_CTRL_CTRLRST;
 
 #if !defined(QEMU_RISCV)
-	while (pSDXCReg->CTRL & (NX_SDXC_CTRL_DMARST |
-				NX_SDXC_CTRL_FIFORST |
-				NX_SDXC_CTRL_CTRLRST))
-		pSDXCReg->CTRL;
+	while (pSDMMCReg->CTRL & (NX_SDMMC_CTRL_DMARST |
+				NX_SDMMC_CTRL_FIFORST |
+				NX_SDMMC_CTRL_CTRLRST))
+		pSDMMCReg->CTRL;
 #endif
-	pSDXCReg->PWREN = 0x1 << 0;	// Set Power Enable
+	pSDMMCReg->PWREN = 0x1 << 0;	// Set Power Enable
 
 	// Data Timeout = 0xFFFFFF, Response Timeout = 0x64
-	pSDXCReg->TMOUT = (unsigned int)((0xFFFFFFU << 8) | (0x64 << 0));
+	pSDMMCReg->TMOUT = (unsigned int)((0xFFFFFFU << 8) | (0x64 << 0));
 
 	// Data Bus Width : 0(1-bit), 1(4-bit)
-	pSDXCReg->CTYPE = 0;
+	pSDMMCReg->CTYPE = 0;
 
 	// Block size
-	pSDXCReg->BLKSIZ = BLOCK_LENGTH;
+	pSDMMCReg->BLKSIZ = BLOCK_LENGTH;
 
 	// Issue when RX FIFO Count >= 8 x 4 bytes & TX FIFO Count <= 8 x 4 bytes
-	pSDXCReg->FIFOTH = ((8 - 1) << 16) |		// Rx threshold
+	pSDMMCReg->FIFOTH = ((8 - 1) << 16) |		// Rx threshold
 				(8 << 0);		// Tx threshold
 
 	// Mask & Clear All interrupts
-	pSDXCReg->INTMASK = 0;
-	pSDXCReg->RINTSTS = (unsigned int)(0xFFFFFFFF);
+	pSDMMCReg->INTMASK = 0;
+	pSDMMCReg->RINTSTS = (unsigned int)(0xFFFFFFFF);
 
 	// Wake up & Power on fifo sram
-	pSDXCReg->TIESRAM = (unsigned int)0x3;
-	pSDXCReg->TIEMODE = 1;
+	pSDMMCReg->TIESRAM = (unsigned int)0x3;
+	pSDMMCReg->TIEMODE = 1;
 
 #ifdef QEMU_RISCV
-        _dprintf("[SUKER-bootrom] pSDXCReg->PWREN = 0x%x\n",pSDXCReg->PWREN);
-        _dprintf("[SUKER-bootrom] pSDXCReg->CLKENA = 0x%x\n",pSDXCReg->CLKENA);
-        _dprintf("[SUKER-bootrom] pSDXCReg->TIEDRVPHASE = 0x%x\n",pSDXCReg->TIEDRVPHASE);
-        _dprintf("[SUKER-bootrom] pSDXCReg->TIESMPPHASE = 0x%x\n",pSDXCReg->TIESMPPHASE);
-        _dprintf("[SUKER-bootrom] pSDXCReg->CLKSRC = 0x%x\n",pSDXCReg->CLKSRC);
-        _dprintf("[SUKER-bootrom] pSDXCReg->CLKDIV = 0x%x\n",pSDXCReg->CLKDIV);
-        _dprintf("[SUKER-bootrom] pSDXCReg->CTRL = 0x%x\n",pSDXCReg->CTRL);
-        _dprintf("[SUKER-bootrom] pSDXCReg->TMOUT = 0x%x\n",pSDXCReg->TMOUT);
-        _dprintf("[SUKER-bootrom] pSDXCReg->CTYPE = 0x%x\n",pSDXCReg->CTYPE);
-        _dprintf("[SUKER-bootrom] pSDXCReg->BLKSIZ = 0x%x\n",pSDXCReg->BLKSIZ);
-        _dprintf("[SUKER-bootrom] pSDXCReg->FIFOTH = 0x%x\n",pSDXCReg->FIFOTH);
-        _dprintf("[SUKER-bootrom] pSDXCReg->INTMASK = 0x%x\n",pSDXCReg->INTMASK);
-        _dprintf("[SUKER-bootrom] pSDXCReg->RINTSTS = 0x%x\n",pSDXCReg->RINTSTS);
-        _dprintf("[SUKER-bootrom] pSDXCReg->TIESRAM = 0x%x\n",pSDXCReg->TIESRAM);
-        _dprintf("[SUKER-bootrom] pSDXCReg->TIEMODE = 0x%x\n",pSDXCReg->TIEMODE);
+        _dprintf("[SUKER-bootrom] pSDMMCReg->PWREN = 0x%x\n",pSDMMCReg->PWREN);
+        _dprintf("[SUKER-bootrom] pSDMMCReg->CLKENA = 0x%x\n",pSDMMCReg->CLKENA);
+        _dprintf("[SUKER-bootrom] pSDMMCReg->TIEDRVPHASE = 0x%x\n",pSDMMCReg->TIEDRVPHASE);
+        _dprintf("[SUKER-bootrom] pSDMMCReg->TIESMPPHASE = 0x%x\n",pSDMMCReg->TIESMPPHASE);
+        _dprintf("[SUKER-bootrom] pSDMMCReg->CLKSRC = 0x%x\n",pSDMMCReg->CLKSRC);
+        _dprintf("[SUKER-bootrom] pSDMMCReg->CLKDIV = 0x%x\n",pSDMMCReg->CLKDIV);
+        _dprintf("[SUKER-bootrom] pSDMMCReg->CTRL = 0x%x\n",pSDMMCReg->CTRL);
+        _dprintf("[SUKER-bootrom] pSDMMCReg->TMOUT = 0x%x\n",pSDMMCReg->TMOUT);
+        _dprintf("[SUKER-bootrom] pSDMMCReg->CTYPE = 0x%x\n",pSDMMCReg->CTYPE);
+        _dprintf("[SUKER-bootrom] pSDMMCReg->BLKSIZ = 0x%x\n",pSDMMCReg->BLKSIZ);
+        _dprintf("[SUKER-bootrom] pSDMMCReg->FIFOTH = 0x%x\n",pSDMMCReg->FIFOTH);
+        _dprintf("[SUKER-bootrom] pSDMMCReg->INTMASK = 0x%x\n",pSDMMCReg->INTMASK);
+        _dprintf("[SUKER-bootrom] pSDMMCReg->RINTSTS = 0x%x\n",pSDMMCReg->RINTSTS);
+        _dprintf("[SUKER-bootrom] pSDMMCReg->TIESRAM = 0x%x\n",pSDMMCReg->TIESRAM);
+        _dprintf("[SUKER-bootrom] pSDMMCReg->TIEMODE = 0x%x\n",pSDMMCReg->TIEMODE);
         
         pbl0fn->_dprintf("[SUKER-bootrom] %s : END\n",__func__);
 #endif
@@ -161,16 +161,16 @@ CBOOL NX_SDMMC_Init(SDXCBOOTSTATUS *pSDXCBootStatus)
 
 
 //------------------------------------------------------------------------------
-CBOOL NX_SDMMC_SetClock(SDXCBOOTSTATUS *pSDXCBootStatus,
+CBOOL NX_SDMMC_SetClock(SDMMCBOOTSTATUS *pSDMMCBootStatus,
 				CBOOL enb, U32 divider)
 {
 	NXBL0FN *pbl0fn = Getbl0fnPtr();
 #ifndef QEMU_RISCV        
 	volatile U32 timeout;
 #endif        
-	U32 i = pSDXCBootStatus->SDPort;
-	register struct NX_SDMMC_RegisterSet * const pSDXCReg =
-					pgSDXCReg[i];
+	U32 i = pSDMMCBootStatus->SDPort;
+	register struct NX_SDMMC_RegisterSet * const pSDMMCReg =
+					pgSDMMCReg[i];
 
 #ifdef QEMU_RISCV
         pbl0fn->kputs("------------------------------------");
@@ -180,50 +180,50 @@ CBOOL NX_SDMMC_SetClock(SDXCBOOTSTATUS *pSDXCBootStatus,
 	//--------------------------------------------------------------------------
 	// 1. Confirm that no card is engaged in any transaction.
 	//	If there's a transaction, wait until it has been finished.
-//	while(NX_SDXC_IsDataTransferBusy())
+//	while(NX_SDMMC_IsDataTransferBusy())
 //		;
-//	while(NX_SDXC_IsCardDataBusy())
+//	while(NX_SDMMC_IsCardDataBusy())
 //		;
 #if 1
 	//--------------------------------------------------------------------------
 	// 2. Disable the output clock.
 	// low power mode & clock disable
-	pSDXCReg->CLKENA |= NX_SDXC_CLKENA_LOWPWR;
-	pSDXCReg->CLKENA &= ~NX_SDXC_CLKENA_CLKENB;
+	pSDMMCReg->CLKENA |= NX_SDMMC_CLKENA_LOWPWR;
+	pSDMMCReg->CLKENA &= ~NX_SDMMC_CLKENA_CLKENB;
 
 
-	/* if (divider == SDXC_DIVIDER_400KHZ) */
+	/* if (divider == SDMMC_DIVIDER_400KHZ) */
 	/* 	pbl0fn->setdeviceclock(&sdmmcclk[i][2], 1, 1); */
-	/* if (divider == SDXC_CLKDIV_LOW) */
+	/* if (divider == SDMMC_CLKDIV_LOW) */
 	/* 	pbl0fn->setdeviceclock(&sdmmcclk[i][1], 1, 1); */
 
 
-	pSDXCReg->CLKENA &= ~NX_SDXC_CLKENA_LOWPWR;	// low power mode & clock disable
+	pSDMMCReg->CLKENA &= ~NX_SDMMC_CLKENA_LOWPWR;	// low power mode & clock disable
 
 
 	//--------------------------------------------------------------------------
-	// 4. Start a command with NX_SDXC_CMDFLAG_UPDATECLKONLY flag.
+	// 4. Start a command with NX_SDMMC_CMDFLAG_UPDATECLKONLY flag.
 #ifndef QEMU_RISCV
 repeat_4 :
-	pSDXCReg->CMD = 0 | NX_SDXC_CMDFLAG_STARTCMD |
-			NX_SDXC_CMDFLAG_UPDATECLKONLY |
-			NX_SDXC_CMDFLAG_STOPABORT;
+	pSDMMCReg->CMD = 0 | NX_SDMMC_CMDFLAG_STARTCMD |
+			NX_SDMMC_CMDFLAG_UPDATECLKONLY |
+			NX_SDMMC_CMDFLAG_STOPABORT;
 
 	//--------------------------------------------------------------------------
-	// 5. Wait until a update clock command is taken by the SDXC module.
+	// 5. Wait until a update clock command is taken by the SDMMC module.
 	//	If a HLE is occurred, repeat 4.
 	timeout = 0;
 
-	while (pSDXCReg->CMD & NX_SDXC_CMDFLAG_STARTCMD) {
+	while (pSDMMCReg->CMD & NX_SDMMC_CMDFLAG_STARTCMD) {
 		if (++timeout > NX_SDMMC_TIMEOUT) {
 			pbl0fn->_dprintf("clk TO\r\n");
 			INFINTE_LOOP();
 			return CFALSE;
 		}
 	}
-	if (pSDXCReg->RINTSTS & NX_SDXC_RINTSTS_HLE) {
+	if (pSDMMCReg->RINTSTS & NX_SDMMC_RINTSTS_HLE) {
 		INFINTE_LOOP();
-		pSDXCReg->RINTSTS = NX_SDXC_RINTSTS_HLE;
+		pSDMMCReg->RINTSTS = NX_SDMMC_RINTSTS_HLE;
 		goto repeat_4;
 	}
 
@@ -232,21 +232,21 @@ repeat_4 :
 #endif
 	//--------------------------------------------------------------------------
 	// 6. Enable the output clock.
-	pSDXCReg->CLKENA |= NX_SDXC_CLKENA_CLKENB;
+	pSDMMCReg->CLKENA |= NX_SDMMC_CLKENA_CLKENB;
 
 	//--------------------------------------------------------------------------
-	// 7. Start a command with NX_SDXC_CMDFLAG_UPDATECLKONLY flag.
+	// 7. Start a command with NX_SDMMC_CMDFLAG_UPDATECLKONLY flag.
 #ifndef QEMU_RISCV
 repeat_7 :
-	pSDXCReg->CMD = 0 | NX_SDXC_CMDFLAG_STARTCMD |
-		NX_SDXC_CMDFLAG_UPDATECLKONLY |
-		NX_SDXC_CMDFLAG_STOPABORT;
+	pSDMMCReg->CMD = 0 | NX_SDMMC_CMDFLAG_STARTCMD |
+		NX_SDMMC_CMDFLAG_UPDATECLKONLY |
+		NX_SDMMC_CMDFLAG_STOPABORT;
 
 	//--------------------------------------------------------------------------
-	// 8. Wait until a update clock command is taken by the SDXC module.
+	// 8. Wait until a update clock command is taken by the SDMMC module.
 	//	If a HLE is occurred, repeat 7.
 	timeout = 0;
-	while (pSDXCReg->CMD & NX_SDXC_CMDFLAG_STARTCMD) {
+	while (pSDMMCReg->CMD & NX_SDMMC_CMDFLAG_STARTCMD) {
 		if (++timeout > NX_SDMMC_TIMEOUT) {
 			pbl0fn->_dprintf("clk2 TO\r\n");
 			INFINTE_LOOP();
@@ -254,9 +254,9 @@ repeat_7 :
 		}
 	}
 
-	if (pSDXCReg->RINTSTS & NX_SDXC_RINTSTS_HLE) {
+	if (pSDMMCReg->RINTSTS & NX_SDMMC_RINTSTS_HLE) {
 		INFINTE_LOOP();
-		pSDXCReg->RINTSTS = NX_SDXC_RINTSTS_HLE;
+		pSDMMCReg->RINTSTS = NX_SDMMC_RINTSTS_HLE;
 		goto repeat_7;
 	}
 #endif
@@ -266,15 +266,15 @@ repeat_7 :
 
 //------------------------------------------------------------------------------
 U32 NX_SDMMC_SendCommandInternal(
-		SDXCBOOTSTATUS *pSDXCBootStatus,
+		SDMMCBOOTSTATUS *pSDMMCBootStatus,
 		NX_SDMMC_COMMAND *pCommand)
 {
 	NXBL0FN *pbl0fn = Getbl0fnPtr();
 	U32		cmd, flag;
 	U32		status = 0;
 	volatile U32	timeout;
-	register struct NX_SDMMC_RegisterSet * const pSDXCReg =
-				pgSDXCReg[pSDXCBootStatus->SDPort];
+	register struct NX_SDMMC_RegisterSet * const pSDMMCReg =
+				pgSDMMCReg[pSDMMCBootStatus->SDPort];
 
 #ifdef QEMU_RISCV
         pbl0fn->kputs("------------------------------------");
@@ -291,17 +291,17 @@ U32 NX_SDMMC_SendCommandInternal(
 	cmd	= pCommand->cmdidx & 0xFF;
 	flag	= pCommand->flag;
 
-	pSDXCReg->RINTSTS = 0xFFFFFFFF;
+	pSDMMCReg->RINTSTS = 0xFFFFFFFF;
 
 	//--------------------------------------------------------------------------
 	// Send Command
 	timeout = 0;
 	do {
-		pSDXCReg->RINTSTS	= NX_SDXC_RINTSTS_HLE;
-		pSDXCReg->CMDARG	= pCommand->arg;
-		pSDXCReg->CMD		= cmd | flag |
-					NX_SDXC_CMDFLAG_USE_HOLD_REG;
-		while (pSDXCReg->CMD & NX_SDXC_CMDFLAG_STARTCMD) {
+		pSDMMCReg->RINTSTS	= NX_SDMMC_RINTSTS_HLE;
+		pSDMMCReg->CMDARG	= pCommand->arg;
+		pSDMMCReg->CMD		= cmd | flag |
+					NX_SDMMC_CMDFLAG_USE_HOLD_REG;
+		while (pSDMMCReg->CMD & NX_SDMMC_CMDFLAG_STARTCMD) {
 			if (++timeout > NX_SDMMC_TIMEOUT) {
 				pbl0fn->_dprintf("TO send cmd\r\n");
 				status |= NX_SDMMC_STATUS_CMDBUSY;
@@ -309,13 +309,13 @@ U32 NX_SDMMC_SendCommandInternal(
 				goto End;
 			}
 		}
-	} while (pSDXCReg->RINTSTS & NX_SDXC_RINTSTS_HLE);
+	} while (pSDMMCReg->RINTSTS & NX_SDMMC_RINTSTS_HLE);
 
 	//--------------------------------------------------------------------------
 	// Wait until Command sent to card and got response from card.
 	timeout = 0;
 	while (1) {
-		if (pSDXCReg->RINTSTS & NX_SDXC_RINTSTS_CD)
+		if (pSDMMCReg->RINTSTS & NX_SDMMC_RINTSTS_CD)
 			break;
 
 		if (++timeout > NX_SDMMC_TIMEOUT) {
@@ -325,36 +325,36 @@ U32 NX_SDMMC_SendCommandInternal(
 			goto End;
 		}
 
-		if ((flag & NX_SDXC_CMDFLAG_STOPABORT) &&
-			(pSDXCReg->RINTSTS & NX_SDXC_RINTSTS_HTO)) {
+		if ((flag & NX_SDMMC_CMDFLAG_STOPABORT) &&
+			(pSDMMCReg->RINTSTS & NX_SDMMC_RINTSTS_HTO)) {
 			// You have to clear FIFO when HTO is occurred.
-			// After that, SDXC module leaves in stopped state and takes next command.
-			while (0 == (pSDXCReg->STATUS & NX_SDXC_STATUS_FIFOEMPTY)) {
-				pSDXCReg->DATA;
+			// After that, SDMMC module leaves in stopped state and takes next command.
+			while (0 == (pSDMMCReg->STATUS & NX_SDMMC_STATUS_FIFOEMPTY)) {
+				pSDMMCReg->DATA;
 			}
 		}
 	}
 
 	// Check Response Error
-	if (pSDXCReg->RINTSTS & (NX_SDXC_RINTSTS_RCRC |
-				NX_SDXC_RINTSTS_RE |
-				NX_SDXC_RINTSTS_RTO)) {
-		if (pSDXCReg->RINTSTS & NX_SDXC_RINTSTS_RCRC)
+	if (pSDMMCReg->RINTSTS & (NX_SDMMC_RINTSTS_RCRC |
+				NX_SDMMC_RINTSTS_RE |
+				NX_SDMMC_RINTSTS_RTO)) {
+		if (pSDMMCReg->RINTSTS & NX_SDMMC_RINTSTS_RCRC)
 			status |= NX_SDMMC_STATUS_RESCRCFAIL;
-		if (pSDXCReg->RINTSTS & NX_SDXC_RINTSTS_RE)
+		if (pSDMMCReg->RINTSTS & NX_SDMMC_RINTSTS_RE)
 			status |= NX_SDMMC_STATUS_RESERROR;
-		if (pSDXCReg->RINTSTS & NX_SDXC_RINTSTS_RTO)
+		if (pSDMMCReg->RINTSTS & NX_SDMMC_RINTSTS_RTO)
 			status |= NX_SDMMC_STATUS_RESTOUT;
 	}
 
 	if ((status == NX_SDMMC_STATUS_NOERROR) &&
-		(flag & NX_SDXC_CMDFLAG_SHORTRSP)) {
-		pCommand->response[0] = pSDXCReg->RESP[0];
-		if ((flag & NX_SDXC_CMDFLAG_LONGRSP) ==
-				NX_SDXC_CMDFLAG_LONGRSP) {
-			pCommand->response[1] = pSDXCReg->RESP[1];
-			pCommand->response[2] = pSDXCReg->RESP[2];
-			pCommand->response[3] = pSDXCReg->RESP[3];
+		(flag & NX_SDMMC_CMDFLAG_SHORTRSP)) {
+		pCommand->response[0] = pSDMMCReg->RESP[0];
+		if ((flag & NX_SDMMC_CMDFLAG_LONGRSP) ==
+				NX_SDMMC_CMDFLAG_LONGRSP) {
+			pCommand->response[1] = pSDMMCReg->RESP[1];
+			pCommand->response[2] = pSDMMCReg->RESP[2];
+			pCommand->response[3] = pSDMMCReg->RESP[3];
 		}
 
 		if (NX_SDMMC_RSPIDX_R1B == ((pCommand->cmdidx >> 8) & 0xFF)) {
@@ -366,7 +366,7 @@ U32 NX_SDMMC_SendCommandInternal(
 					INFINTE_LOOP();
 					goto End;
 				}
-			} while (pSDXCReg->STATUS & NX_SDXC_STATUS_DATABUSY);
+			} while (pSDMMCReg->STATUS & NX_SDMMC_STATUS_DATABUSY);
 		}
 	}
 
@@ -384,7 +384,7 @@ End:
 }
 
 //------------------------------------------------------------------------------
-U32 NX_SDMMC_SendStatus(SDXCBOOTSTATUS *pSDXCBootStatus)
+U32 NX_SDMMC_SendStatus(SDMMCBOOTSTATUS *pSDMMCBootStatus)
 {
 	NXBL0FN *pbl0fn = Getbl0fnPtr();
 	U32 status;
@@ -396,19 +396,19 @@ U32 NX_SDMMC_SendStatus(SDXCBOOTSTATUS *pSDXCBootStatus)
 #endif
 
 	cmd.cmdidx	= SEND_STATUS;
-	cmd.arg		= pSDXCBootStatus->rca;
-	cmd.flag	= NX_SDXC_CMDFLAG_STARTCMD |
-			NX_SDXC_CMDFLAG_CHKRSPCRC |
-			NX_SDXC_CMDFLAG_SHORTRSP;
+	cmd.arg		= pSDMMCBootStatus->rca;
+	cmd.flag	= NX_SDMMC_CMDFLAG_STARTCMD |
+			NX_SDMMC_CMDFLAG_CHKRSPCRC |
+			NX_SDMMC_CMDFLAG_SHORTRSP;
 
-	status = pbl0fn->NX_SDMMC_SendCommandInternal(pSDXCBootStatus, &cmd);
+	status = pbl0fn->NX_SDMMC_SendCommandInternal(pSDMMCBootStatus, &cmd);
 
 
 	return status;
 }
 
 //------------------------------------------------------------------------------
-U32 NX_SDMMC_SendCommand(SDXCBOOTSTATUS *pSDXCBootStatus,
+U32 NX_SDMMC_SendCommand(SDMMCBOOTSTATUS *pSDMMCBootStatus,
 				NX_SDMMC_COMMAND *pCommand)
 {
 	NXBL0FN *pbl0fn = Getbl0fnPtr();
@@ -419,16 +419,16 @@ U32 NX_SDMMC_SendCommand(SDXCBOOTSTATUS *pSDXCBootStatus,
         pbl0fn->_dprintf("[SUKER-bootrom] %s start\n",__func__);
 #endif
         
-	status = pbl0fn->NX_SDMMC_SendCommandInternal(pSDXCBootStatus, pCommand);
+	status = pbl0fn->NX_SDMMC_SendCommandInternal(pSDMMCBootStatus, pCommand);
 	if (NX_SDMMC_STATUS_NOERROR != status) {
-		pbl0fn->NX_SDMMC_SendStatus(pSDXCBootStatus);
+		pbl0fn->NX_SDMMC_SendStatus(pSDMMCBootStatus);
 	}
 
 	return status;
 }
 
 //------------------------------------------------------------------------------
-U32 NX_SDMMC_SendAppCommand(SDXCBOOTSTATUS *pSDXCBootStatus,
+U32 NX_SDMMC_SendAppCommand(SDMMCBOOTSTATUS *pSDMMCBootStatus,
 				NX_SDMMC_COMMAND *pCommand)
 {
 	NXBL0FN *pbl0fn = Getbl0fnPtr();
@@ -441,45 +441,45 @@ U32 NX_SDMMC_SendAppCommand(SDXCBOOTSTATUS *pSDXCBootStatus,
 #endif
         
 	cmd.cmdidx	= APP_CMD;
-	cmd.arg		= pSDXCBootStatus->rca;
-	cmd.flag	= NX_SDXC_CMDFLAG_STARTCMD |
-			NX_SDXC_CMDFLAG_WAITPRVDAT |
-			NX_SDXC_CMDFLAG_CHKRSPCRC |
-			NX_SDXC_CMDFLAG_SHORTRSP;
+	cmd.arg		= pSDMMCBootStatus->rca;
+	cmd.flag	= NX_SDMMC_CMDFLAG_STARTCMD |
+			NX_SDMMC_CMDFLAG_WAITPRVDAT |
+			NX_SDMMC_CMDFLAG_CHKRSPCRC |
+			NX_SDMMC_CMDFLAG_SHORTRSP;
 
-	status = pbl0fn->NX_SDMMC_SendCommandInternal(pSDXCBootStatus, &cmd);
+	status = pbl0fn->NX_SDMMC_SendCommandInternal(pSDMMCBootStatus, &cmd);
 	if (NX_SDMMC_STATUS_NOERROR == status) {
-		pbl0fn->NX_SDMMC_SendCommand(pSDXCBootStatus, pCommand);
+		pbl0fn->NX_SDMMC_SendCommand(pSDMMCBootStatus, pCommand);
 	}
 
 	return status;
 }
 
 //------------------------------------------------------------------------------
-CBOOL NX_SDMMC_IdentifyCard(SDXCBOOTSTATUS *pSDXCBootStatus)
+CBOOL NX_SDMMC_IdentifyCard(SDMMCBOOTSTATUS *pSDMMCBootStatus)
 {
 	NXBL0FN *pbl0fn = Getbl0fnPtr();
 	S32 timeout;
 	U32 HCS, RCA;
 	NX_SDMMC_CARDTYPE CardType = NX_SDMMC_CARDTYPE_UNKNOWN;
 	NX_SDMMC_COMMAND cmd;
-	struct NX_SDMMC_RegisterSet * const pSDXCReg =
-					pgSDXCReg[pSDXCBootStatus->SDPort];
+	struct NX_SDMMC_RegisterSet * const pSDMMCReg =
+					pgSDMMCReg[pSDMMCBootStatus->SDPort];
 
 #ifdef QEMU_RISCV
         pbl0fn->kputs("------------------------------------");
         pbl0fn->_dprintf("[SUKER-bootrom] %s start\n",__func__);
 #endif
 
-	if (CFALSE == pbl0fn->NX_SDMMC_SetClock(pSDXCBootStatus,
+	if (CFALSE == pbl0fn->NX_SDMMC_SetClock(pSDMMCBootStatus,
 					CTRUE,
-					SDXC_DIVIDER_400KHZ))
+					SDMMC_DIVIDER_400KHZ))
 		return CFALSE;
 
 	// Data Bus Width : 0(1-bit), 1(4-bit)
-	pSDXCReg->CTYPE = 0;
+	pSDMMCReg->CTYPE = 0;
 
-	pSDXCBootStatus->rca = 0;
+	pSDMMCBootStatus->rca = 0;
 
 	//--------------------------------------------------------------------------
 	//	Identify SD/MMC card
@@ -487,23 +487,23 @@ CBOOL NX_SDMMC_IdentifyCard(SDXCBOOTSTATUS *pSDXCBootStatus)
 	// Go idle state
 	cmd.cmdidx	= GO_IDLE_STATE;
 	cmd.arg		= 0;
-	cmd.flag	= NX_SDXC_CMDFLAG_STARTCMD |
-			NX_SDXC_CMDFLAG_SENDINIT |
-			NX_SDXC_CMDFLAG_STOPABORT;
+	cmd.flag	= NX_SDMMC_CMDFLAG_STARTCMD |
+			NX_SDMMC_CMDFLAG_SENDINIT |
+			NX_SDMMC_CMDFLAG_STOPABORT;
 
-	pbl0fn->NX_SDMMC_SendCommand(pSDXCBootStatus, &cmd);
+	pbl0fn->NX_SDMMC_SendCommand(pSDMMCBootStatus, &cmd);
 
 	// Check SD Card Version
 	cmd.cmdidx	= SEND_IF_COND;
 	// argument = VHS : 2.7~3.6V and Check Pattern(0xAA)
 	cmd.arg		= (1 << 8) | 0xAA;
-	cmd.flag	= NX_SDXC_CMDFLAG_STARTCMD |
-			NX_SDXC_CMDFLAG_WAITPRVDAT |
-			NX_SDXC_CMDFLAG_CHKRSPCRC |
-			NX_SDXC_CMDFLAG_SHORTRSP;
+	cmd.flag	= NX_SDMMC_CMDFLAG_STARTCMD |
+			NX_SDMMC_CMDFLAG_WAITPRVDAT |
+			NX_SDMMC_CMDFLAG_CHKRSPCRC |
+			NX_SDMMC_CMDFLAG_SHORTRSP;
 
 	if (NX_SDMMC_STATUS_NOERROR ==
-			pbl0fn->NX_SDMMC_SendCommandInternal(pSDXCBootStatus, &cmd)) {
+			pbl0fn->NX_SDMMC_SendCommandInternal(pSDMMCBootStatus, &cmd)) {
 		// Ver 2.0 or later SD Memory Card
 		if (cmd.response[0] != ((1 << 8) | 0xAA))
 			return CFALSE;
@@ -519,34 +519,34 @@ CBOOL NX_SDMMC_IdentifyCard(SDXCBOOTSTATUS *pSDXCBootStatus)
 	timeout = NX_SDMMC_TIMEOUT_IDENTIFY;
 
 	cmd.cmdidx	= APP_CMD;
-	cmd.arg		= pSDXCBootStatus->rca;
-	cmd.flag	= NX_SDXC_CMDFLAG_STARTCMD |
-			NX_SDXC_CMDFLAG_WAITPRVDAT |
-			NX_SDXC_CMDFLAG_CHKRSPCRC |
-			NX_SDXC_CMDFLAG_SHORTRSP;
+	cmd.arg		= pSDMMCBootStatus->rca;
+	cmd.flag	= NX_SDMMC_CMDFLAG_STARTCMD |
+			NX_SDMMC_CMDFLAG_WAITPRVDAT |
+			NX_SDMMC_CMDFLAG_CHKRSPCRC |
+			NX_SDMMC_CMDFLAG_SHORTRSP;
 
 	if (NX_SDMMC_STATUS_NOERROR ==
-			pbl0fn->NX_SDMMC_SendCommandInternal(pSDXCBootStatus, &cmd)) {
+			pbl0fn->NX_SDMMC_SendCommandInternal(pSDMMCBootStatus, &cmd)) {
 		//----------------------------------------------------------------------
 		// SD memory card
 		#define FAST_BOOT	(1<<29)
 
 		cmd.cmdidx	= SD_SEND_OP_COND;
 		cmd.arg		= (HCS | FAST_BOOT | 0x00FC0000);	// 3.0 ~ 3.6V
-		cmd.flag	= NX_SDXC_CMDFLAG_STARTCMD |
-				NX_SDXC_CMDFLAG_WAITPRVDAT |
-				NX_SDXC_CMDFLAG_SHORTRSP;
+		cmd.flag	= NX_SDMMC_CMDFLAG_STARTCMD |
+				NX_SDMMC_CMDFLAG_WAITPRVDAT |
+				NX_SDMMC_CMDFLAG_SHORTRSP;
 
 		if (NX_SDMMC_STATUS_NOERROR !=
 				pbl0fn->NX_SDMMC_SendCommandInternal(
-					pSDXCBootStatus, &cmd)) {
+					pSDMMCBootStatus, &cmd)) {
 			return CFALSE;
 		}
 		/* Wait until card has finished the power up routine */
 		while (0==(cmd.response[0] & (1UL << 31))) {
 			if (NX_SDMMC_STATUS_NOERROR !=
 					pbl0fn->NX_SDMMC_SendAppCommand(
-						pSDXCBootStatus, &cmd)) {
+						pSDMMCBootStatus, &cmd)) {
 				return CFALSE;
 			}
 
@@ -565,20 +565,20 @@ CBOOL NX_SDMMC_IdentifyCard(SDXCBOOTSTATUS *pSDXCBootStatus)
 		// MMC memory card
 		cmd.cmdidx	= GO_IDLE_STATE;
 		cmd.arg		= 0;
-		cmd.flag	= NX_SDXC_CMDFLAG_STARTCMD |
-				NX_SDXC_CMDFLAG_SENDINIT |
-				NX_SDXC_CMDFLAG_STOPABORT;
+		cmd.flag	= NX_SDMMC_CMDFLAG_STARTCMD |
+				NX_SDMMC_CMDFLAG_SENDINIT |
+				NX_SDMMC_CMDFLAG_STOPABORT;
 
-		pbl0fn->NX_SDMMC_SendCommand(pSDXCBootStatus, &cmd);
+		pbl0fn->NX_SDMMC_SendCommand(pSDMMCBootStatus, &cmd);
 
 		do {
 			cmd.cmdidx	= SEND_OP_COND;
 			cmd.arg		= 0x40FC0000;	// MMC High Capacity -_-???
-			cmd.flag	= NX_SDXC_CMDFLAG_STARTCMD |
-					NX_SDXC_CMDFLAG_WAITPRVDAT |
-					NX_SDXC_CMDFLAG_SHORTRSP;
+			cmd.flag	= NX_SDMMC_CMDFLAG_STARTCMD |
+					NX_SDMMC_CMDFLAG_WAITPRVDAT |
+					NX_SDMMC_CMDFLAG_SHORTRSP;
 			if (NX_SDMMC_STATUS_NOERROR !=
-					pbl0fn->NX_SDMMC_SendCommand(pSDXCBootStatus,
+					pbl0fn->NX_SDMMC_SendCommand(pSDMMCBootStatus,
 								&cmd)) {
 				return CFALSE;
 			}
@@ -600,22 +600,22 @@ CBOOL NX_SDMMC_IdentifyCard(SDXCBOOTSTATUS *pSDXCBootStatus)
 	}
 
 //	NX_ASSERT( (cmd.response[0] & 0x00FC0000) == 0x00FC0000 );
-	pSDXCBootStatus->bHighCapacity =
+	pSDMMCBootStatus->bHighCapacity =
 		(cmd.response[0] & (1 << 30)) ? CTRUE : CFALSE;
 
 	pbl0fn->_dprintf("%sCard.\r\n",
-			(pSDXCBootStatus->bHighCapacity) ? "High Capacity " : "");
+			(pSDMMCBootStatus->bHighCapacity) ? "High Capacity " : "");
 
 	//--------------------------------------------------------------------------
 	// Get CID
 	cmd.cmdidx	= ALL_SEND_CID;
 	cmd.arg		= 0;
-	cmd.flag	= NX_SDXC_CMDFLAG_STARTCMD |
-			NX_SDXC_CMDFLAG_WAITPRVDAT |
-			NX_SDXC_CMDFLAG_CHKRSPCRC |
-			NX_SDXC_CMDFLAG_LONGRSP;
+	cmd.flag	= NX_SDMMC_CMDFLAG_STARTCMD |
+			NX_SDMMC_CMDFLAG_WAITPRVDAT |
+			NX_SDMMC_CMDFLAG_CHKRSPCRC |
+			NX_SDMMC_CMDFLAG_LONGRSP;
 	if (NX_SDMMC_STATUS_NOERROR !=
-			pbl0fn->NX_SDMMC_SendCommand(pSDXCBootStatus, &cmd)) {
+			pbl0fn->NX_SDMMC_SendCommand(pSDMMCBootStatus, &cmd)) {
 		pbl0fn->_dprintf("cannot read CID\r\n");
 		return CFALSE;
 	}
@@ -625,28 +625,28 @@ CBOOL NX_SDMMC_IdentifyCard(SDXCBOOTSTATUS *pSDXCBootStatus)
 	cmd.cmdidx	= (CardType == NX_SDMMC_CARDTYPE_SDMEM) ?
 					SEND_RELATIVE_ADDR : SET_RELATIVE_ADDR;
 	cmd.arg		= RCA;
-	cmd.flag	= NX_SDXC_CMDFLAG_STARTCMD |
-			NX_SDXC_CMDFLAG_WAITPRVDAT |
-			NX_SDXC_CMDFLAG_CHKRSPCRC |
-			NX_SDXC_CMDFLAG_SHORTRSP;
+	cmd.flag	= NX_SDMMC_CMDFLAG_STARTCMD |
+			NX_SDMMC_CMDFLAG_WAITPRVDAT |
+			NX_SDMMC_CMDFLAG_CHKRSPCRC |
+			NX_SDMMC_CMDFLAG_SHORTRSP;
 	if (NX_SDMMC_STATUS_NOERROR !=
-			pbl0fn->NX_SDMMC_SendCommand(pSDXCBootStatus, &cmd)) {
+			pbl0fn->NX_SDMMC_SendCommand(pSDMMCBootStatus, &cmd)) {
 		pbl0fn->_dprintf("cannot read RCA\r\n");
 		return CFALSE;
 	}
 
 	if (CardType == NX_SDMMC_CARDTYPE_SDMEM)
-		pSDXCBootStatus->rca = cmd.response[0] & 0xFFFF0000;
+		pSDMMCBootStatus->rca = cmd.response[0] & 0xFFFF0000;
 	else
-		pSDXCBootStatus->rca = RCA;
+		pSDMMCBootStatus->rca = RCA;
 
-	pSDXCBootStatus->CardType = CardType;
+	pSDMMCBootStatus->CardType = CardType;
 
 	return CTRUE;
 }
 
 //------------------------------------------------------------------------------
-CBOOL NX_SDMMC_SelectCard(SDXCBOOTSTATUS *pSDXCBootStatus)
+CBOOL NX_SDMMC_SelectCard(SDMMCBOOTSTATUS *pSDMMCBootStatus)
 {
 	NXBL0FN *pbl0fn = Getbl0fnPtr();
 	U32 status;
@@ -657,19 +657,19 @@ CBOOL NX_SDMMC_SelectCard(SDXCBOOTSTATUS *pSDXCBootStatus)
         pbl0fn->_dprintf("[SUKER-bootrom] %s start\n",__func__);
 #endif
 	cmd.cmdidx	= SELECT_CARD;
-	cmd.arg		= pSDXCBootStatus->rca;
-	cmd.flag	= NX_SDXC_CMDFLAG_STARTCMD |
-			NX_SDXC_CMDFLAG_WAITPRVDAT |
-			NX_SDXC_CMDFLAG_CHKRSPCRC |
-			NX_SDXC_CMDFLAG_SHORTRSP;
+	cmd.arg		= pSDMMCBootStatus->rca;
+	cmd.flag	= NX_SDMMC_CMDFLAG_STARTCMD |
+			NX_SDMMC_CMDFLAG_WAITPRVDAT |
+			NX_SDMMC_CMDFLAG_CHKRSPCRC |
+			NX_SDMMC_CMDFLAG_SHORTRSP;
 
-	status = pbl0fn->NX_SDMMC_SendCommand(pSDXCBootStatus, &cmd);
+	status = pbl0fn->NX_SDMMC_SendCommand(pSDMMCBootStatus, &cmd);
 
 	return (NX_SDMMC_STATUS_NOERROR == status) ? CTRUE : CFALSE;
 }
 
 //------------------------------------------------------------------------------
-CBOOL NX_SDMMC_SetCardDetectPullUp(SDXCBOOTSTATUS *pSDXCBootStatus,
+CBOOL NX_SDMMC_SetCardDetectPullUp(SDMMCBOOTSTATUS *pSDMMCBootStatus,
 					CBOOL bEnb)
 {
 	NXBL0FN *pbl0fn = Getbl0fnPtr();
@@ -678,30 +678,30 @@ CBOOL NX_SDMMC_SetCardDetectPullUp(SDXCBOOTSTATUS *pSDXCBootStatus,
        
 	cmd.cmdidx	= SET_CLR_CARD_DETECT;
 	cmd.arg		= (bEnb) ? 1 : 0;
-	cmd.flag	= NX_SDXC_CMDFLAG_STARTCMD |
-			NX_SDXC_CMDFLAG_WAITPRVDAT |
-			NX_SDXC_CMDFLAG_CHKRSPCRC |
-			NX_SDXC_CMDFLAG_SHORTRSP;
+	cmd.flag	= NX_SDMMC_CMDFLAG_STARTCMD |
+			NX_SDMMC_CMDFLAG_WAITPRVDAT |
+			NX_SDMMC_CMDFLAG_CHKRSPCRC |
+			NX_SDMMC_CMDFLAG_SHORTRSP;
 
 #ifdef QEMU_RISCV
         pbl0fn->kputs("------------------------------------");
         pbl0fn->_dprintf("[SUKER-bootrom] %s start\n",__func__);
 #endif
         
-        status = pbl0fn->NX_SDMMC_SendAppCommand(pSDXCBootStatus, &cmd);
+        status = pbl0fn->NX_SDMMC_SendAppCommand(pSDMMCBootStatus, &cmd);
 
 	return (NX_SDMMC_STATUS_NOERROR == status) ? CTRUE : CFALSE;
 }
 
 //------------------------------------------------------------------------------
-CBOOL NX_SDMMC_SetBusWidth(SDXCBOOTSTATUS *pSDXCBootStatus,
+CBOOL NX_SDMMC_SetBusWidth(SDMMCBOOTSTATUS *pSDMMCBootStatus,
 					U32 buswidth )
 {
 	NXBL0FN *pbl0fn = Getbl0fnPtr();
 	U32 status;
 	NX_SDMMC_COMMAND cmd;
-	register struct NX_SDMMC_RegisterSet * const pSDXCReg =
-					pgSDXCReg[pSDXCBootStatus->SDPort];
+	register struct NX_SDMMC_RegisterSet * const pSDMMCReg =
+					pgSDMMCReg[pSDMMCBootStatus->SDPort];
 
 #ifdef QEMU_RISCV
         pbl0fn->kputs("------------------------------------");
@@ -710,14 +710,14 @@ CBOOL NX_SDMMC_SetBusWidth(SDXCBOOTSTATUS *pSDXCBootStatus,
         
 	NX_ASSERT( buswidth==1 || buswidth==4 );
 
-	if (pSDXCBootStatus->CardType == NX_SDMMC_CARDTYPE_SDMEM) {
+	if (pSDMMCBootStatus->CardType == NX_SDMMC_CARDTYPE_SDMEM) {
 		cmd.cmdidx	= SET_BUS_WIDTH;
 		cmd.arg		= (buswidth >> 1);
-		cmd.flag	= NX_SDXC_CMDFLAG_STARTCMD |
-				NX_SDXC_CMDFLAG_WAITPRVDAT |
-				NX_SDXC_CMDFLAG_CHKRSPCRC |
-				NX_SDXC_CMDFLAG_SHORTRSP;
-		status = pbl0fn->NX_SDMMC_SendAppCommand(pSDXCBootStatus, &cmd);
+		cmd.flag	= NX_SDMMC_CMDFLAG_STARTCMD |
+				NX_SDMMC_CMDFLAG_WAITPRVDAT |
+				NX_SDMMC_CMDFLAG_CHKRSPCRC |
+				NX_SDMMC_CMDFLAG_SHORTRSP;
+		status = pbl0fn->NX_SDMMC_SendAppCommand(pSDMMCBootStatus, &cmd);
 	} else {
 		/* ExtCSD[183] : BUS_WIDTH <= 0 : 1-bit, 1 : 4-bit, 2 : 8-bit */
 		cmd.cmdidx	= SWITCH_FUNC;
@@ -725,33 +725,33 @@ CBOOL NX_SDMMC_SetBusWidth(SDXCBOOTSTATUS *pSDXCBootStatus,
 						(183 << 16) |
 				    ((buswidth >> 2) << 8) |
 						  (0 << 0);
-		cmd.flag	= NX_SDXC_CMDFLAG_STARTCMD |
-				NX_SDXC_CMDFLAG_WAITPRVDAT |
-				NX_SDXC_CMDFLAG_CHKRSPCRC |
-				NX_SDXC_CMDFLAG_SHORTRSP;
-		status = pbl0fn->NX_SDMMC_SendCommand( pSDXCBootStatus, &cmd );
+		cmd.flag	= NX_SDMMC_CMDFLAG_STARTCMD |
+				NX_SDMMC_CMDFLAG_WAITPRVDAT |
+				NX_SDMMC_CMDFLAG_CHKRSPCRC |
+				NX_SDMMC_CMDFLAG_SHORTRSP;
+		status = pbl0fn->NX_SDMMC_SendCommand( pSDMMCBootStatus, &cmd );
 	}
 
 	if (NX_SDMMC_STATUS_NOERROR != status)
 		return CFALSE;
 
 	/* 0 : 1-bit mode, 1 : 4-bit mode */
-	pSDXCReg->CTYPE = buswidth >> 2;
+	pSDMMCReg->CTYPE = buswidth >> 2;
 
-	pSDXCReg->TIEMODE = buswidth >> 2;
+	pSDMMCReg->TIEMODE = buswidth >> 2;
 
 	return CTRUE;
 }
 
 //------------------------------------------------------------------------------
-CBOOL NX_SDMMC_SetBlockLength(SDXCBOOTSTATUS *pSDXCBootStatus,
+CBOOL NX_SDMMC_SetBlockLength(SDMMCBOOTSTATUS *pSDMMCBootStatus,
 					U32 blocklength)
 {
 	NXBL0FN *pbl0fn = Getbl0fnPtr();
 	U32 status;
 	NX_SDMMC_COMMAND cmd;
-	register struct NX_SDMMC_RegisterSet * const pSDXCReg =
-					pgSDXCReg[pSDXCBootStatus->SDPort];
+	register struct NX_SDMMC_RegisterSet * const pSDMMCReg =
+					pgSDMMCReg[pSDMMCBootStatus->SDPort];
 
 #ifdef QEMU_RISCV
         pbl0fn->kputs("------------------------------------");
@@ -760,23 +760,23 @@ CBOOL NX_SDMMC_SetBlockLength(SDXCBOOTSTATUS *pSDXCBootStatus,
         
 	cmd.cmdidx	= SET_BLOCKLEN;
 	cmd.arg		= blocklength;
-	cmd.flag	= NX_SDXC_CMDFLAG_STARTCMD |
-			NX_SDXC_CMDFLAG_WAITPRVDAT |
-			NX_SDXC_CMDFLAG_CHKRSPCRC |
-			NX_SDXC_CMDFLAG_SHORTRSP;
-	status = pbl0fn->NX_SDMMC_SendCommand(pSDXCBootStatus, &cmd);
+	cmd.flag	= NX_SDMMC_CMDFLAG_STARTCMD |
+			NX_SDMMC_CMDFLAG_WAITPRVDAT |
+			NX_SDMMC_CMDFLAG_CHKRSPCRC |
+			NX_SDMMC_CMDFLAG_SHORTRSP;
+	status = pbl0fn->NX_SDMMC_SendCommand(pSDMMCBootStatus, &cmd);
 
 	if (NX_SDMMC_STATUS_NOERROR != status)
 		return CFALSE;
 
-        pSDXCReg->BLKSIZ = blocklength;
+        pSDMMCReg->BLKSIZ = blocklength;
 
 	return CTRUE;
 }
 
 #if 0
 //------------------------------------------------------------------------------
-CBOOL NX_SDMMC_SelectPartition(SDXCBOOTSTATUS *pSDXCBootStatus,
+CBOOL NX_SDMMC_SelectPartition(SDMMCBOOTSTATUS *pSDMMCBootStatus,
 					U32 partition)
 {
 	NXBL0FN *pbl0fn = Getbl0fnPtr();
@@ -798,11 +798,11 @@ CBOOL NX_SDMMC_SelectPartition(SDXCBOOTSTATUS *pSDXCBootStatus,
 //------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------
-CBOOL NX_SDMMC_Terminate(SDXCBOOTSTATUS *pSDXCBootStatus)
+CBOOL NX_SDMMC_Terminate(SDMMCBOOTSTATUS *pSDMMCBootStatus)
 {
         NXBL0FN *pbl0fn = Getbl0fnPtr();
-	register struct NX_SDMMC_RegisterSet * const pSDXCReg =
-					pgSDXCReg[pSDXCBootStatus->SDPort];
+	register struct NX_SDMMC_RegisterSet * const pSDMMCReg =
+					pgSDMMCReg[pSDMMCBootStatus->SDPort];
 
 #ifdef QEMU_RISCV
         pbl0fn->kputs("------------------------------------");
@@ -810,24 +810,24 @@ CBOOL NX_SDMMC_Terminate(SDXCBOOTSTATUS *pSDXCBootStatus)
 #endif
         
 	// Clear All interrupts
-	pSDXCReg->RINTSTS = 0xFFFFFFFF;
+	pSDMMCReg->RINTSTS = 0xFFFFFFFF;
 
 	// Reset the controller & DMA interface & FIFO
-	pSDXCReg->CTRL = NX_SDXC_CTRL_DMARST |
-			NX_SDXC_CTRL_FIFORST |
-			NX_SDXC_CTRL_CTRLRST;
-	while (pSDXCReg->CTRL & (NX_SDXC_CTRL_DMARST |
-				NX_SDXC_CTRL_FIFORST |
-				NX_SDXC_CTRL_CTRLRST))
-		pSDXCReg->CTRL;
+	pSDMMCReg->CTRL = NX_SDMMC_CTRL_DMARST |
+			NX_SDMMC_CTRL_FIFORST |
+			NX_SDMMC_CTRL_CTRLRST;
+	while (pSDMMCReg->CTRL & (NX_SDMMC_CTRL_DMARST |
+				NX_SDMMC_CTRL_FIFORST |
+				NX_SDMMC_CTRL_CTRLRST))
+		pSDMMCReg->CTRL;
 
-       	pbl0fn->setdeviceclock(&sdmmcclk[pSDXCBootStatus->SDPort][0], 2, 0);
+       	pbl0fn->setdeviceclock(&sdmmcclk[pSDMMCBootStatus->SDPort][0], 2, 0);
 
 	return CTRUE;
 }
 
 //------------------------------------------------------------------------------
-CBOOL NX_SDMMC_Open(SDXCBOOTSTATUS *pSDXCBootStatus, U32 option)
+CBOOL NX_SDMMC_Open(SDMMCBOOTSTATUS *pSDMMCBootStatus, U32 option)
 {
 	NXBL0FN *pbl0fn = Getbl0fnPtr();
 	U32 SDSpeed;
@@ -837,51 +837,51 @@ CBOOL NX_SDMMC_Open(SDXCBOOTSTATUS *pSDXCBootStatus, U32 option)
         pbl0fn->_dprintf("[SUKER-bootrom] %s start\n",__func__);
 #endif
         
-	if (pSDXCBootStatus->bHighSpeed == CTRUE)
-		SDSpeed = SDXC_CLKDIV_HIGH;
+	if (pSDMMCBootStatus->bHighSpeed == CTRUE)
+		SDSpeed = SDMMC_CLKDIV_HIGH;
 	else
-		SDSpeed = SDXC_CLKDIV_LOW;
+		SDSpeed = SDMMC_CLKDIV_LOW;
 	//--------------------------------------------------------------------------
 	// card identification mode : Identify & Initialize
-	if (CFALSE == pbl0fn->NX_SDMMC_IdentifyCard(pSDXCBootStatus)) {
+	if (CFALSE == pbl0fn->NX_SDMMC_IdentifyCard(pSDMMCBootStatus)) {
 		pbl0fn->_dprintf("Identify Fail\r\n");
 		return CFALSE;
 	}
 
 	//--------------------------------------------------------------------------
 	// data transfer mode : Stand-by state
-	if (CFALSE == pbl0fn->NX_SDMMC_SetClock(pSDXCBootStatus, CTRUE,
+	if (CFALSE == pbl0fn->NX_SDMMC_SetClock(pSDMMCBootStatus, CTRUE,
 				SDSpeed)) {
 		pbl0fn->_dprintf("Card Clk rst fail\r\n");
 		return CFALSE;
 	}
-	if (CFALSE == pbl0fn->NX_SDMMC_SelectCard(pSDXCBootStatus)) {
+	if (CFALSE == pbl0fn->NX_SDMMC_SelectCard(pSDMMCBootStatus)) {
 		pbl0fn->_dprintf("Card Sel Fail\r\n");
 		return CFALSE;
 	}
 
 	//--------------------------------------------------------------------------
 	// data transfer mode : Transfer state
-	if (pSDXCBootStatus->CardType == NX_SDMMC_CARDTYPE_SDMEM) {
-		pbl0fn->NX_SDMMC_SetCardDetectPullUp(pSDXCBootStatus, CFALSE);
+	if (pSDMMCBootStatus->CardType == NX_SDMMC_CARDTYPE_SDMEM) {
+		pbl0fn->NX_SDMMC_SetCardDetectPullUp(pSDMMCBootStatus, CFALSE);
 	}
 
-	if (CFALSE == pbl0fn->NX_SDMMC_SetBlockLength(pSDXCBootStatus,
+	if (CFALSE == pbl0fn->NX_SDMMC_SetBlockLength(pSDMMCBootStatus,
 				BLOCK_LENGTH)) {
 		pbl0fn->_dprintf("Set Blk Lng Fail\r\n");
 		return CFALSE;
 	}
 
 	if (option & (1 << eMMCBUSWIDTH))
-		pbl0fn->NX_SDMMC_SetBusWidth(pSDXCBootStatus, 8);
+		pbl0fn->NX_SDMMC_SetBusWidth(pSDMMCBootStatus, 8);
 	else
-		pbl0fn->NX_SDMMC_SetBusWidth(pSDXCBootStatus, 4);
+		pbl0fn->NX_SDMMC_SetBusWidth(pSDMMCBootStatus, 4);
 
 	return CTRUE;
 }
 
 //------------------------------------------------------------------------------
-CBOOL NX_SDMMC_Close(SDXCBOOTSTATUS *pSDXCBootStatus)
+CBOOL NX_SDMMC_Close(SDMMCBOOTSTATUS *pSDMMCBootStatus)
 {
 	NXBL0FN *pbl0fn = Getbl0fnPtr();
 
@@ -889,21 +889,21 @@ CBOOL NX_SDMMC_Close(SDXCBOOTSTATUS *pSDXCBootStatus)
         pbl0fn->kputs("------------------------------------");
         pbl0fn->_dprintf("[SUKER-bootrom] %s start\n",__func__);
 #endif
-        pbl0fn->NX_SDMMC_SetClock(pSDXCBootStatus, CFALSE, SDXC_DIVIDER_400KHZ);
+        pbl0fn->NX_SDMMC_SetClock(pSDMMCBootStatus, CFALSE, SDMMC_DIVIDER_400KHZ);
 
 	return CTRUE;
 }
 
 //------------------------------------------------------------------------------
 CBOOL NX_SDMMC_ReadSectorData(
-		SDXCBOOTSTATUS *pSDXCBootStatus,
+		SDMMCBOOTSTATUS *pSDMMCBootStatus,
 		U32 numberOfSector,
 		U32 *pdwBuffer)
 {
 	NXBL0FN *pbl0fn = Getbl0fnPtr();
 	U32		count;
-	register struct NX_SDMMC_RegisterSet * const pSDXCReg =
-					pgSDXCReg[pSDXCBootStatus->SDPort];
+	register struct NX_SDMMC_RegisterSet * const pSDMMCReg =
+					pgSDMMCReg[pSDMMCBootStatus->SDPort];
 
 #ifdef QEMU_RISCV
         pbl0fn->kputs("------------------------------------");
@@ -916,68 +916,68 @@ CBOOL NX_SDMMC_ReadSectorData(
 	NX_ASSERT(0 == (count % 32));
 
 	while (0 < count) {
-		if ((pSDXCReg->RINTSTS & NX_SDXC_RINTSTS_RXDR)
-		 || (pSDXCReg->RINTSTS & NX_SDXC_RINTSTS_DTO)) {
+		if ((pSDMMCReg->RINTSTS & NX_SDMMC_RINTSTS_RXDR)
+		 || (pSDMMCReg->RINTSTS & NX_SDMMC_RINTSTS_DTO)) {
 			U32 FSize, Timeout = NX_SDMMC_TIMEOUT;
-			while ((pSDXCReg->STATUS & NX_SDXC_STATUS_FIFOEMPTY) &&
+			while ((pSDMMCReg->STATUS & NX_SDMMC_STATUS_FIFOEMPTY) &&
 					Timeout--)
-				pSDXCReg->STATUS;
+				pSDMMCReg->STATUS;
 			if (0 == Timeout)
 				break;
-			FSize = (pSDXCReg->STATUS &
-					NX_SDXC_STATUS_FIFOCOUNT) >> 17;
+			FSize = (pSDMMCReg->STATUS &
+					NX_SDMMC_STATUS_FIFOCOUNT) >> 17;
 			count -= (FSize * 4);
 			while (FSize) {
-				*pdwBuffer++ = pSDXCReg->DATA;
+				*pdwBuffer++ = pSDMMCReg->DATA;
 				FSize--;
 			}
 
-			pSDXCReg->RINTSTS = NX_SDXC_RINTSTS_RXDR;
+			pSDMMCReg->RINTSTS = NX_SDMMC_RINTSTS_RXDR;
 		}
 
 		// Check Errors
-		if (pSDXCReg->RINTSTS & (NX_SDXC_RINTSTS_DRTO |
-					NX_SDXC_RINTSTS_EBE |
-					NX_SDXC_RINTSTS_SBE |
-					NX_SDXC_RINTSTS_DCRC)) {
+		if (pSDMMCReg->RINTSTS & (NX_SDMMC_RINTSTS_DRTO |
+					NX_SDMMC_RINTSTS_EBE |
+					NX_SDMMC_RINTSTS_SBE |
+					NX_SDMMC_RINTSTS_DCRC)) {
 			pbl0fn->_dprintf("Read left = %x\r\n", count);
 
-			if (pSDXCReg->RINTSTS & NX_SDXC_RINTSTS_DRTO)
+			if (pSDMMCReg->RINTSTS & NX_SDMMC_RINTSTS_DRTO)
 				pbl0fn->_dprintf("DRTO\r\n");
-			if (pSDXCReg->RINTSTS & NX_SDXC_RINTSTS_EBE)
+			if (pSDMMCReg->RINTSTS & NX_SDMMC_RINTSTS_EBE)
 				pbl0fn->_dprintf("EBE\r\n");
-			if (pSDXCReg->RINTSTS & NX_SDXC_RINTSTS_SBE)
+			if (pSDMMCReg->RINTSTS & NX_SDMMC_RINTSTS_SBE)
 				pbl0fn->_dprintf("SBE\r\n");
-			if (pSDXCReg->RINTSTS & NX_SDXC_RINTSTS_DCRC)
+			if (pSDMMCReg->RINTSTS & NX_SDMMC_RINTSTS_DCRC)
 				pbl0fn->_dprintf("DCRC\r\n");
 
 			return CFALSE;
 		}
 
-		if (pSDXCReg->RINTSTS & NX_SDXC_RINTSTS_DTO) {
+		if (pSDMMCReg->RINTSTS & NX_SDMMC_RINTSTS_DTO) {
 			if (count == 0) {
-				pSDXCReg->RINTSTS = NX_SDXC_RINTSTS_DTO;
+				pSDMMCReg->RINTSTS = NX_SDMMC_RINTSTS_DTO;
 				break;
 			}
 		}
 
 		#if defined(NX_DEBUG)
-		if (pSDXCReg->RINTSTS & NX_SDXC_RINTSTS_HTO) {
+		if (pSDMMCReg->RINTSTS & NX_SDMMC_RINTSTS_HTO) {
 			pbl0fn->_dprintf("HTO\r\n");
-			pSDXCReg->RINTSTS = NX_SDXC_RINTSTS_HTO;
+			pSDMMCReg->RINTSTS = NX_SDMMC_RINTSTS_HTO;
 		}
 		#endif
 
-		NX_ASSERT(0 == (pSDXCReg->RINTSTS & NX_SDXC_RINTSTS_FRUN));
+		NX_ASSERT(0 == (pSDMMCReg->RINTSTS & NX_SDMMC_RINTSTS_FRUN));
 	}
 
-	pSDXCReg->RINTSTS = NX_SDXC_RINTSTS_DTO;
+	pSDMMCReg->RINTSTS = NX_SDMMC_RINTSTS_DTO;
 
 	return CTRUE;
 }
 
 //------------------------------------------------------------------------------
-CBOOL NX_SDMMC_ReadSectors(SDXCBOOTSTATUS *pSDXCBootStatus,
+CBOOL NX_SDMMC_ReadSectors(SDMMCBOOTSTATUS *pSDMMCBootStatus,
 			U32 SectorNum, U32 numberOfSector, U32 *pdwBuffer)
 {
 	NXBL0FN *pbl0fn = Getbl0fnPtr();
@@ -987,8 +987,8 @@ CBOOL NX_SDMMC_ReadSectors(SDXCBOOTSTATUS *pSDXCBootStatus,
 	U32	response;
 	#endif
 	NX_SDMMC_COMMAND cmd;
-	register struct NX_SDMMC_RegisterSet * const pSDXCReg =
-					pgSDXCReg[pSDXCBootStatus->SDPort];
+	register struct NX_SDMMC_RegisterSet * const pSDMMCReg =
+					pgSDMMCReg[pSDMMCBootStatus->SDPort];
 #ifdef QEMU_RISCV
         pbl0fn->kputs("------------------------------------");
         pbl0fn->_dprintf("[SUKER-bootrom] %s start\n",__func__);
@@ -997,78 +997,78 @@ CBOOL NX_SDMMC_ReadSectors(SDXCBOOTSTATUS *pSDXCBootStatus,
 	NX_ASSERT(0 == ((U32)pdwBuffer & 3));
 
 	// wait while data busy or data transfer busy
-	while (pSDXCReg->STATUS & (1 << 9 | 1 << 10))
-		pSDXCReg->STATUS;
+	while (pSDMMCReg->STATUS & (1 << 9 | 1 << 10))
+		pSDMMCReg->STATUS;
 
 	//--------------------------------------------------------------------------
 	// wait until 'Ready for data' is set and card is in transfer state.
 	do {
 		cmd.cmdidx	= SEND_STATUS;
-		cmd.arg		= pSDXCBootStatus->rca;
-		cmd.flag	= NX_SDXC_CMDFLAG_STARTCMD |
-				NX_SDXC_CMDFLAG_CHKRSPCRC |
-				NX_SDXC_CMDFLAG_SHORTRSP;
-		status = pbl0fn->NX_SDMMC_SendCommand(pSDXCBootStatus, &cmd);
+		cmd.arg		= pSDMMCBootStatus->rca;
+		cmd.flag	= NX_SDMMC_CMDFLAG_STARTCMD |
+				NX_SDMMC_CMDFLAG_CHKRSPCRC |
+				NX_SDMMC_CMDFLAG_SHORTRSP;
+		status = pbl0fn->NX_SDMMC_SendCommand(pSDMMCBootStatus, &cmd);
 		if (NX_SDMMC_STATUS_NOERROR != status)
 			goto End;
 	} while (!((cmd.response[0] & (1 << 8)) &&
 		(((cmd.response[0] >> 9) & 0xF) == 4)));
 
-	NX_ASSERT(NX_SDXC_STATUS_FIFOEMPTY ==
-			(pSDXCReg->STATUS & NX_SDXC_STATUS_FIFOEMPTY));
-	NX_ASSERT(0 == (pSDXCReg->STATUS & NX_SDXC_STATUS_FSMBUSY));
+	NX_ASSERT(NX_SDMMC_STATUS_FIFOEMPTY ==
+			(pSDMMCReg->STATUS & NX_SDMMC_STATUS_FIFOEMPTY));
+	NX_ASSERT(0 == (pSDMMCReg->STATUS & NX_SDMMC_STATUS_FSMBUSY));
 
 	// Set byte count
-	pSDXCReg->BYTCNT = numberOfSector * BLOCK_LENGTH;
+	pSDMMCReg->BYTCNT = numberOfSector * BLOCK_LENGTH;
 
 	//--------------------------------------------------------------------------
 	// Send Command
 	if (numberOfSector > 1) {
 		cmd.cmdidx	= READ_MULTIPLE_BLOCK;
-		cmd.flag	= NX_SDXC_CMDFLAG_STARTCMD |
-				NX_SDXC_CMDFLAG_WAITPRVDAT |
-				NX_SDXC_CMDFLAG_CHKRSPCRC |
-				NX_SDXC_CMDFLAG_SHORTRSP |
-				NX_SDXC_CMDFLAG_BLOCK |
-				NX_SDXC_CMDFLAG_RXDATA |
-				NX_SDXC_CMDFLAG_SENDAUTOSTOP;
+		cmd.flag	= NX_SDMMC_CMDFLAG_STARTCMD |
+				NX_SDMMC_CMDFLAG_WAITPRVDAT |
+				NX_SDMMC_CMDFLAG_CHKRSPCRC |
+				NX_SDMMC_CMDFLAG_SHORTRSP |
+				NX_SDMMC_CMDFLAG_BLOCK |
+				NX_SDMMC_CMDFLAG_RXDATA |
+				NX_SDMMC_CMDFLAG_SENDAUTOSTOP;
 	} else {
 		cmd.cmdidx	= READ_SINGLE_BLOCK;
-		cmd.flag	= NX_SDXC_CMDFLAG_STARTCMD |
-				NX_SDXC_CMDFLAG_WAITPRVDAT |
-				NX_SDXC_CMDFLAG_CHKRSPCRC |
-				NX_SDXC_CMDFLAG_SHORTRSP |
-				NX_SDXC_CMDFLAG_BLOCK |
-				NX_SDXC_CMDFLAG_RXDATA;
+		cmd.flag	= NX_SDMMC_CMDFLAG_STARTCMD |
+				NX_SDMMC_CMDFLAG_WAITPRVDAT |
+				NX_SDMMC_CMDFLAG_CHKRSPCRC |
+				NX_SDMMC_CMDFLAG_SHORTRSP |
+				NX_SDMMC_CMDFLAG_BLOCK |
+				NX_SDMMC_CMDFLAG_RXDATA;
 	}
-	cmd.arg		= (pSDXCBootStatus->bHighCapacity) ?
+	cmd.arg		= (pSDMMCBootStatus->bHighCapacity) ?
 				SectorNum : SectorNum*BLOCK_LENGTH;
 
-	status = pbl0fn->NX_SDMMC_SendCommand(pSDXCBootStatus, &cmd);
+	status = pbl0fn->NX_SDMMC_SendCommand(pSDMMCBootStatus, &cmd);
 	if (NX_SDMMC_STATUS_NOERROR != status)
 		goto End;
 
 	//--------------------------------------------------------------------------
 	// Read data
-	if (CTRUE != pbl0fn->NX_SDMMC_ReadSectorData(pSDXCBootStatus,
+	if (CTRUE != pbl0fn->NX_SDMMC_ReadSectorData(pSDMMCBootStatus,
 						numberOfSector, pdwBuffer))
 		goto End;
 
-	NX_ASSERT(NX_SDXC_STATUS_FIFOEMPTY ==
-			(pSDXCReg->STATUS & NX_SDXC_STATUS_FIFOEMPTY));
-	NX_ASSERT(0 == (pSDXCReg->STATUS & NX_SDXC_STATUS_FIFOFULL));
-	NX_ASSERT(0 == (pSDXCReg->STATUS & NX_SDXC_STATUS_FIFOCOUNT));
+	NX_ASSERT(NX_SDMMC_STATUS_FIFOEMPTY ==
+			(pSDMMCReg->STATUS & NX_SDMMC_STATUS_FIFOEMPTY));
+	NX_ASSERT(0 == (pSDMMCReg->STATUS & NX_SDMMC_STATUS_FIFOFULL));
+	NX_ASSERT(0 == (pSDMMCReg->STATUS & NX_SDMMC_STATUS_FIFOCOUNT));
 
 	if (numberOfSector > 1) {
 		// Wait until the Auto-stop command has been finished.
-		while (0 == (pSDXCReg->RINTSTS & NX_SDXC_RINTSTS_ACD))
-			pSDXCReg->RINTSTS;
+		while (0 == (pSDMMCReg->RINTSTS & NX_SDMMC_RINTSTS_ACD))
+			pSDMMCReg->RINTSTS;
 
-		NX_ASSERT(0 == (pSDXCReg->STATUS & NX_SDXC_STATUS_FSMBUSY));
+		NX_ASSERT(0 == (pSDMMCReg->STATUS & NX_SDMMC_STATUS_FSMBUSY));
 
 		#if defined(NX_DEBUG)
 		// Get Auto-stop response and then check it.
-		response = pSDXCReg->RESP[1];
+		response = pSDMMCReg->RESP[1];
 		if (response & 0xFDF98008) {
 			pbl0fn->_dprintf("Auto Stop Resp Fail:%x\r\n", response);
 			//goto End;
@@ -1082,16 +1082,16 @@ End:
 	if (CFALSE == result) {
 		cmd.cmdidx	= STOP_TRANSMISSION;
 		cmd.arg		= 0;
-		cmd.flag	= NX_SDXC_CMDFLAG_STARTCMD |
-				NX_SDXC_CMDFLAG_CHKRSPCRC |
-				NX_SDXC_CMDFLAG_SHORTRSP |
-				NX_SDXC_CMDFLAG_STOPABORT;
-		pbl0fn->NX_SDMMC_SendCommandInternal(pSDXCBootStatus, &cmd);
+		cmd.flag	= NX_SDMMC_CMDFLAG_STARTCMD |
+				NX_SDMMC_CMDFLAG_CHKRSPCRC |
+				NX_SDMMC_CMDFLAG_SHORTRSP |
+				NX_SDMMC_CMDFLAG_STOPABORT;
+		pbl0fn->NX_SDMMC_SendCommandInternal(pSDMMCBootStatus, &cmd);
 
-		if (0 == (pSDXCReg->STATUS & NX_SDXC_STATUS_FIFOEMPTY)) {
-			pSDXCReg->CTRL = NX_SDXC_CTRL_FIFORST;
-			while (pSDXCReg->CTRL & NX_SDXC_CTRL_FIFORST)
-				pSDXCReg->CTRL;
+		if (0 == (pSDMMCReg->STATUS & NX_SDMMC_STATUS_FIFOEMPTY)) {
+			pSDMMCReg->CTRL = NX_SDMMC_CTRL_FIFORST;
+			while (pSDMMCReg->CTRL & NX_SDMMC_CTRL_FIFORST)
+				pSDMMCReg->CTRL;
 		}
 	}
         
@@ -1100,14 +1100,14 @@ End:
 #if 1
 //------------------------------------------------------------------------------
 CBOOL NX_SDMMC_ReadBootSector(
-		SDXCBOOTSTATUS *pSDXCBootStatus,
+		SDMMCBOOTSTATUS *pSDMMCBootStatus,
 		U32 numberOfSector,
 		U32 *pdwBuffer)
 {
 	NXBL0FN *pbl0fn = Getbl0fnPtr();
 	U32		count;
-	register struct NX_SDMMC_RegisterSet * const pSDXCReg =
-					pgSDXCReg[pSDXCBootStatus->SDPort];
+	register struct NX_SDMMC_RegisterSet * const pSDMMCReg =
+					pgSDMMCReg[pSDMMCBootStatus->SDPort];
 
 #ifdef QEMU_RISCV
         pbl0fn->kputs("------------------------------------");
@@ -1120,63 +1120,63 @@ CBOOL NX_SDMMC_ReadBootSector(
 	NX_ASSERT(0 == (count % 32));
 
 	while (0 < count) {
-		if ((pSDXCReg->RINTSTS & NX_SDXC_RINTSTS_RXDR)
-		 || (pSDXCReg->RINTSTS & NX_SDXC_RINTSTS_DTO)) {
+		if ((pSDMMCReg->RINTSTS & NX_SDMMC_RINTSTS_RXDR)
+		 || (pSDMMCReg->RINTSTS & NX_SDMMC_RINTSTS_DTO)) {
 			U32 FSize, Timeout = NX_SDMMC_TIMEOUT;
-			while ((pSDXCReg->STATUS & NX_SDXC_STATUS_FIFOEMPTY) &&
+			while ((pSDMMCReg->STATUS & NX_SDMMC_STATUS_FIFOEMPTY) &&
 					Timeout--)
-				pSDXCReg->STATUS;
+				pSDMMCReg->STATUS;
 //			if (0 == Timeout)
 //				break;
-			FSize = (pSDXCReg->STATUS &
-					NX_SDXC_STATUS_FIFOCOUNT) >> 17;
+			FSize = (pSDMMCReg->STATUS &
+					NX_SDMMC_STATUS_FIFOCOUNT) >> 17;
 			count -= (FSize * 4);
 			while (FSize) {
-				*pdwBuffer++ = pSDXCReg->DATA;
+				*pdwBuffer++ = pSDMMCReg->DATA;
 				FSize--;
 			}
 
-			pSDXCReg->RINTSTS = NX_SDXC_RINTSTS_RXDR;
+			pSDMMCReg->RINTSTS = NX_SDMMC_RINTSTS_RXDR;
 		}
 #if 0
 		// Check Errors
-		if (pSDXCReg->RINTSTS & (NX_SDXC_RINTSTS_DRTO |
-					NX_SDXC_RINTSTS_EBE |
-					NX_SDXC_RINTSTS_SBE |
-					NX_SDXC_RINTSTS_DCRC)) {
+		if (pSDMMCReg->RINTSTS & (NX_SDMMC_RINTSTS_DRTO |
+					NX_SDMMC_RINTSTS_EBE |
+					NX_SDMMC_RINTSTS_SBE |
+					NX_SDMMC_RINTSTS_DCRC)) {
 			pbl0fn->_dprintf("Read left = %x\r\n", count);
 
-			if (pSDXCReg->RINTSTS & NX_SDXC_RINTSTS_DRTO)
+			if (pSDMMCReg->RINTSTS & NX_SDMMC_RINTSTS_DRTO)
 				pbl0fn->_dprintf("DRTO\r\n");
-			if (pSDXCReg->RINTSTS & NX_SDXC_RINTSTS_EBE)
+			if (pSDMMCReg->RINTSTS & NX_SDMMC_RINTSTS_EBE)
 				pbl0fn->_dprintf("EBE\r\n");
-			if (pSDXCReg->RINTSTS & NX_SDXC_RINTSTS_SBE)
+			if (pSDMMCReg->RINTSTS & NX_SDMMC_RINTSTS_SBE)
 				pbl0fn->_dprintf("SBE\r\n");
-			if (pSDXCReg->RINTSTS & NX_SDXC_RINTSTS_DCRC)
+			if (pSDMMCReg->RINTSTS & NX_SDMMC_RINTSTS_DCRC)
 				pbl0fn->_dprintf("DCRC\r\n");
 
 			return CFALSE;
 		}
 #endif
-		if (pSDXCReg->RINTSTS & NX_SDXC_RINTSTS_DTO) {
+		if (pSDMMCReg->RINTSTS & NX_SDMMC_RINTSTS_DTO) {
 			if (count == 0) {
-				pSDXCReg->RINTSTS = NX_SDXC_RINTSTS_DTO;
+				pSDMMCReg->RINTSTS = NX_SDMMC_RINTSTS_DTO;
 				pbl0fn->_dprintf("DTO\r\n");
 				break;
 			}
 		}
 
 		#if defined(NX_DEBUG)
-		if (pSDXCReg->RINTSTS & NX_SDXC_RINTSTS_HTO) {
+		if (pSDMMCReg->RINTSTS & NX_SDMMC_RINTSTS_HTO) {
 			pbl0fn->_dprintf("HTO\r\n");
-			pSDXCReg->RINTSTS = NX_SDXC_RINTSTS_HTO;
+			pSDMMCReg->RINTSTS = NX_SDMMC_RINTSTS_HTO;
 		}
 		#endif
 
-		NX_ASSERT(0 == (pSDXCReg->RINTSTS & NX_SDXC_RINTSTS_FRUN));
+		NX_ASSERT(0 == (pSDMMCReg->RINTSTS & NX_SDMMC_RINTSTS_FRUN));
 	}
 
-	pSDXCReg->RINTSTS = NX_SDXC_RINTSTS_DTO;
+	pSDMMCReg->RINTSTS = NX_SDMMC_RINTSTS_DTO;
 
 	return CTRUE;
 }
@@ -1184,36 +1184,36 @@ CBOOL NX_SDMMC_ReadBootSector(
 
 
 //------------------------------------------------------------------------------
-CBOOL SDMMCBOOT(SDXCBOOTSTATUS *pSDXCBootStatus, U32 option)
+CBOOL SDMMCBOOT(SDMMCBOOTSTATUS *pSDMMCBootStatus, U32 option)
 {
 	NXBL0FN *pbl0fn = Getbl0fnPtr();
 	CBOOL	result = CFALSE;
-	struct NX_SDMMC_RegisterSet * const pSDXCReg =
-				pgSDXCReg[pSDXCBootStatus->SDPort];
+	struct NX_SDMMC_RegisterSet * const pSDMMCReg =
+				pgSDMMCReg[pSDMMCBootStatus->SDPort];
 
 #ifdef QEMU_RISCV
         pbl0fn->kputs("------------------------------------");
         pbl0fn->_dprintf("[SUKER-bootrom] %s start\n",__func__);
 #endif
         
-	if (CTRUE != pbl0fn->NX_SDMMC_Open(pSDXCBootStatus, option)) {
+	if (CTRUE != pbl0fn->NX_SDMMC_Open(pSDMMCBootStatus, option)) {
 		pbl0fn->_dprintf("device open fail\r\n");
 		goto error;
 	}
 
-	if (0 == (pSDXCReg->STATUS & NX_SDXC_STATUS_FIFOEMPTY)) {
+	if (0 == (pSDMMCReg->STATUS & NX_SDMMC_STATUS_FIFOEMPTY)) {
 		volatile U32 tempcount = 0x100000;
-		pSDXCReg->CTRL = NX_SDXC_CTRL_FIFORST;
+		pSDMMCReg->CTRL = NX_SDMMC_CTRL_FIFORST;
 		/* Wait until the FIFO reset is completed. */
-		while ((pSDXCReg->CTRL & NX_SDXC_CTRL_FIFORST) &&
+		while ((pSDMMCReg->CTRL & NX_SDMMC_CTRL_FIFORST) &&
 				tempcount--)
-			pSDXCReg->CTRL;
+			pSDMMCReg->CTRL;
 	}
 
 	unsigned int *psector = (unsigned int *)&(*pbl0fn->pbm)->bi;
 	unsigned int rsn = 0;
 
-	if (pbl0fn->NX_SDMMC_ReadSectors(pSDXCBootStatus, rsn++, 1, psector) == CFALSE) {
+	if (pbl0fn->NX_SDMMC_ReadSectors(pSDMMCBootStatus, rsn++, 1, psector) == CFALSE) {
 		pbl0fn->_dprintf("MBR read fail.\r\n");
 		goto error;
 	}
@@ -1221,7 +1221,7 @@ CBOOL SDMMCBOOT(SDXCBOOTSTATUS *pSDXCBootStatus, U32 option)
 	/* int ret; */
 	/* ret = pbl0fn->is_gpt_part((unsigned char *)psector); */
 
-	/* if (pbl0fn->NX_SDMMC_ReadSectors(pSDXCBootStatus, rsn++, 1, psector) == CFALSE) { */
+	/* if (pbl0fn->NX_SDMMC_ReadSectors(pSDMMCBootStatus, rsn++, 1, psector) == CFALSE) { */
 	/* 	pbl0fn->_dprintf("%s Header read fail\r\n", ret ? "Boot" : "GPT"); */
 	/* 	goto error; */
 	/* } */
@@ -1231,7 +1231,7 @@ CBOOL SDMMCBOOT(SDXCBOOTSTATUS *pSDXCBootStatus, U32 option)
 	/* 	if (!ret) { */
 	/* 		rsn = pbl0fn->get_first_empty_lba((unsigned char *)psector); */
 	/* 		pbl0fn->_dprintf("read bootimage from sector %d.\r\n", rsn); */
-	/* 		if (pbl0fn->NX_SDMMC_ReadSectors(pSDXCBootStatus, rsn++, 1, */
+	/* 		if (pbl0fn->NX_SDMMC_ReadSectors(pSDMMCBootStatus, rsn++, 1, */
 	/* 				psector) == CFALSE) { */
 	/* 			pbl0fn->_dprintf("Boot Header read fail.\r\n"); */
 	/* 			goto error; */
@@ -1259,7 +1259,7 @@ CBOOL SDMMCBOOT(SDXCBOOTSTATUS *pSDXCBootStatus, U32 option)
 	U32 sectorsize = (BootSize - 256 + BLOCK_LENGTH - 1) / BLOCK_LENGTH;
 	unsigned int tdata[1024 / 4];
        	unsigned int *pdata = (unsigned int *)(*pbl0fn->pbm)->image;
-	result = pbl0fn->NX_SDMMC_ReadSectors(pSDXCBootStatus, rsn, 2, tdata);
+	result = pbl0fn->NX_SDMMC_ReadSectors(pSDMMCBootStatus, rsn, 2, tdata);
 	rsn += 2;
 
 	/* pbl0fn->nx_memcpy(&(*pbl0fn->pbm)->rsa_public, tdata, sizeof(struct asymmetrickey)); */
@@ -1269,7 +1269,7 @@ CBOOL SDMMCBOOT(SDXCBOOTSTATUS *pSDXCBootStatus, U32 option)
 	 * boot key certify
 	 * ========================================================*/
 
-	result = pbl0fn->NX_SDMMC_ReadSectors(pSDXCBootStatus,
+	result = pbl0fn->NX_SDMMC_ReadSectors(pSDMMCBootStatus,
 			rsn, sectorsize, &pdata[256]);
 
 error:
@@ -1338,10 +1338,10 @@ void NX_SDPADSetGPIO(U32 PortNum)
 }
 
 //------------------------------------------------------------------------------
-U32 iSDXCBOOT(U32 option)
+U32 iSDMMCBOOT(U32 option)
 {
 	NXBL0FN *pbl0fn = Getbl0fnPtr();
-	SDXCBOOTSTATUS SDXCBootStatus, *pSDXCBootStatus;
+	SDMMCBOOTSTATUS SDMMCBootStatus, *pSDMMCBootStatus;
 	CBOOL	result = CFALSE;
 
 #ifdef QEMU_RISCV
@@ -1349,36 +1349,36 @@ U32 iSDXCBOOT(U32 option)
         pbl0fn->_dprintf("[SUKER-bootrom] %s start\n",__func__);
 #endif
 
-	pSDXCBootStatus = &SDXCBootStatus;
+	pSDMMCBootStatus = &SDMMCBootStatus;
 
-	pSDXCBootStatus->SDPort = ((option >> SELSDPORT) & 0x3);
+	pSDMMCBootStatus->SDPort = ((option >> SELSDPORT) & 0x3);
 
-	if (pSDXCBootStatus->SDPort >= 3) {
-		pSDXCBootStatus->SDPort = 0;
-		pSDXCBootStatus->bHighSpeed = CTRUE;
+	if (pSDMMCBootStatus->SDPort >= 3) {
+		pSDMMCBootStatus->SDPort = 0;
+		pSDMMCBootStatus->bHighSpeed = CTRUE;
 	} else
-		pSDXCBootStatus->bHighSpeed = CFALSE;
+		pSDMMCBootStatus->bHighSpeed = CFALSE;
 
 #ifndef QEMU_RISCV
-	pbl0fn->NX_SDPADSetALT(pSDXCBootStatus->SDPort);
+	pbl0fn->NX_SDPADSetALT(pSDMMCBootStatus->SDPort);
 #endif
         
 #ifdef DEBUG
-        _dprintf("[SUKER-bootrom] pSDXCBootStatus = 0x%x\n",pSDXCBootStatus);
+        _dprintf("[SUKER-bootrom] pSDMMCBootStatus = 0x%x\n",pSDMMCBootStatus);
 #endif        
-	pbl0fn->NX_SDMMC_Init(pSDXCBootStatus);
+	pbl0fn->NX_SDMMC_Init(pSDMMCBootStatus);
 
-        //	pbl0fn->_dprintf("SD boot:%d\r\n", pSDXCBootStatus->SDPort);
+        //	pbl0fn->_dprintf("SD boot:%d\r\n", pSDMMCBootStatus->SDPort);
 #ifdef QEMU_RISCV
-        pbl0fn->_dprintf("[SUKER-bootrom] %s : SDBOOT = 0x%lx\n",__func__,pSDXCBootStatus->SDPort);
+        pbl0fn->_dprintf("[SUKER-bootrom] %s : SDBOOT = 0x%lx\n",__func__,pSDMMCBootStatus->SDPort);
 #endif
-	result = pbl0fn->SDMMCBOOT(pSDXCBootStatus, option);
+	result = pbl0fn->SDMMCBOOT(pSDMMCBootStatus, option);
 
-	pbl0fn->NX_SDMMC_Close(pSDXCBootStatus);
-	pbl0fn->NX_SDMMC_Terminate(pSDXCBootStatus);
+	pbl0fn->NX_SDMMC_Close(pSDMMCBootStatus);
+	pbl0fn->NX_SDMMC_Terminate(pSDMMCBootStatus);
 
 #ifndef QEMU_RISCV        
-	pbl0fn->NX_SDPADSetGPIO(pSDXCBootStatus->SDPort);
+	pbl0fn->NX_SDPADSetGPIO(pSDMMCBootStatus->SDPort);
 #endif
 
 #ifdef QEMU_RISCV

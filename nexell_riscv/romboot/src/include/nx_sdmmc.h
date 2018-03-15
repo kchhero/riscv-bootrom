@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2012 Nexell Co., All Rights Reserved
+ * Copyright (C) 2018 Nexell Co., All Rights Reserved
  * Nexell Co. Proprietary & Confidential
  *
  * NEXELL INFORMS THAT THIS CODE AND INFORMATION IS PROVIDED "AS IS" BASE
@@ -9,93 +9,82 @@
  *
  * Module	: SDMMC
  * File		: nx_sdmmc.h
- * Description	:
- * Author	: Firware Team
+ * Description  :
+ * ReferenceDoc : DesignWare Cores Mobile Storage Host Controller Databook, Version 1.60a
+ * Author	: S/W A, suker
  * History	:
  */
 #ifndef __NX_SDMMC_H__
 #define __NX_SDMMC_H__
 
-//#include "nx_prototype.h"
+#include "nx_type.h"
 
 #ifdef  __cplusplus
 extern "C"
 {
 #endif
 
-
-//------------------------------------------------------------------------------
-/// @defgroup   SDMMC SD Host Controller
-//------------------------------------------------------------------------------
-//@{
-
-//------------------------------------------------------------------------------
-/// @brief  SDMMC Module
-//------------------------------------------------------------------------------
-//@{
-
-/// @brief  SDMMC Module's Register List
-struct  NX_SDMMC_RegisterSet
+typedef struct  NX_SDMMC_RegisterSet_2_9
 {
-	volatile unsigned int CTRL;			// 0x000 : Control
-	volatile unsigned int PWREN;			// 0x004 : Power Enable
-	volatile unsigned int CLKDIV;			// 0x008 : Clock Divider
-	volatile unsigned int CLKSRC;			// 0x00C : Clock Source
-	volatile unsigned int CLKENA;			// 0x010 : Clock Enable
-	volatile unsigned int TMOUT;			// 0x014 : Time-Out
-	volatile unsigned int CTYPE;			// 0x018 : Card Type
-	volatile unsigned int BLKSIZ;			// 0x01C : Block Size
-	volatile unsigned int BYTCNT;			// 0x020 : Byte Count
-	volatile unsigned int INTMASK;			// 0x024 : Interrupt Mask
-	volatile unsigned int CMDARG;			// 0x028 : Command Argument
-	volatile unsigned int CMD;			// 0x02C : Command
-	volatile unsigned int RESP[4];			// 0x030 : Response 0
-	volatile unsigned int MINTSTS;			// 0x040 : Masked Interrupt Status
-	volatile unsigned int RINTSTS;			// 0x044 : Raw Interrupt Status
-	volatile unsigned int STATUS;			// 0x048 : Status - Mainly for Debug Purpose
-	volatile unsigned int FIFOTH;			// 0x04C : FIFO Threshold
-	volatile unsigned int CDETECT;			// 0x050 : Card Detect
-	volatile unsigned int WRTPRT;			// 0x054 : Write Protect
-	volatile unsigned int GPIO;			// 0x058 : General Purpose Input/Output
-	volatile unsigned int TCBCNT;			// 0x05C : Transferred CIU card byte count
-	volatile unsigned int TBBCNT;			// 0x060 : Transferred Host Byte Count
-	volatile unsigned int DEBNCE;			// 0x064 : Card Detect Debounce
-	volatile unsigned int USRID;			// 0x068 : User ID
-	volatile unsigned int VERID;			// 0x06C : Version ID
-	volatile unsigned int HCON;			// 0x070 : Hardware Configuration
-	volatile unsigned int UHS_REG;			// 0x074 : UHS_REG register
-	volatile unsigned int RSTn;			// 0x078 : Hardware reset register
-	volatile unsigned int _Rev0;			// 0x07C
-	volatile unsigned int BMOD;			// 0x080 : Bus Mode
-	volatile unsigned int PLDMND;			// 0x084 : Poll Demand
-	volatile unsigned int DBADDR;			// 0x088 : Descriptor List Base Address
-	volatile unsigned int IDSTS;			// 0x08C : Internal DMAC Status
-	volatile unsigned int IDINTEN;			// 0x090 : Internal DMAC Interrupt Enable
-	volatile unsigned int DSCADDR;			// 0x094 : Current Host Descriptor Address
-	volatile unsigned int BUFADDR;			// 0x098 : Current Buffer Descriptor Address
-	volatile unsigned char  _Rev1[0x100-0x09C];	// 0x09C ~ 0x100 reserved area
-	volatile unsigned int CARDTHRCTL;		// 0x100 : Card Read Threshold Enable
-	volatile unsigned int BACKEND_POWER;		// 0x104 : Back-end Power
-	volatile unsigned int UHS_REG_EXT;		// 0x108 : eMMC 4.5 1.2V
-	volatile unsigned int EMMC_DDR_REG;		// 0x10C : eMMC DDR START bit detection control
-	volatile unsigned int ENABLE_SHIFT;		// 0x110 : Phase shift control
-	volatile unsigned int CLKCTRL;			// 0x114 : External clock phase & delay control
-	volatile unsigned char  _Rev2[0x200-0x118];	// 0x118 ~ 0x200
-	volatile unsigned int DATA;			// 0x200 : Data
-	volatile unsigned char  _Rev3[0x400-0x204];	// 0x204 ~ 0x400
-	volatile unsigned int TIEMODE;			// 0x400
-	volatile unsigned int TIESRAM;			// 0x404
-	volatile unsigned int TIEDRVPHASE;		// 0x408
-	volatile unsigned int TIESMPPHASE;		// 0x40C
-	volatile unsigned int TIEDSDELAY;		// 0x410
-};
+	volatile U32 CTRL;			// 0x000 : Control
+	volatile U32 PWREN;			// 0x004 : Power Enable
+	volatile U32 CLKDIV;			// 0x008 : Clock Divider
+	volatile U32 CLKSRC;			// 0x00C : Clock Source
+	volatile U32 CLKENA;			// 0x010 : Clock Enable
+	volatile U32 TMOUT;			// 0x014 : Time-Out
+	volatile U32 CTYPE;			// 0x018 : Card Type
+	volatile U32 BLKSIZ;			// 0x01C : Block Size
+	volatile U32 BYTCNT;			// 0x020 : Byte Count
+	volatile U32 INTMASK;			// 0x024 : Interrupt Mask
+	volatile U32 CMDARG;			// 0x028 : Command Argument
+	volatile U32 CMD;			// 0x02C : Command
+	volatile U32 RESP[4];			// 0x030 : Response 0
+	volatile U32 MINTSTS;			// 0x040 : Masked Interrupt Status
+	volatile U32 RINTSTS;			// 0x044 : Raw Interrupt Status
+	volatile U32 STATUS;			// 0x048 : Status - Mainly for Debug Purpose
+	volatile U32 FIFOTH;			// 0x04C : FIFO Threshold
+	volatile U32 CDETECT;			// 0x050 : Card Detect
+	volatile U32 WRTPRT;			// 0x054 : Write Protect
+	volatile U32 GPIO;			// 0x058 : General Purpose Input/Output
+	volatile U32 TCBCNT;			// 0x05C : Transferred CIU card byte count
+	volatile U32 TBBCNT;			// 0x060 : Transferred Host Byte Count
+	volatile U32 DEBNCE;			// 0x064 : Card Detect Debounce
+	volatile U32 USRID;			// 0x068 : User ID
+	volatile U32 VERID;			// 0x06C : Version ID
+	volatile U32 HCON;			// 0x070 : Hardware Configuration
+	volatile U32 UHS_REG;			// 0x074 : UHS_REG register
+	volatile U32 RSTn;			// 0x078 : Hardware reset register
+	volatile U32 _Rev0;			// 0x07C
+	volatile U32 BMOD;			// 0x080 : Bus Mode
+	volatile U32 PLDMND;			// 0x084 : Poll Demand
+	volatile U32 DBADDR;			// 0x088 : Descriptor List Base Address
+	volatile U32 IDSTS;			// 0x08C : Internal DMAC Status
+	volatile U32 IDINTEN;			// 0x090 : Internal DMAC Interrupt Enable
+	volatile U32 DSCADDR;			// 0x094 : Current Host Descriptor Address
+	volatile U32 BUFADDR;			// 0x098 : Current Buffer Descriptor Address
+	volatile U8  _Rev1[0x100-0x09C];	// 0x09C ~ 0x100 reserved area
+	volatile U32 CARDTHRCTL;		// 0x100 : Card Read Threshold Enable
+	volatile U32 BACKEND_POWER;		// 0x104 : Back-end Power
+	volatile U32 UHS_REG_EXT;		// 0x108 : eMMC 4.5 1.2V
+	volatile U32 EMMC_DDR_REG;		// 0x10C : eMMC DDR START bit detection control
+	volatile U32 ENABLE_SHIFT;		// 0x110 : Phase shift control
+	volatile U32 CLKCTRL;			// 0x114 : External clock phase & delay control
+	volatile U8  _Rev2[0x200-0x118];	// 0x118 ~ 0x200
+	volatile U32 DATA;			// 0x200 : Data
+	volatile U8  _Rev3[0x400-0x204];	// 0x204 ~ 0x400
+	volatile U32 TIEMODE;			// 0x400
+	volatile U32 TIESRAM;			// 0x404
+	volatile U32 TIEDRVPHASE;		// 0x408
+	volatile U32 TIESMPPHASE;		// 0x40C
+	volatile U32 TIEDSDELAY;		// 0x410
+} NX_SDMMC_RegisterSet;
 
 /// @brief  SDMMC BIU
 struct strNxSdmmcBiu
 {
-	volatile unsigned int CTRL;
-	volatile unsigned int BSIZE;
-	volatile unsigned int BADDR;
+	volatile U32 CTRL;
+	volatile U32 BSIZE;
+	volatile U32 BADDR;
 	struct strNxSdmmcBiu *Next;
 };
 
@@ -104,10 +93,10 @@ typedef struct strNxSdmmcBiu    NX_SDMMC_BIU;
 /// @brief  SDMMC BIU Config
 typedef struct
 {
-	int   OWN;
-	int   IntDisable;
-	unsigned int     BuffAddr;
-	unsigned int     DataSize;
+	CBOOL   OWN;
+	CBOOL   IntDisable;
+	U32     BuffAddr;
+	U32     DataSize;
 } NX_SDMMC_BIUConfig;
 
 /// @brief  SDMMC Interrupts for Interrupt Interface
@@ -322,179 +311,179 @@ typedef enum
 /// @name   Module Interface
 //------------------------------------------------------------------------------
 //@{
-int   NX_SDMMC_Initialize( void );
-unsigned int     NX_SDMMC_GetNumberOfModule( void );
+CBOOL   NX_SDMMC_Initialize( void );
+U32     NX_SDMMC_GetNumberOfModule( void );
 //@}
 
 //------------------------------------------------------------------------------
 /// @name   Basic Interface
 //------------------------------------------------------------------------------
 //@{
-unsigned int     NX_SDMMC_GetPhysicalAddress( unsigned int ModuleIndex );
-unsigned int     NX_SDMMC_GetSizeOfRegisterSet( void );
+U32     NX_SDMMC_GetPhysicalAddress( U32 ModuleIndex );
+U32     NX_SDMMC_GetSizeOfRegisterSet( void );
 
-void    NX_SDMMC_SetBaseAddress( unsigned int ModuleIndex, void* BaseAddress );
-void*    NX_SDMMC_GetBaseAddress( unsigned int ModuleIndex );
+void    NX_SDMMC_SetBaseAddress( U32 ModuleIndex, void* BaseAddress );
+void*    NX_SDMMC_GetBaseAddress( U32 ModuleIndex );
 
-int   NX_SDMMC_OpenModule( unsigned int ModuleIndex );
-int   NX_SDMMC_CloseModule( unsigned int ModuleIndex );
+CBOOL   NX_SDMMC_OpenModule( U32 ModuleIndex );
+CBOOL   NX_SDMMC_CloseModule( U32 ModuleIndex );
 
-int   NX_SDMMC_CheckBusy( unsigned int ModuleIndex );
-int   NX_SDMMC_CanPowerDown( unsigned int ModuelIndex );
+CBOOL   NX_SDMMC_CheckBusy( U32 ModuleIndex );
+CBOOL   NX_SDMMC_CanPowerDown( U32 ModuelIndex );
 //@}
 
 //------------------------------------------------------------------------------
 /// @name   Interrupt Interface
 //------------------------------------------------------------------------------
 //@{
-signed int     NX_SDMMC_GetInterruptNumber( unsigned int ModuleIndex );
+S32     NX_SDMMC_GetInterruptNumber( U32 ModuleIndex );
 
-void    NX_SDMMC_SetInterruptEnable( unsigned int ModuleIndex, signed int IntNum, int Enable );
-int   NX_SDMMC_GetInterruptEnable( unsigned int ModuleIndex, signed int IntNum );
-int   NX_SDMMC_GetInterruptPending( unsigned int ModuleIndex, signed int IntNum );
-void    NX_SDMMC_ClearInterruptPending( unsigned int ModuleIndex, signed int IntNum );
+void    NX_SDMMC_SetInterruptEnable( U32 ModuleIndex, S32 IntNum, CBOOL Enable );
+CBOOL   NX_SDMMC_GetInterruptEnable( U32 ModuleIndex, S32 IntNum );
+CBOOL   NX_SDMMC_GetInterruptPending( U32 ModuleIndex, S32 IntNum );
+void    NX_SDMMC_ClearInterruptPending( U32 ModuleIndex, S32 IntNum );
 
-void    NX_SDMMC_SetInterruptEnableAll( unsigned int ModuleIndex, int Enable );
-int   NX_SDMMC_GetInterruptEnableAll( unsigned int ModuleIndex );
-int   NX_SDMMC_GetInterruptPendingAll( unsigned int ModuleIndex );
-void    NX_SDMMC_ClearInterruptPendingAll( unsigned int ModuleIndex );
-signed int     NX_SDMMC_GetInterruptPendingNumber( unsigned int ModuleIndex );
+void    NX_SDMMC_SetInterruptEnableAll( U32 ModuleIndex, CBOOL Enable );
+CBOOL   NX_SDMMC_GetInterruptEnableAll( U32 ModuleIndex );
+CBOOL   NX_SDMMC_GetInterruptPendingAll( U32 ModuleIndex );
+void    NX_SDMMC_ClearInterruptPendingAll( U32 ModuleIndex );
+S32     NX_SDMMC_GetInterruptPendingNumber( U32 ModuleIndex );
 
-void    NX_SDMMC_SetInterruptEnable32( unsigned int ModuleIndex, unsigned int EnableFlag );
-unsigned int     NX_SDMMC_GetInterruptEnable32( unsigned int ModuleIndex );
-unsigned int     NX_SDMMC_GetInterruptPending32( unsigned int ModuleIndex );
-void    NX_SDMMC_ClearInterruptPending32( unsigned int ModuleIndex, unsigned int PendingFlag );
+void    NX_SDMMC_SetInterruptEnable32( U32 ModuleIndex, U32 EnableFlag );
+U32     NX_SDMMC_GetInterruptEnable32( U32 ModuleIndex );
+U32     NX_SDMMC_GetInterruptPending32( U32 ModuleIndex );
+void    NX_SDMMC_ClearInterruptPending32( U32 ModuleIndex, U32 PendingFlag );
 //@}
 
 //------------------------------------------------------------------------------
 /// @name   Clock Control Interface
 //------------------------------------------------------------------------------
 //@{
-unsigned int     NX_SDMMC_GetClockNumber( unsigned int ModuleIndex );
-unsigned int     NX_SDMMC_GetResetNumber( unsigned int ModuleIndex );
+U32     NX_SDMMC_GetClockNumber( U32 ModuleIndex );
+U32     NX_SDMMC_GetResetNumber( U32 ModuleIndex );
 //@}
 
 //------------------------------------------------------------------------------
 /// @name   Module customized operations
 //------------------------------------------------------------------------------
 //@{
-void    NX_SDMMC_SetPowerEnable( unsigned int ModuleIndex, unsigned int PowerIndex, int Enable );
-int   NX_SDMMC_GetPowerEnable( unsigned int ModuleIndex, unsigned int PowerIndex );
+void    NX_SDMMC_SetPowerEnable( U32 ModuleIndex, U32 PowerIndex, CBOOL Enable );
+CBOOL   NX_SDMMC_GetPowerEnable( U32 ModuleIndex, U32 PowerIndex );
 
-void    NX_SDMMC_AbortReadData( unsigned int ModuleIndex );
-void    NX_SDMMC_SendIRQResponse( unsigned int ModuleIndex );
-void    NX_SDMMC_SetReadWait( unsigned int ModuleIndex, int bAssert );
+void    NX_SDMMC_AbortReadData( U32 ModuleIndex );
+void    NX_SDMMC_SendIRQResponse( U32 ModuleIndex );
+void    NX_SDMMC_SetReadWait( U32 ModuleIndex, CBOOL bAssert );
 
-//void    NX_SDMMC_ResetDMA( unsigned int ModuleIndex );
-//int   NX_SDMMC_IsResetDMA( unsigned int ModuleIndex );
-void    NX_SDMMC_ResetDMAC( unsigned int ModuleIndex );
-void    NX_SDMMC_SetDMAMode( unsigned int ModuleIndex, int Enable );
-void    NX_SDMMC_SetUseInternalDMAC( unsigned int ModuleIndex, int Enable );
-int   NX_SDMMC_IsDMAReq( unsigned int ModuleIndex );
-int   NX_SDMMC_IsDMAAck( unsigned int ModuleIndex );
+//void    NX_SDMMC_ResetDMA( U32 ModuleIndex );
+//CBOOL   NX_SDMMC_IsResetDMA( U32 ModuleIndex );
+void    NX_SDMMC_ResetDMAC( U32 ModuleIndex );
+void    NX_SDMMC_SetDMAMode( U32 ModuleIndex, CBOOL Enable );
+void    NX_SDMMC_SetUseInternalDMAC( U32 ModuleIndex, CBOOL Enable );
+CBOOL   NX_SDMMC_IsDMAReq( U32 ModuleIndex );
+CBOOL   NX_SDMMC_IsDMAAck( U32 ModuleIndex );
 
-void    NX_SDMMC_ResetFIFO( unsigned int ModuleIndex );
-int   NX_SDMMC_IsResetFIFO( unsigned int ModuleIndex );
-void    NX_SDMMC_ResetController( unsigned int ModuleIndex );
-int   NX_SDMMC_IsResetController( unsigned int ModuleIndex );
+void    NX_SDMMC_ResetFIFO( U32 ModuleIndex );
+CBOOL   NX_SDMMC_IsResetFIFO( U32 ModuleIndex );
+void    NX_SDMMC_ResetController( U32 ModuleIndex );
+CBOOL   NX_SDMMC_IsResetController( U32 ModuleIndex );
 
-void    NX_SDMMC_SetClockSource( unsigned int ModuleIndex, NX_SDMMC_CLOCK_SOURCE ClkSrc );
-NX_SDMMC_CLOCK_SOURCE    NX_SDMMC_GetClockSource( unsigned int ModuleIndex );
-void    NX_SDMMC_SetOutputClockDivider( unsigned int ModuleIndex, unsigned int divider );
-unsigned int     NX_SDMMC_GetOutputClockDivider( unsigned int ModuleIndex );
-void    NX_SDMMC_SetLowPowerClockMode( unsigned int ModuleIndex, int Enable );
-int   NX_SDMMC_GetLowPowerClockMode( unsigned int ModuleIndex );
-void    NX_SDMMC_SetOutputClockEnable( unsigned int ModuleIndex, int Enable );
-int   NX_SDMMC_GetOutputClockEnable( unsigned int ModuleIndex );
+void    NX_SDMMC_SetClockSource( U32 ModuleIndex, NX_SDMMC_CLOCK_SOURCE ClkSrc );
+NX_SDMMC_CLOCK_SOURCE    NX_SDMMC_GetClockSource( U32 ModuleIndex );
+void    NX_SDMMC_SetOutputClockDivider( U32 ModuleIndex, U32 divider );
+U32     NX_SDMMC_GetOutputClockDivider( U32 ModuleIndex );
+void    NX_SDMMC_SetLowPowerClockMode( U32 ModuleIndex, CBOOL Enable );
+CBOOL   NX_SDMMC_GetLowPowerClockMode( U32 ModuleIndex );
+void    NX_SDMMC_SetOutputClockEnable( U32 ModuleIndex, CBOOL Enable );
+CBOOL   NX_SDMMC_GetOutputClockEnable( U32 ModuleIndex );
 
-void    NX_SDMMC_SetDriveClockShiftPhase( unsigned int ModuleIndex, NX_SDMMC_CLKSHIFT ClockShift );
-NX_SDMMC_CLKSHIFT   NX_SDMMC_GetDriveClockShiftPhase( unsigned int ModuleIndex );
-void    NX_SDMMC_SetSampleClockShiftPhase( unsigned int ModuleIndex, NX_SDMMC_CLKSHIFT ClockShift );
-NX_SDMMC_CLKSHIFT   NX_SDMMC_GetSampleClockShiftPhase( unsigned int ModuleIndex );
-void    NX_SDMMC_SetDriveClockDelay( unsigned int ModuleIndex, unsigned int Delay );
-unsigned int     NX_SDMMC_GetDriveClockDelay( unsigned int ModuleIndex );
-void    NX_SDMMC_SetSampleClockDelay( unsigned int ModuleIndex, unsigned int Delay );
-unsigned int     NX_SDMMC_GetSampleClockDelay( unsigned int ModuleIndex );
+void    NX_SDMMC_SetDriveClockShiftPhase( U32 ModuleIndex, NX_SDMMC_CLKSHIFT ClockShift );
+NX_SDMMC_CLKSHIFT   NX_SDMMC_GetDriveClockShiftPhase( U32 ModuleIndex );
+void    NX_SDMMC_SetSampleClockShiftPhase( U32 ModuleIndex, NX_SDMMC_CLKSHIFT ClockShift );
+NX_SDMMC_CLKSHIFT   NX_SDMMC_GetSampleClockShiftPhase( U32 ModuleIndex );
+void    NX_SDMMC_SetDriveClockDelay( U32 ModuleIndex, U32 Delay );
+U32     NX_SDMMC_GetDriveClockDelay( U32 ModuleIndex );
+void    NX_SDMMC_SetSampleClockDelay( U32 ModuleIndex, U32 Delay );
+U32     NX_SDMMC_GetSampleClockDelay( U32 ModuleIndex );
 
-void    NX_SDMMC_SetDataTimeOut( unsigned int ModuleIndex, unsigned int dwTimeOut );
-unsigned int     NX_SDMMC_GetDataTimeOut( unsigned int ModuleIndex );
-void    NX_SDMMC_SetResponseTimeOut( unsigned int ModuleIndex, unsigned int dwTimeOut );
-unsigned int     NX_SDMMC_GetResponseTimeOut( unsigned int ModuleIndex );
+void    NX_SDMMC_SetDataTimeOut( U32 ModuleIndex, U32 dwTimeOut );
+U32     NX_SDMMC_GetDataTimeOut( U32 ModuleIndex );
+void    NX_SDMMC_SetResponseTimeOut( U32 ModuleIndex, U32 dwTimeOut );
+U32     NX_SDMMC_GetResponseTimeOut( U32 ModuleIndex );
 
-void    NX_SDMMC_SetDataBusWidth( unsigned int ModuleIndex, unsigned int width );
-unsigned int     NX_SDMMC_GetDataBusWidth( unsigned int ModuleIndex );
+void    NX_SDMMC_SetDataBusWidth( U32 ModuleIndex, U32 width );
+U32     NX_SDMMC_GetDataBusWidth( U32 ModuleIndex );
 
-void    NX_SDMMC_SetBlockSize( unsigned int ModuleIndex, unsigned int SizeInByte );
-unsigned int     NX_SDMMC_GetBlockSize( unsigned int ModuleIndex );
-void    NX_SDMMC_SetByteCount( unsigned int ModuleIndex, unsigned int SizeInByte );
-unsigned int     NX_SDMMC_GetByteCount( unsigned int ModuleIndex );
+void    NX_SDMMC_SetBlockSize( U32 ModuleIndex, U32 SizeInByte );
+U32     NX_SDMMC_GetBlockSize( U32 ModuleIndex );
+void    NX_SDMMC_SetByteCount( U32 ModuleIndex, U32 SizeInByte );
+U32     NX_SDMMC_GetByteCount( U32 ModuleIndex );
 
-void    NX_SDMMC_SetCommandArgument( unsigned int ModuleIndex, unsigned int argument );
-void    NX_SDMMC_SetCommand( unsigned int ModuleIndex, unsigned int Cmd, unsigned int flag );
-void    NX_SDMMC_StartCommand( unsigned int ModuleIndex );
-int   NX_SDMMC_IsCommandBusy( unsigned int ModuleIndex );
+void    NX_SDMMC_SetCommandArgument( U32 ModuleIndex, U32 argument );
+void    NX_SDMMC_SetCommand( U32 ModuleIndex, U32 Cmd, U32 flag );
+void    NX_SDMMC_StartCommand( U32 ModuleIndex );
+CBOOL   NX_SDMMC_IsCommandBusy( U32 ModuleIndex );
 
-unsigned int     NX_SDMMC_GetShortResponse( unsigned int ModuleIndex );
-void    NX_SDMMC_GetLongResponse( unsigned int ModuleIndex, unsigned int *pLongResponse );
-unsigned int     NX_SDMMC_GetAutoStopResponse( unsigned int ModuleIndex );
-unsigned int     NX_SDMMC_GetResponseIndex( unsigned int ModuleIndex );
+U32     NX_SDMMC_GetShortResponse( U32 ModuleIndex );
+void    NX_SDMMC_GetLongResponse( U32 ModuleIndex, U32 *pLongResponse );
+U32     NX_SDMMC_GetAutoStopResponse( U32 ModuleIndex );
+U32     NX_SDMMC_GetResponseIndex( U32 ModuleIndex );
 
-void    NX_SDMMC_SetFIFORxThreshold( unsigned int ModuleIndex, unsigned int Threshold );
-unsigned int     NX_SDMMC_GetFIFORxThreshold( unsigned int ModuleIndex );
-void    NX_SDMMC_SetFIFOTxThreshold( unsigned int ModuleIndex, unsigned int Threshold );
-unsigned int     NX_SDMMC_GetFIFOTxThreshold( unsigned int ModuleIndex );
+void    NX_SDMMC_SetFIFORxThreshold( U32 ModuleIndex, U32 Threshold );
+U32     NX_SDMMC_GetFIFORxThreshold( U32 ModuleIndex );
+void    NX_SDMMC_SetFIFOTxThreshold( U32 ModuleIndex, U32 Threshold );
+U32     NX_SDMMC_GetFIFOTxThreshold( U32 ModuleIndex );
 
 
-unsigned int     NX_SDMMC_GetFIFOCount( unsigned int ModuleIndex );
-int   NX_SDMMC_IsFIFOFull( unsigned int ModuleIndex );
-int   NX_SDMMC_IsFIFOEmpty( unsigned int ModuleIndex );
-int   NX_SDMMC_IsFIFOTxThreshold( unsigned int ModuleIndex );
-int   NX_SDMMC_IsFIFORxThreshold( unsigned int ModuleIndex );
+U32     NX_SDMMC_GetFIFOCount( U32 ModuleIndex );
+CBOOL   NX_SDMMC_IsFIFOFull( U32 ModuleIndex );
+CBOOL   NX_SDMMC_IsFIFOEmpty( U32 ModuleIndex );
+CBOOL   NX_SDMMC_IsFIFOTxThreshold( U32 ModuleIndex );
+CBOOL   NX_SDMMC_IsFIFORxThreshold( U32 ModuleIndex );
 
-unsigned int     NX_SDMMC_GetDataTransferSize( unsigned int ModuleIndex );
-unsigned int     NX_SDMMC_GetFIFOTransferSize( unsigned int ModuleIndex );
+U32     NX_SDMMC_GetDataTransferSize( U32 ModuleIndex );
+U32     NX_SDMMC_GetFIFOTransferSize( U32 ModuleIndex );
 
-void    NX_SDMMC_SetData( unsigned int ModuleIndex, unsigned int dwData );
-unsigned int     NX_SDMMC_GetData( unsigned int ModuleIndex );
-void    NX_SDMMC_SetData32( unsigned int ModuleIndex, const unsigned int *pdwData );
-void    NX_SDMMC_GetData32( unsigned int ModuleIndex, unsigned int *pdwData );
-volatile unsigned int*   NX_SDMMC_GetDataPointer( unsigned int ModuleIndex );
+void    NX_SDMMC_SetData( U32 ModuleIndex, U32 dwData );
+U32     NX_SDMMC_GetData( U32 ModuleIndex );
+void    NX_SDMMC_SetData32( U32 ModuleIndex, const U32 *pdwData );
+void    NX_SDMMC_GetData32( U32 ModuleIndex, U32 *pdwData );
+volatile U32*   NX_SDMMC_GetDataPointer( U32 ModuleIndex );
 
-int   NX_SDMMC_MakeBIU( NX_SDMMC_BIUConfig *pBIUC, NX_SDMMC_BIU *pBIU );
-void    NX_SDMMC_GetDataBIU( unsigned int ModuleIndex, NX_SDMMC_BIU *pBIU );
-void    NX_SDMMC_SetDataBIU( unsigned int ModuleIndex, NX_SDMMC_BIU *pBIU );
-void    NX_SDMMC_PollDemand( unsigned int ModuleIndex );
+CBOOL   NX_SDMMC_MakeBIU( NX_SDMMC_BIUConfig *pBIUC, NX_SDMMC_BIU *pBIU );
+void    NX_SDMMC_GetDataBIU( U32 ModuleIndex, NX_SDMMC_BIU *pBIU );
+void    NX_SDMMC_SetDataBIU( U32 ModuleIndex, NX_SDMMC_BIU *pBIU );
+void    NX_SDMMC_PollDemand( U32 ModuleIndex );
 
-unsigned int     NX_SDMMC_GetDMACStatus( unsigned int ModuleIndex );
-void    NX_SDMMC_SetDMACStatus( unsigned int ModuleIndex, unsigned int SetData );
-void    NX_SDMMC_SetDMACIntEnable( unsigned int ModuleIndex, unsigned int IntFlag );
-unsigned int     NX_SDMMC_GetDMACIntEnable( unsigned int ModuleIndex );
-int   NX_SDMMC_GetDMACResetStatus( unsigned int ModuleIndex );
-void    NX_SDMMC_SetDMACBurstLength( unsigned int ModuleIndex, unsigned int BurstLength );
-void    NX_SDMMC_SetIDMACEnable( unsigned int ModuleIndex, int bEnable );
-int   NX_SDMMC_GetIDMACEnable( unsigned int ModuleIndex );
+U32     NX_SDMMC_GetDMACStatus( U32 ModuleIndex );
+void    NX_SDMMC_SetDMACStatus( U32 ModuleIndex, U32 SetData );
+void    NX_SDMMC_SetDMACIntEnable( U32 ModuleIndex, U32 IntFlag );
+U32     NX_SDMMC_GetDMACIntEnable( U32 ModuleIndex );
+CBOOL   NX_SDMMC_GetDMACResetStatus( U32 ModuleIndex );
+void    NX_SDMMC_SetDMACBurstLength( U32 ModuleIndex, U32 BurstLength );
+void    NX_SDMMC_SetIDMACEnable( U32 ModuleIndex, CBOOL bEnable );
+CBOOL   NX_SDMMC_GetIDMACEnable( U32 ModuleIndex );
 
-void    NX_SDMMC_SetDescSkipLen( unsigned int ModuleIndex, unsigned int uLength );
-unsigned int     NX_SDMMC_GetDescSkipLen( unsigned int ModuleIndex );
-void    NX_SDMMC_ResetIDMAC( unsigned int ModuleIndex );
-int   NX_SDMMC_IsResetIDMAC( unsigned int ModuleIndex );
-void    NX_SDMMC_SetDebounce( unsigned int ModuleIndex, unsigned int uDebounce );
-unsigned int     NX_SDMMC_GetDebounce( unsigned int ModuleIndex );
-int   NX_SDMMC_IsIDMACSupported( unsigned int ModuleIndex );
+void    NX_SDMMC_SetDescSkipLen( U32 ModuleIndex, U32 uLength );
+U32     NX_SDMMC_GetDescSkipLen( U32 ModuleIndex );
+void    NX_SDMMC_ResetIDMAC( U32 ModuleIndex );
+CBOOL   NX_SDMMC_IsResetIDMAC( U32 ModuleIndex );
+void    NX_SDMMC_SetDebounce( U32 ModuleIndex, U32 uDebounce );
+U32     NX_SDMMC_GetDebounce( U32 ModuleIndex );
+CBOOL   NX_SDMMC_IsIDMACSupported( U32 ModuleIndex );
 
-void    NX_SDMMC_SetCardVoltage( unsigned int ModuleIndex, unsigned int VolBase, unsigned int VolOffset);
-unsigned int     NX_SDMMC_GetCardVoltage( unsigned int ModuleIndex, unsigned int VolBase);
+void    NX_SDMMC_SetCardVoltage( U32 ModuleIndex, U32 VolBase, U32 VolOffset);
+U32     NX_SDMMC_GetCardVoltage( U32 ModuleIndex, U32 VolBase);
 
-int   NX_SDMMC_IsDataTransferBusy( unsigned int ModuleIndex );
-int   NX_SDMMC_IsCardDataBusy( unsigned int ModuleIndex );
-int   NX_SDMMC_IsCardPresent( unsigned int ModuleIndex );
+CBOOL   NX_SDMMC_IsDataTransferBusy( U32 ModuleIndex );
+CBOOL   NX_SDMMC_IsCardDataBusy( U32 ModuleIndex );
+CBOOL   NX_SDMMC_IsCardPresent( U32 ModuleIndex );
 
-void    NX_SDMMC_SetDDRMode( unsigned int ModuleIndex, int Enable );
-int   NX_SDMMC_GetDDRMode( unsigned int ModuleIndex );
-void    NX_SDMMC_SetVoltageMode( unsigned int ModuleIndex, int Enable );
-int   NX_SDMMC_GetVoltageMode( unsigned int ModuleIndex );
+void    NX_SDMMC_SetDDRMode( U32 ModuleIndex, CBOOL Enable );
+CBOOL   NX_SDMMC_GetDDRMode( U32 ModuleIndex );
+void    NX_SDMMC_SetVoltageMode( U32 ModuleIndex, CBOOL Enable );
+CBOOL   NX_SDMMC_GetVoltageMode( U32 ModuleIndex );
 
-NX_SDMMC_CMDFSM NX_SDMMC_GetCommandFSM( unsigned int ModuleIndex );
+NX_SDMMC_CMDFSM NX_SDMMC_GetCommandFSM( U32 ModuleIndex );
 //@}
 
 

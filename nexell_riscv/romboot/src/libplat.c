@@ -61,8 +61,7 @@ struct NX_GPIO (*const pGPIOReg)[1] = (struct NX_GPIO (*)[])GPIO_CTRL_ADDR;
 struct NX_ALIVE_RegisterSet * const pAlive =
   (struct NX_ALIVE_RegisterSet *)PHY_BASEADDR_SYSCTRLTOP_MODULE;
 #else
-struct NX_GPIO (*const pGPIOReg)[1] =
-  (struct NX_GPIO (*)[])PHY_BASEADDR_GPIO0_MODULE;
+struct NX_GPIO (*const pGPIOReg)[1] = (struct NX_GPIO (*)[])PHY_BASEADDR_GPIO0_MODULE;
 struct NX_ALIVE_RegisterSet * const pAlive =
   (struct NX_ALIVE_RegisterSet *)PHY_BASEADDR_SYSCTRLTOP_MODULE;
 #endif

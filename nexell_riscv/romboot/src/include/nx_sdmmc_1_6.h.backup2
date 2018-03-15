@@ -311,19 +311,19 @@ typedef enum
 // HOST_CTRL2_R
 typedef enum
 {
-  NX_SDMMC_HOST_CTRL2_UHS_MODE_SEL        =   7UL<<0,    //2:0        //UHS Mode/eMMC Speed Mode Select
-  NX_SDMMC_HOST_CTRL2_SIGNALING_EN        =   1UL<<3,    //3          //1.8V Signaling Enable
-  NX_SDMMC_HOST_CTRL2_DRV_STRENGTH_SEL    =   3UL<<4,    //5:4        //Driver Strength Select
-  NX_SDMMC_HOST_CTRL2_EXEC_TUNING         =   1UL<<6,    //6          //Execute Tuning
-  NX_SDMMC_HOST_CTRL2_SAMPLE_CLK_SEL      =   1UL<<7,    //7          //Sampling Clock Select
-  NX_SDMMC_HOST_CTRL2_UHS2_IF_ENABLE      =   1UL<<8,    //8          //UHS-II Interface Enable
-  NX_SDMMC_HOST_CTRL2_RSVD_9              =   1UL<<9,    //9          //Reserved
-  NX_SDMMC_HOST_CTRL2_ADMA2_LEN_MODE      =   1UL<<10,   //10         //ADMA2 Length Mode
-  NX_SDMMC_HOST_CTRL2_CMD23_ENABLE        =   1UL<<11,   //11         //CMD23 Enable
-  NX_SDMMC_HOST_CTRL2_HOST_VER4_ENABLE    =   1UL<<12,   //12         //Host Version 4 Enable
-  NX_SDMMC_HOST_CTRL2_ADDRESSING          =   1UL<<13,   //13         //64-bit Addressing, 0(FALSE):32 bits addressing, 1(TRUE):64 bits addressing
-  NX_SDMMC_HOST_CTRL2_ASYNC_INT_ENABLE    =   1UL<<14,   //14         //Asynchronous Interrupt Enable
-  NX_SDMMC_HOST_CTRL2_PRESET_VAL_ENABLE   =   1UL<<15,   //15         //Preset Value Enable
+  NX_SDMMC_HOST_CTRL2_UHS_MODE_SEL        =   7UL<<0,    //2:0   //UHS Mode/eMMC Speed Mode Select
+  NX_SDMMC_HOST_CTRL2_SIGNALING_EN        =   1UL<<3,    //3     //1.8V Signaling Enable
+  NX_SDMMC_HOST_CTRL2_DRV_STRENGTH_SEL    =   3UL<<4,    //5:4   //Driver Strength Select
+  NX_SDMMC_HOST_CTRL2_EXEC_TUNING         =   1UL<<6,    //6     //Execute Tuning
+  NX_SDMMC_HOST_CTRL2_SAMPLE_CLK_SEL      =   1UL<<7,    //7     //Sampling Clock Select
+  NX_SDMMC_HOST_CTRL2_UHS2_IF_ENABLE      =   1UL<<8,    //8     //UHS-II Interface Enable
+  NX_SDMMC_HOST_CTRL2_RSVD_9              =   1UL<<9,    //9     //Reserved
+  NX_SDMMC_HOST_CTRL2_ADMA2_LEN_MODE      =   1UL<<10,   //10    //ADMA2 Length Mode
+  NX_SDMMC_HOST_CTRL2_CMD23_ENABLE        =   1UL<<11,   //11    //CMD23 Enable
+  NX_SDMMC_HOST_CTRL2_HOST_VER4_ENABLE    =   1UL<<12,   //12    //Host Version 4 Enable
+  NX_SDMMC_HOST_CTRL2_ADDRESSING          =   1UL<<13,   //13    //64-bit Addressing, 0(FALSE):32 bits addressing, 1(TRUE):64 bits addressing
+  NX_SDMMC_HOST_CTRL2_ASYNC_INT_ENABLE    =   1UL<<14,   //14    //Asynchronous Interrupt Enable
+  NX_SDMMC_HOST_CTRL2_PRESET_VAL_ENABLE   =   1UL<<15,   //15    //Preset Value Enable
 } NX_SDMMC_HOST_CTRL2_R;
 
 //CAPABILITIES1_R

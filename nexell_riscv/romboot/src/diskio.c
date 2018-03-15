@@ -21,7 +21,7 @@
 #include "include/nx_type.h"
 #include "diskio.h"
 
-#include "iSDMMCBOOT.h"
+#include "iSDHCBOOT.h"
 
 //#include "libarm.h"
 #include "fnptr.h"
@@ -90,7 +90,7 @@ DRESULT disk_read (
 {
 	NXBL0FN *pbl0fn = Getbl0fnPtr();
 	CBOOL	Result;
-	SDMMCBOOTSTATUS *pSDXCBootStatus = (SDMMCBOOTSTATUS *)diskhandle;
+	SDXCBOOTSTATUS *pSDXCBootStatus = (SDXCBOOTSTATUS *)diskhandle;
 
 	switch (drv) {
 	case MMC:

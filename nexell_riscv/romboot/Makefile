@@ -47,7 +47,7 @@ endif
 SYS_OBJS	+=	nx_clock.o
 SYS_OBJS	+= 	iROMBOOT.o libplat.o debug.o
 
-SYS_OBJS	+= 	iSDMMCBOOT.o
+SYS_OBJS	+= 	iSDHCBOOT.o
 SYS_OBJS	+= 	iUSBBOOT.o
 SYS_OBJS	+= 	diskio.o
 
