@@ -71,7 +71,7 @@ unsigned int iROMBOOT(unsigned int OrgBootOption)
 /* 		0 << EXNOBOOTMSG | 2 << SELSDPORT | UARTBOOT << BOOTMODE; */
 /* #endif */
     unsigned int option = OrgBootOption & 0x1FF;
-    unsigned int soption;
+    unsigned int soption = 0;
 
     unsigned int eBootOption = pECIDReg->BOOT_CFG;
 
@@ -236,10 +236,15 @@ lastboot:
 		goto lastboot;
 #else
     {
-        CBOOL result = CFALSE;
+        int result;
+        struct nx_bootinfo *pbi = (struct nx_bootinfo *)BASEADDR_SRAM;
         result = pbl0fn->iSDXCBOOT(option);
-	while (1);
-	return 0;
+        //	while (1);
+        __asm__ __volatile__ ("fence.i" : : : "memory");
+        pbl0fn->_dprintf("Launch to 0x%x\r\n", pbi->StartAddr);
+        //		void (*plaunch)(void) = (void (*)(void))pbi->StartAddr;
+        //		plaunch();
+        return pbi->StartAddr;
     }
 #endif
 }

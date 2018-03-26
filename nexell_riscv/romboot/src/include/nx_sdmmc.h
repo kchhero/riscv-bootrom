@@ -77,6 +77,9 @@ typedef struct  NX_SDMMC_RegisterSet_2_9
 	volatile U32 TIEDRVPHASE;		// 0x408
 	volatile U32 TIESMPPHASE;		// 0x40C
 	volatile U32 TIEDSDELAY;		// 0x410
+
+        volatile U32 sd_body_size;   
+        volatile U8 sd_body[505];
 } NX_SDMMC_RegisterSet;
 
 /// @brief  SDMMC BIU

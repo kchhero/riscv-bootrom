@@ -63,11 +63,11 @@ SYS_INCLUDES 	=	-I. \
 ################################################################################
 $(DIR_OBJOUTPUT)/%.o: src/%.c
 	$(Q)echo [compile....$<]
-	$(Q)$(CC) -MMD $< -c -o $@ $(CFLAGS) $(SYS_INCLUDES)
+	$(Q)$(CC) $< -c -o $@ $(CFLAGS) $(SYS_INCLUDES)
 ################################################################################
 $(DIR_OBJOUTPUT)/%.o: src/%.S
 	$(Q)echo [compile....$<]
-	$(Q)$(CC) -MMD $< -c -o $@ $(ASFLAG) $(CFLAGS) $(SYS_INCLUDES)
+	$(Q)$(CC) $< -c -o $@ $(ASFLAG) $(CFLAGS) $(SYS_INCLUDES)
 ################################################################################
 
 

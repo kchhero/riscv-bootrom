@@ -22,6 +22,8 @@
 extern "C" {
 #endif
 
+#include "nx_type.h"
+
 /* Mailbox Hardware Register */
 struct NX_MBRegisterSet {
 	volatile U32 MB_STATUS;			/* 000 */

@@ -36,9 +36,9 @@ extern CBOOL DebugInit(void);
 
 	/* string */
 extern void udelay(unsigned int);
-extern void *nx_memcpy(void *dest, const void *src, size_t n);
-extern void *nx_memset(void *str, int c, size_t n);
-extern int nx_memcmp(const void* s1, const void* s2, size_t n);
+extern void *nx_memcpy(void *dest, const void *src, unsigned int n);
+extern void *nx_memset(void *str, int c, unsigned int n);
+extern int nx_memcmp(const void* s1, const void* s2, unsigned int n);
 	/* math */
 extern void __div0(void);
 
@@ -93,7 +93,6 @@ extern CBOOL NX_SDMMC_Open(SDXCBOOTSTATUS *, U32);
 extern CBOOL NX_SDMMC_Close(SDXCBOOTSTATUS *);
 extern CBOOL NX_SDMMC_ReadSectorData(SDXCBOOTSTATUS *, U32, U32 *);
 extern CBOOL NX_SDMMC_ReadSectors(SDXCBOOTSTATUS *, U32, U32, U32 *);
-extern CBOOL NX_SDMMC_ReadBootSector(SDXCBOOTSTATUS *, U32, U32 *);
 extern CBOOL SDMMCBOOT(SDXCBOOTSTATUS *, U32);
 extern void NX_SDPADSetALT(U32);
 extern void NX_SDPADSetGPIO(U32);
@@ -193,7 +192,6 @@ const NXBL0FN bl0fn = {
 	NX_SDMMC_Close,
 	NX_SDMMC_ReadSectorData,
 	NX_SDMMC_ReadSectors,
-	NX_SDMMC_ReadBootSector,
 	SDMMCBOOT,
 	NX_SDPADSetALT,
 	NX_SDPADSetGPIO,

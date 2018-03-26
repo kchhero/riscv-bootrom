@@ -2,8 +2,8 @@
 Memory Configuration
 
 Name             Origin             Length             Attributes
-debug_ctrl       0x0000000000000000 0x0000000000000100 xrw
-maskrom_mem      0x0000000000001000 0x0000000000020000 xr
+debug_ctrl       0x0000000000000000 0x0000000000001000 xrw
+maskrom_mem      0x0000000000001000 0x0000000000010000 xr
 clint_ctrl       0x0000000002000000 0x0000000000010000 rw
 plic_ctrl        0x000000000c000000 0x0000000004000000 rw
 gpio_ctrl        0x0000000010012000 0x0000000000001000 rw
@@ -12,7 +12,7 @@ spi_ctrl         0x0000000010014000 0x0000000000001000 rw
 sdmmc0_ctrl      0x0000000026080000 0x0000000000010000 rw
 sdmmc1_ctrl      0x0000000026090000 0x0000000000010000 rw
 sdmmc2_ctrl      0x00000000260a0000 0x0000000000010000 rw
-memory_mem       0x0000000080000000 0x0000000040000000 xrw
+memory_mem       0x000000008fff0000 0x0000000000010000 xrw
 *default*        0x0000000000000000 0xffffffffffffffff
 
 Linker script and memory map
@@ -30,236 +30,235 @@ LOAD obj/fnptr.o
                 [!provide]                        PROVIDE (_ram, ORIGIN (memory_mem))
                 [!provide]                        PROVIDE (_ram_end, (_ram + LENGTH (memory_mem)))
 
-.text           0x0000000000001000     0x1ada
+.text           0x0000000000001000     0x2370
                 [!provide]                        PROVIDE (_ftext, .)
  *(.text.init)
- .text.init     0x0000000000001000       0x94 obj/head.o
+ .text.init     0x0000000000001000       0xa0 obj/head.o
                 0x0000000000001000                _prog_start
  *(.text.unlikely .text.unlikely.*)
  *(.text .text.* .gnu.linkonce.t.*)
- .text          0x0000000000001094        0x0 obj/head.o
- .text          0x0000000000001094      0x15e obj/kprintf.o
-                0x0000000000001094                kputs
-                0x00000000000010d8                _dprintf
- .text          0x00000000000011f2      0x2ba obj/nx_clock.o
-                0x00000000000011f2                NX_PLL_GetFrequency
-                0x0000000000001262                setcpuclock
-                0x0000000000001324                setsystemclock
-                0x00000000000013ca                setdeviceclock
- .text          0x00000000000014ac       0x78 obj/iROMBOOT.o
-                0x00000000000014ac                iROMBOOT
- .text          0x0000000000001524      0x2da obj/libplat.o
-                0x0000000000001524                udelay
-                0x0000000000001548                GPIOReleasePAD
-                0x0000000000001578                GPIOSetAltFunction
-                0x00000000000015c4                GPIOSetDrvSt
-                0x000000000000161e                GPIOSetPullup
-                0x0000000000001670                setpad
-                0x000000000000177c                nx_memcpy
-                0x000000000000179e                nx_memset
-                0x00000000000017be                nx_memcmp
-                0x00000000000017e8                __div0
- .text          0x00000000000017fe       0x4e obj/debug.o
-                0x00000000000017fe                DebugInit
-                0x000000000000182c                DebugPutch
-                0x000000000000183c                DebugIsBusy
- .text          0x000000000000184c      0x88c obj/iSDHCBOOT.o
-                0x000000000000184c                NX_SDMMC_Init
-                0x000000000000195a                NX_SDMMC_SetClock
-                0x00000000000019a6                NX_SDMMC_SendCommandInternal
-                0x00000000000019ea                NX_SDMMC_SendStatus
-                0x0000000000001a30                NX_SDMMC_SendCommand
-                0x0000000000001a4c                NX_SDMMC_SendAppCommand
-                0x0000000000001a68                NX_SDMMC_IdentifyCard
-                0x0000000000001ac8                NX_SDMMC_SelectCard
-                0x0000000000001ad8                NX_SDMMC_SetCardDetectPullUp
-                0x0000000000001b02                NX_SDMMC_SetBusWidth
-                0x0000000000001b46                NX_SDMMC_SetBlockLength
-                0x0000000000001bbc                NX_SDMMC_Terminate
-                0x0000000000001bfa                NX_SDMMC_Open
-                0x0000000000001ce6                NX_SDMMC_Close
-                0x0000000000001d2c                NX_SDMMC_ReadSectorData
-                0x0000000000001d70                NX_SDMMC_ReadSectors
-                0x0000000000001dc0                NX_SDMMC_ReadBootSector
-                0x0000000000001e04                SDMMCBOOT
-                0x0000000000001f60                NX_SDPADSetALT
-                0x0000000000001fca                NX_SDPADSetGPIO
-                0x000000000000201c                iSDXCBOOT
- .text          0x00000000000020d8      0x946 obj/iUSBBOOT.o
-                0x00000000000020d8                nx_usb_write_in_fifo
-                0x0000000000002116                nx_usb_read_out_fifo
-                0x0000000000002156                nx_usb_ep0_int_hndlr
-                0x000000000000226a                nx_usb_transfer_ep0
-                0x000000000000237c                nx_usb_int_bulkin
-                0x0000000000002438                nx_usb_int_bulkout
-                0x000000000000243a                nx_usb_reset
-                0x00000000000024cc                nx_usb_set_init
-                0x0000000000002606                nx_usb_pkt_receive
-                0x0000000000002678                nx_usb_transfer
-                0x0000000000002746                nx_udc_int_hndlr
-                0x00000000000027d2                iUSBBOOT
- .text          0x0000000000002a1e       0x50 obj/diskio.o
-                0x0000000000002a1e                disk_initialize
-                0x0000000000002a24                disk_status
-                0x0000000000002a28                disk_read
- .text          0x0000000000002a6e       0x2c obj/fnptr.o
-                0x0000000000002a6e                Getbl0fnPtr
-                0x0000000000002a78                delay
+ .text          0x00000000000010a0        0x0 obj/head.o
+ .text          0x00000000000010a0      0x15e obj/kprintf.o
+                0x00000000000010a0                kputs
+                0x00000000000010e4                _dprintf
+ .text          0x00000000000011fe      0x2ba obj/nx_clock.o
+                0x00000000000011fe                NX_PLL_GetFrequency
+                0x000000000000126e                setcpuclock
+                0x0000000000001330                setsystemclock
+                0x00000000000013d6                setdeviceclock
+ .text          0x00000000000014b8       0xce obj/iROMBOOT.o
+                0x00000000000014b8                iROMBOOT
+ .text          0x0000000000001586      0x2da obj/libplat.o
+                0x0000000000001586                udelay
+                0x00000000000015aa                GPIOReleasePAD
+                0x00000000000015da                GPIOSetAltFunction
+                0x0000000000001626                GPIOSetDrvSt
+                0x0000000000001680                GPIOSetPullup
+                0x00000000000016d2                setpad
+                0x00000000000017de                nx_memcpy
+                0x0000000000001800                nx_memset
+                0x0000000000001820                nx_memcmp
+                0x000000000000184a                __div0
+ .text          0x0000000000001860       0x4e obj/debug.o
+                0x0000000000001860                DebugInit
+                0x000000000000188e                DebugPutch
+                0x000000000000189e                DebugIsBusy
+ .text          0x00000000000018ae     0x10c0 obj/iSDHCBOOT.o
+                0x00000000000018ae                NX_SDMMC_SetClock
+                0x000000000000198c                NX_SDMMC_SendCommandInternal
+                0x0000000000001aa8                NX_SDMMC_SendStatus
+                0x0000000000001d10                NX_SDMMC_SendCommand
+                0x0000000000001d72                NX_SDMMC_SendAppCommand
+                0x0000000000001df0                NX_SDMMC_IdentifyCard
+                0x0000000000001ff8                NX_SDMMC_SelectCard
+                0x0000000000002064                NX_SDMMC_SetCardDetectPullUp
+                0x00000000000020d8                NX_SDMMC_SetBusWidth
+                0x00000000000021ba                NX_SDMMC_SetBlockLength
+                0x0000000000002252                NX_SDMMC_Init
+                0x000000000000231c                NX_SDMMC_Terminate
+                0x00000000000023a4                NX_SDMMC_Open
+                0x00000000000023c8                NX_SDMMC_Close
+                0x0000000000002406                NX_SDMMC_ReadSectorData
+                0x00000000000025a8                NX_SDMMC_ReadSectors
+                0x00000000000026e2                SDMMCBOOT
+                0x0000000000002842                NX_SDPADSetALT
+                0x0000000000002890                NX_SDPADSetGPIO
+                0x00000000000028de                iSDXCBOOT
+ .text          0x000000000000296e      0x946 obj/iUSBBOOT.o
+                0x000000000000296e                nx_usb_write_in_fifo
+                0x00000000000029ac                nx_usb_read_out_fifo
+                0x00000000000029ec                nx_usb_ep0_int_hndlr
+                0x0000000000002b00                nx_usb_transfer_ep0
+                0x0000000000002c12                nx_usb_int_bulkin
+                0x0000000000002cce                nx_usb_int_bulkout
+                0x0000000000002cd0                nx_usb_reset
+                0x0000000000002d62                nx_usb_set_init
+                0x0000000000002e9c                nx_usb_pkt_receive
+                0x0000000000002f0e                nx_usb_transfer
+                0x0000000000002fdc                nx_udc_int_hndlr
+                0x0000000000003068                iUSBBOOT
+ .text          0x00000000000032b4       0x50 obj/diskio.o
+                0x00000000000032b4                disk_initialize
+                0x00000000000032ba                disk_status
+                0x00000000000032be                disk_read
+ .text          0x0000000000003304       0x2c obj/fnptr.o
+                0x0000000000003304                Getbl0fnPtr
+                0x000000000000330e                delay
                 [!provide]                        PROVIDE (_etext, .)
-                0x0000000000002ada                . = (. + 0x40)
- *fill*         0x0000000000002a9a       0x40 
+                0x0000000000003370                . = (. + 0x40)
+ *fill*         0x0000000000003330       0x40 
 
-.eh_frame       0x0000000000002ae0        0x0
+.eh_frame       0x0000000000003370        0x0
  *(.eh_frame)
 
-.rodata         0x0000000000002ae0      0xcb8
+.rodata         0x0000000000003370     0x1028
  *(.rodata .rodata.* .gnu.linkonce.r.*)
- .rodata        0x0000000000002ae0        0x4 obj/head.o
- .rodata        0x0000000000002ae4       0x58 obj/kprintf.o
- *fill*         0x0000000000002b3c        0x4 
- .rodata        0x0000000000002b40       0x50 obj/nx_clock.o
-                0x0000000000002b40                gppll
-                0x0000000000002b68                cpuclkdiv
-                0x0000000000002b80                pllpms
- .rodata        0x0000000000002b90       0x1c obj/iROMBOOT.o
-                0x0000000000002b90                iv
-                0x0000000000002ba0                sssclk
- *fill*         0x0000000000002bac        0x4 
+ .rodata        0x0000000000003370        0x4 obj/head.o
+ .rodata        0x0000000000003374       0x58 obj/kprintf.o
+ *fill*         0x00000000000033cc        0x4 
+ .rodata        0x00000000000033d0       0x50 obj/nx_clock.o
+                0x00000000000033d0                gppll
+                0x00000000000033f8                cpuclkdiv
+                0x0000000000003410                pllpms
+ .rodata        0x0000000000003420       0x2c obj/iROMBOOT.o
+                0x0000000000003430                iv
+                0x0000000000003440                sssclk
+ *fill*         0x000000000000344c        0x4 
  .rodata.str1.8
-                0x0000000000002bb0      0x11e obj/iROMBOOT.o
- *fill*         0x0000000000002cce        0x2 
+                0x0000000000003450       0x39 obj/iROMBOOT.o
+ *fill*         0x0000000000003489        0x7 
  .rodata.str1.8
-                0x0000000000002cd0       0x18 obj/libplat.o
- .rodata        0x0000000000002ce8        0xc obj/debug.o
-                0x0000000000002ce8                dbguart
- *fill*         0x0000000000002cf4        0x4 
- .rodata        0x0000000000002cf8       0xfe obj/iSDHCBOOT.o
-                0x0000000000002cf8                pgSDXCReg
-                0x0000000000002d38                sdmmcpad
-                0x0000000000002dc0                sdmmcclk
- *fill*         0x0000000000002df6        0x2 
+                0x0000000000003490       0x18 obj/libplat.o
+ .rodata        0x00000000000034a8        0xc obj/debug.o
+                0x00000000000034a8                dbguart
+ *fill*         0x00000000000034b4        0x4 
+ .rodata        0x00000000000034b8      0x2a2 obj/iSDHCBOOT.o
+                0x00000000000034e0                pgSDXCReg
+                0x0000000000003608                sdmmcclk
+                0x00000000000036b8                sdmmcpad
+ *fill*         0x000000000000375a        0x6 
  .rodata.str1.8
-                0x0000000000002df8      0x6be obj/iSDHCBOOT.o
- *fill*         0x00000000000034b6        0x2 
- .rodata        0x00000000000034b8       0xaa obj/iUSBBOOT.o
-                0x00000000000034e8                usbclk
-                0x00000000000034fc                gs_ConfigDescHS
-                0x000000000000351c                gs_ConfigDescFS
-                0x000000000000353c                gs_DevDescHS
-                0x0000000000003550                gs_DevDescFS
- *fill*         0x0000000000003562        0x6 
+                0x0000000000003760      0x959 obj/iSDHCBOOT.o
+                                        0x961 (size before relaxing)
+ *fill*         0x00000000000040b9        0x7 
+ .rodata        0x00000000000040c0       0xaa obj/iUSBBOOT.o
+                0x00000000000040f0                usbclk
+                0x0000000000004104                gs_ConfigDescHS
+                0x0000000000004124                gs_ConfigDescFS
+                0x0000000000004144                gs_DevDescHS
+                0x0000000000004158                gs_DevDescFS
+ *fill*         0x000000000000416a        0x6 
  .rodata.str1.8
-                0x0000000000003568       0x68 obj/iUSBBOOT.o
+                0x0000000000004170       0x68 obj/iUSBBOOT.o
                                          0x67 (size before relaxing)
- .rodata        0x00000000000035d0      0x1c8 obj/fnptr.o
-                0x00000000000035d0                bl0fn
+ .rodata        0x00000000000041d8      0x1c0 obj/fnptr.o
+                0x00000000000041d8                bl0fn
 
-.rela.dyn       0x0000000000003798        0x0
- .rela.text.init
-                0x0000000000003798        0x0 obj/head.o
- .rela.text     0x0000000000003798        0x0 obj/head.o
-
-.srodata        0x0000000000003798        0x0
+.srodata        0x0000000000004398        0x0
  *(.srodata.cst16)
  *(.srodata.cst8)
  *(.srodata.cst4)
  *(.srodata.cst2)
  *(.srodata.*)
 
-.data           0x0000000000003798        0x0
+.data           0x0000000000004398      0x1f9
  *(.data .data.* .gnu.linkonce.d.*)
- .data          0x0000000000003798        0x0 obj/head.o
- .data          0x0000000000003798        0x0 obj/kprintf.o
- .data          0x0000000000003798        0x0 obj/nx_clock.o
- .data          0x0000000000003798        0x0 obj/iROMBOOT.o
- .data          0x0000000000003798        0x0 obj/libplat.o
- .data          0x0000000000003798        0x0 obj/debug.o
- .data          0x0000000000003798        0x0 obj/iSDHCBOOT.o
- .data          0x0000000000003798        0x0 obj/iUSBBOOT.o
- .data          0x0000000000003798        0x0 obj/diskio.o
- .data          0x0000000000003798        0x0 obj/fnptr.o
+ .data          0x0000000000004398        0x0 obj/head.o
+ .data          0x0000000000004398        0x0 obj/kprintf.o
+ .data          0x0000000000004398        0x0 obj/nx_clock.o
+ .data          0x0000000000004398        0x0 obj/iROMBOOT.o
+ .data          0x0000000000004398        0x0 obj/libplat.o
+ .data          0x0000000000004398        0x0 obj/debug.o
+ .data          0x0000000000004398      0x1f9 obj/iSDHCBOOT.o
+                0x0000000000004398                sd_body
+ .data          0x0000000000004591        0x0 obj/iUSBBOOT.o
+ .data          0x0000000000004591        0x0 obj/diskio.o
+ .data          0x0000000000004591        0x0 obj/fnptr.o
  *(.tohost)
 
-.sdata          0x0000000000003798       0x40
+.sdata          0x0000000000004598       0x48
  *(.sdata .sdata.* .gnu.linkonce.s.*)
- .sdata         0x0000000000003798       0x18 obj/iROMBOOT.o
-                0x0000000000003798                pbootkeyhash
-                0x00000000000037a0                pbm
-                0x00000000000037a8                pECIDReg
- .sdata         0x00000000000037b0       0x10 obj/libplat.o
-                0x00000000000037b0                pAlive
-                0x00000000000037b8                pGPIOReg
- .sdata         0x00000000000037c0       0x18 obj/iUSBBOOT.o
-                0x00000000000037c0                pCMUUSB
-                0x00000000000037c8                pPBI
-                0x00000000000037d0                pUOReg
+ .sdata         0x0000000000004598       0x18 obj/iROMBOOT.o
+                0x0000000000004598                pbootkeyhash
+                0x00000000000045a0                pbm
+                0x00000000000045a8                pECIDReg
+ .sdata         0x00000000000045b0       0x10 obj/libplat.o
+                0x00000000000045b0                pAlive
+                0x00000000000045b8                pGPIOReg
+ .sdata         0x00000000000045c0        0x4 obj/iSDHCBOOT.o
+                0x00000000000045c0                sd_body_size
+ *fill*         0x00000000000045c4        0x4 
+ .sdata         0x00000000000045c8       0x18 obj/iUSBBOOT.o
+                0x00000000000045c8                pCMUUSB
+                0x00000000000045d0                pPBI
+                0x00000000000045d8                pUOReg
                 [!provide]                        PROVIDE (_data, ADDR (.rodata))
                 [!provide]                        PROVIDE (_data_lma, LOADADDR (.rodata))
                 [!provide]                        PROVIDE (_edata, .)
 
-.bss            0x0000000080000000        0x8
+.bss            0x000000008fff0000        0x8
                 [!provide]                        PROVIDE (_fbss, .)
                 [!provide]                        PROVIDE (__global_pointer$, (. + 0x7c0))
  *(.sbss .sbss.* .gnu.linkonce.sb.*)
- .sbss          0x0000000080000000        0x4 obj/debug.o
-                0x0000000080000000                test
+ .sbss          0x000000008fff0000        0x4 obj/debug.o
+                0x000000008fff0000                test
  *(.bss .bss.* .gnu.linkonce.b.*)
- .bss           0x0000000080000004        0x0 obj/head.o
- .bss           0x0000000080000004        0x0 obj/kprintf.o
- .bss           0x0000000080000004        0x0 obj/nx_clock.o
- .bss           0x0000000080000004        0x0 obj/iROMBOOT.o
- .bss           0x0000000080000004        0x0 obj/libplat.o
- .bss           0x0000000080000004        0x0 obj/debug.o
- .bss           0x0000000080000004        0x0 obj/iSDHCBOOT.o
- .bss           0x0000000080000004        0x0 obj/iUSBBOOT.o
- .bss           0x0000000080000004        0x0 obj/diskio.o
- .bss           0x0000000080000004        0x0 obj/fnptr.o
-                0x0000000080000008                . = ALIGN (0x8)
- *fill*         0x0000000080000004        0x4 
-                0x0000000080000008                PROVIDE (_ebss, .)
+ .bss           0x000000008fff0004        0x0 obj/head.o
+ .bss           0x000000008fff0004        0x0 obj/kprintf.o
+ .bss           0x000000008fff0004        0x0 obj/nx_clock.o
+ .bss           0x000000008fff0004        0x0 obj/iROMBOOT.o
+ .bss           0x000000008fff0004        0x0 obj/libplat.o
+ .bss           0x000000008fff0004        0x0 obj/debug.o
+ .bss           0x000000008fff0004        0x0 obj/iSDHCBOOT.o
+ .bss           0x000000008fff0004        0x0 obj/iUSBBOOT.o
+ .bss           0x000000008fff0004        0x0 obj/diskio.o
+ .bss           0x000000008fff0004        0x0 obj/fnptr.o
+                0x000000008fff0008                . = ALIGN (0x8)
+ *fill*         0x000000008fff0004        0x4 
+                0x000000008fff0008                PROVIDE (_ebss, .)
                 [!provide]                        PROVIDE (_end, .)
-                0x0000000080100008                PROVIDE (_sp, ALIGN ((MIN ((ORIGIN (memory_mem) + LENGTH (memory_mem)), (_ebss + 0x100000)) - 0x7), 0x8))
+                0x0000000090000000                PROVIDE (_sp, ALIGN ((MIN ((ORIGIN (memory_mem) + LENGTH (memory_mem)), (_ebss + 0x100000)) - 0x7), 0x8))
                 [!provide]                        PROVIDE (_heap_end, (_sp - 0x800))
 
-.stack          0x0000000080000008        0x0
+.stack          0x000000008fff0008        0x0
                 0x0000000000000001                ASSERT ((_sp >= (_ebss + 0x1000)), Error: No room left for the heap and stack)
 OUTPUT(build/swallow.elf elf64-littleriscv)
 
-.debug_line     0x0000000000000000     0x258a
+.debug_line     0x0000000000000000     0x2d58
  .debug_line    0x0000000000000000       0x7d obj/head.o
  .debug_line    0x000000000000007d      0x2ee obj/kprintf.o
  .debug_line    0x000000000000036b      0x3aa obj/nx_clock.o
- .debug_line    0x0000000000000715      0x1ba obj/iROMBOOT.o
- .debug_line    0x00000000000008cf      0x43c obj/libplat.o
- .debug_line    0x0000000000000d0b      0x1e1 obj/debug.o
- .debug_line    0x0000000000000eec      0x881 obj/iSDHCBOOT.o
- .debug_line    0x000000000000176d      0xb05 obj/iUSBBOOT.o
- .debug_line    0x0000000000002272      0x19a obj/diskio.o
- .debug_line    0x000000000000240c      0x17e obj/fnptr.o
+ .debug_line    0x0000000000000715      0x248 obj/iROMBOOT.o
+ .debug_line    0x000000000000095d      0x43c obj/libplat.o
+ .debug_line    0x0000000000000d99      0x1e1 obj/debug.o
+ .debug_line    0x0000000000000f7a      0xfc1 obj/iSDHCBOOT.o
+ .debug_line    0x0000000000001f3b      0xb05 obj/iUSBBOOT.o
+ .debug_line    0x0000000000002a40      0x19a obj/diskio.o
+ .debug_line    0x0000000000002bda      0x17e obj/fnptr.o
 
-.debug_info     0x0000000000000000     0xaacd
+.debug_info     0x0000000000000000     0xb7b5
  .debug_info    0x0000000000000000       0x22 obj/head.o
  .debug_info    0x0000000000000022      0x3fc obj/kprintf.o
  .debug_info    0x000000000000041e      0x6b3 obj/nx_clock.o
- .debug_info    0x0000000000000ad1     0x1106 obj/iROMBOOT.o
- .debug_info    0x0000000000001bd7     0x13fe obj/libplat.o
- .debug_info    0x0000000000002fd5     0x13a8 obj/debug.o
- .debug_info    0x000000000000437d     0x29a4 obj/iSDHCBOOT.o
- .debug_info    0x0000000000006d21     0x2537 obj/iUSBBOOT.o
- .debug_info    0x0000000000009258      0xc71 obj/diskio.o
- .debug_info    0x0000000000009ec9      0xc04 obj/fnptr.o
+ .debug_info    0x0000000000000ad1     0x15a5 obj/iROMBOOT.o
+ .debug_info    0x0000000000002076     0x13db obj/libplat.o
+ .debug_info    0x0000000000003451     0x1385 obj/debug.o
+ .debug_info    0x00000000000047d6     0x329c obj/iSDHCBOOT.o
+ .debug_info    0x0000000000007a72     0x2514 obj/iUSBBOOT.o
+ .debug_info    0x0000000000009f86      0xc4e obj/diskio.o
+ .debug_info    0x000000000000abd4      0xbe1 obj/fnptr.o
 
-.debug_abbrev   0x0000000000000000     0x1ac2
+.debug_abbrev   0x0000000000000000     0x1b08
  .debug_abbrev  0x0000000000000000       0x12 obj/head.o
  .debug_abbrev  0x0000000000000012      0x16e obj/kprintf.o
  .debug_abbrev  0x0000000000000180      0x160 obj/nx_clock.o
- .debug_abbrev  0x00000000000002e0      0x2fc obj/iROMBOOT.o
- .debug_abbrev  0x00000000000005dc      0x3e4 obj/libplat.o
- .debug_abbrev  0x00000000000009c0      0x304 obj/debug.o
- .debug_abbrev  0x0000000000000cc4      0x450 obj/iSDHCBOOT.o
- .debug_abbrev  0x0000000000001114      0x480 obj/iUSBBOOT.o
- .debug_abbrev  0x0000000000001594      0x2ac obj/diskio.o
- .debug_abbrev  0x0000000000001840      0x282 obj/fnptr.o
+ .debug_abbrev  0x00000000000002e0      0x371 obj/iROMBOOT.o
+ .debug_abbrev  0x0000000000000651      0x3e4 obj/libplat.o
+ .debug_abbrev  0x0000000000000a35      0x304 obj/debug.o
+ .debug_abbrev  0x0000000000000d39      0x421 obj/iSDHCBOOT.o
+ .debug_abbrev  0x000000000000115a      0x480 obj/iUSBBOOT.o
+ .debug_abbrev  0x00000000000015da      0x2ac obj/diskio.o
+ .debug_abbrev  0x0000000000001886      0x282 obj/fnptr.o
 
 .debug_aranges  0x0000000000000000      0x1f0
  .debug_aranges
@@ -283,43 +282,42 @@ OUTPUT(build/swallow.elf elf64-littleriscv)
  .debug_aranges
                 0x00000000000001c0       0x30 obj/fnptr.o
 
-.debug_str      0x0000000000000000     0x1e48
- .debug_str     0x0000000000000000       0x54 obj/head.o
- .debug_str     0x0000000000000054      0x124 obj/kprintf.o
+.debug_str      0x0000000000000000     0x1e64
+ .debug_str     0x0000000000000000       0x57 obj/head.o
+ .debug_str     0x0000000000000057      0x124 obj/kprintf.o
                                         0x1a3 (size before relaxing)
- .debug_str     0x0000000000000178      0x2f9 obj/nx_clock.o
+ .debug_str     0x000000000000017b      0x2f9 obj/nx_clock.o
                                         0x41a (size before relaxing)
- .debug_str     0x0000000000000471      0x80b obj/iROMBOOT.o
-                                        0xaeb (size before relaxing)
- .debug_str     0x0000000000000c7c      0x3ff obj/libplat.o
-                                        0xc5a (size before relaxing)
- .debug_str     0x000000000000107b      0x2ee obj/debug.o
-                                        0xca0 (size before relaxing)
- .debug_str     0x0000000000001369      0x2a1 obj/iSDHCBOOT.o
-                                        0xf23 (size before relaxing)
- .debug_str     0x000000000000160a      0x7a7 obj/iUSBBOOT.o
-                                       0x160e (size before relaxing)
- .debug_str     0x0000000000001db1       0x8b obj/diskio.o
-                                        0x8fb (size before relaxing)
- .debug_str     0x0000000000001e3c        0xc obj/fnptr.o
-                                        0x869 (size before relaxing)
+ .debug_str     0x0000000000000474      0xa35 obj/iROMBOOT.o
+                                        0xd96 (size before relaxing)
+ .debug_str     0x0000000000000ea9      0x3ec obj/libplat.o
+                                        0xc32 (size before relaxing)
+ .debug_str     0x0000000000001295       0xda obj/debug.o
+                                        0xc78 (size before relaxing)
+ .debug_str     0x000000000000136f      0x2b1 obj/iSDHCBOOT.o
+                                        0xf20 (size before relaxing)
+ .debug_str     0x0000000000001620      0x7a7 obj/iUSBBOOT.o
+                                       0x15e6 (size before relaxing)
+ .debug_str     0x0000000000001dc7       0x91 obj/diskio.o
+                                        0x8d3 (size before relaxing)
+ .debug_str     0x0000000000001e58        0xc obj/fnptr.o
+                                        0x841 (size before relaxing)
 
-.debug_ranges   0x0000000000000000      0x1e0
+.debug_ranges   0x0000000000000000      0x1c0
  .debug_ranges  0x0000000000000000       0x40 obj/head.o
  .debug_ranges  0x0000000000000040       0xa0 obj/kprintf.o
  .debug_ranges  0x00000000000000e0       0x30 obj/nx_clock.o
- .debug_ranges  0x0000000000000110       0x20 obj/iROMBOOT.o
- .debug_ranges  0x0000000000000130       0xb0 obj/libplat.o
+ .debug_ranges  0x0000000000000110       0xb0 obj/libplat.o
 
-.debug_loc      0x0000000000000000     0x34aa
+.debug_loc      0x0000000000000000     0x3beb
  .debug_loc     0x0000000000000000      0x4b1 obj/kprintf.o
  .debug_loc     0x00000000000004b1      0x54f obj/nx_clock.o
- .debug_loc     0x0000000000000a00       0x37 obj/iROMBOOT.o
- .debug_loc     0x0000000000000a37      0x8fb obj/libplat.o
- .debug_loc     0x0000000000001332       0x5c obj/debug.o
- .debug_loc     0x000000000000138e     0x12ad obj/iSDHCBOOT.o
- .debug_loc     0x000000000000263b      0xc28 obj/iUSBBOOT.o
- .debug_loc     0x0000000000003263      0x247 obj/diskio.o
+ .debug_loc     0x0000000000000a00      0x209 obj/iROMBOOT.o
+ .debug_loc     0x0000000000000c09      0x8fb obj/libplat.o
+ .debug_loc     0x0000000000001504       0x5c obj/debug.o
+ .debug_loc     0x0000000000001560     0x181c obj/iSDHCBOOT.o
+ .debug_loc     0x0000000000002d7c      0xc28 obj/iUSBBOOT.o
+ .debug_loc     0x00000000000039a4      0x247 obj/diskio.o
 
 .comment        0x0000000000000000       0x11
  .comment       0x0000000000000000       0x11 obj/kprintf.o
@@ -333,16 +331,16 @@ OUTPUT(build/swallow.elf elf64-littleriscv)
  .comment       0x0000000000000011       0x12 obj/diskio.o
  .comment       0x0000000000000011       0x12 obj/fnptr.o
 
-.debug_frame    0x0000000000000000      0x990
+.debug_frame    0x0000000000000000      0xa40
  .debug_frame   0x0000000000000000       0x50 obj/kprintf.o
  .debug_frame   0x0000000000000050       0x70 obj/nx_clock.o
- .debug_frame   0x00000000000000c0       0x30 obj/iROMBOOT.o
- .debug_frame   0x00000000000000f0      0x140 obj/libplat.o
- .debug_frame   0x0000000000000230       0x58 obj/debug.o
- .debug_frame   0x0000000000000288      0x3f8 obj/iSDHCBOOT.o
- .debug_frame   0x0000000000000680      0x248 obj/iUSBBOOT.o
- .debug_frame   0x00000000000008c8       0x80 obj/diskio.o
- .debug_frame   0x0000000000000948       0x48 obj/fnptr.o
+ .debug_frame   0x00000000000000c0       0x50 obj/iROMBOOT.o
+ .debug_frame   0x0000000000000110      0x140 obj/libplat.o
+ .debug_frame   0x0000000000000250       0x58 obj/debug.o
+ .debug_frame   0x00000000000002a8      0x488 obj/iSDHCBOOT.o
+ .debug_frame   0x0000000000000730      0x248 obj/iUSBBOOT.o
+ .debug_frame   0x0000000000000978       0x80 obj/diskio.o
+ .debug_frame   0x00000000000009f8       0x48 obj/fnptr.o
 
 Cross Reference Table
 
@@ -364,6 +362,7 @@ Getbl0fnPtr                                       obj/fnptr.o
                                                   obj/iUSBBOOT.o
                                                   obj/iSDHCBOOT.o
                                                   obj/libplat.o
+                                                  obj/iROMBOOT.o
 NX_PLL_GetFrequency                               obj/nx_clock.o
 NX_SDMMC_Close                                    obj/iSDHCBOOT.o
                                                   obj/fnptr.o
@@ -372,8 +371,6 @@ NX_SDMMC_IdentifyCard                             obj/iSDHCBOOT.o
 NX_SDMMC_Init                                     obj/iSDHCBOOT.o
                                                   obj/fnptr.o
 NX_SDMMC_Open                                     obj/iSDHCBOOT.o
-                                                  obj/fnptr.o
-NX_SDMMC_ReadBootSector                           obj/iSDHCBOOT.o
                                                   obj/fnptr.o
 NX_SDMMC_ReadSectorData                           obj/iSDHCBOOT.o
                                                   obj/fnptr.o
@@ -409,8 +406,6 @@ __div0                                            obj/libplat.o
                                                   obj/fnptr.o
 _dprintf                                          obj/kprintf.o
                                                   obj/fnptr.o
-                                                  obj/iSDHCBOOT.o
-                                                  obj/iROMBOOT.o
 _prog_start                                       obj/head.o
 bl0fn                                             obj/fnptr.o
 cpuclkdiv                                         obj/nx_clock.o
@@ -433,15 +428,12 @@ iROMBOOT                                          obj/iROMBOOT.o
                                                   obj/head.o
 iSDXCBOOT                                         obj/iSDHCBOOT.o
                                                   obj/fnptr.o
-                                                  obj/iROMBOOT.o
 iUSBBOOT                                          obj/iUSBBOOT.o
                                                   obj/fnptr.o
 iv                                                obj/iROMBOOT.o
                                                   obj/fnptr.o
 kputs                                             obj/kprintf.o
                                                   obj/fnptr.o
-                                                  obj/iSDHCBOOT.o
-                                                  obj/iROMBOOT.o
 nx_memcmp                                         obj/libplat.o
                                                   obj/fnptr.o
 nx_memcpy                                         obj/libplat.o
@@ -483,6 +475,8 @@ pbootkeyhash                                      obj/iROMBOOT.o
                                                   obj/fnptr.o
 pgSDXCReg                                         obj/iSDHCBOOT.o
 pllpms                                            obj/nx_clock.o
+sd_body                                           obj/iSDHCBOOT.o
+sd_body_size                                      obj/iSDHCBOOT.o
 sdmmcclk                                          obj/iSDHCBOOT.o
 sdmmcpad                                          obj/iSDHCBOOT.o
 setcpuclock                                       obj/nx_clock.o

@@ -35,10 +35,10 @@ struct nx_bootinfo {
 	unsigned int signature;				/* 0x1fc */
 } __attribute__ ((packed, aligned(16)));
 
-struct nx_bootheader {
-	struct nx_bootinfo bi;
-	unsigned int image[1];
-};
+/* struct nx_bootheader { */
+/* 	struct nx_bootinfo bi; */
+/* 	unsigned int image[1]; */
+/* }; */
 
 struct nx_bootmm {
 	struct nx_bootinfo bi;

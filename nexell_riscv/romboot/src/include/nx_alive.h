@@ -17,6 +17,8 @@
 #ifndef __NX_ALIVE_H__
 #define __NX_ALIVE_H__
 
+#include "nx_type.h"
+
 struct REG_ACC {
 	volatile U32 RST;
 	volatile U32 SET;

@@ -22,9 +22,9 @@
 
 void udelay(U32 utime);
 
-void *nx_memcpy(void *dest, const void *src, size_t n);
-void *nx_memset(void *str, int c, size_t n);
-int nx_memcmp(const void* s1, const void* s2, size_t n);
+void *nx_memcpy(void *dest, const void *src, unsigned int n);
+void *nx_memset(void *str, int c, unsigned int n);
+int nx_memcmp(const void* s1, const void* s2, unsigned int n);
 
 struct nxpadi {
 	unsigned int alt: 3;    /* alt function */

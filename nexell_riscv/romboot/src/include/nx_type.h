@@ -56,8 +56,8 @@ typedef S32             CBOOL;
 /* typedef unsigned long long      __uint64_t; */
 /* typedef __uint64_t              uint64_t; */
 
-typedef unsigned int            __size_t;
-typedef __size_t                size_t;
+/* typedef unsigned int            __size_t; */
+/* typedef __size_t                size_t; */
 
 #define S8_MIN		-128		///< signed char min value
 #define S8_MAX		127		///< signed char max value

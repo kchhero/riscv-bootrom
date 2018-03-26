@@ -1,6 +1,6 @@
 
 #include "include/nx_type.h"
-#include "include/nx_prototype.h"
+//#include "include/nx_prototype.h"
 
 #include "cpuif_regmap_framework.h"
 

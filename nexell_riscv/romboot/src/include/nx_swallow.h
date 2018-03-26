@@ -42,7 +42,11 @@
 #define GPIO_GROUP_E		4
 #define GPIO_GROUP_F		5
 
+#ifdef QEMU_RISCV
+#define BASEADDR_SRAM		(0x8FFF0000)
+#else
 #define BASEADDR_SRAM		(0xFFFF0000)
+#endif
 
 #define INTERNAL_SRAM_SIZE	(64*1024)
 #define SECONDBOOT_FSIZENCRC	(64*1024)

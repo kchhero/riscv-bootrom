@@ -157,7 +157,7 @@ void setpad(const union nxpad *const ppad, int num, int enable)
 	}
 }
 
-void *nx_memcpy(void *dest, const void *src, size_t n)
+void *nx_memcpy(void *dest, const void *src, unsigned int n)
 {
 	const char *s = src;
 	char *d = dest;
@@ -168,7 +168,7 @@ void *nx_memcpy(void *dest, const void *src, size_t n)
 	return dest;
 }
 
-void *nx_memset(void *str, int c, size_t n)
+void *nx_memset(void *str, int c, unsigned int n)
 {
 	char *pdata = str;
 	while (n--)
@@ -176,7 +176,7 @@ void *nx_memset(void *str, int c, size_t n)
 	return str;
 }
 
-int nx_memcmp(const void* s1, const void* s2, size_t n)
+int nx_memcmp(const void* s1, const void* s2, unsigned int n)
 {
 	const char *src1 = s1, *src2 = s2;
 

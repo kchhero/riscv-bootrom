@@ -34,7 +34,11 @@ endif
 # Top Names
 ###########################################################################
 PROJECT_NAME		= swallow
-LDS_NAME		= $(PROJECT_NAME).lds
+ifeq ($(QEMU), y)
+LDS_NAME		= $(PROJECT_NAME)_qemu.lds
+else
+LDS_NAME		= $(PROJECT_NAME)_real.lds
+endif
 
 
 ###########################################################################

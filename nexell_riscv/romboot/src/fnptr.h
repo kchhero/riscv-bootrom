@@ -57,9 +57,9 @@ typedef struct{
 
 	/* string */
 	void (*udelay)(unsigned int);
-	void *(*nx_memcpy)(void *dest, const void *src, size_t n);
-	void *(*nx_memset)(void *str, int c, size_t n);
-	int (*nx_memcmp)(const void* s1, const void* s2, size_t n);
+	void *(*nx_memcpy)(void *dest, const void *src, unsigned int n);
+	void *(*nx_memset)(void *str, int c, unsigned int n);
+	int (*nx_memcmp)(const void* s1, const void* s2, unsigned int n);
 	/* math */
 	void (*__div0)(void);
 
@@ -113,7 +113,6 @@ typedef struct{
 	int (*NX_SDMMC_Close)(SDXCBOOTSTATUS *);
 	int (*NX_SDMMC_ReadSectorData)(SDXCBOOTSTATUS *, unsigned int, unsigned int *);
 	int (*NX_SDMMC_ReadSectors)(SDXCBOOTSTATUS *, unsigned int, unsigned int, unsigned int *);
-	int (*NX_SDMMC_ReadBootSector)(SDXCBOOTSTATUS *, unsigned int, unsigned int *);
 	int (*SDMMCBOOT)(SDXCBOOTSTATUS *, unsigned int);
 	void (*NX_SDPADSetALT)(unsigned int);
 	void (*NX_SDPADSetGPIO)(unsigned int);
