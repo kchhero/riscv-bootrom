@@ -1,0 +1,8 @@
+00000297    // 0x000     auipc  t0, %pcrel_hi(dtb)
+02028593    // 0x004     addi   a1, t0, %pcrel_lo(1b)
+f1402573    // 0x008     csrr   a0, mhartid
+0182b283    // 0x00C     ld     t0, 24(t0) 64bit, 32bit ==> 0x0182a283
+00028067    // 0x010     jr     t0
+00000000    // 0x014     NotUsed
+FFFF0000    // 0x018     start: .dword SRAM_BASE
+
