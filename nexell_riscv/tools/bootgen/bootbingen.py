@@ -1,3 +1,5 @@
+import binascii
+
 def nsihgen():
     nsihFilePath = "nsih.txt"
 
@@ -17,17 +19,22 @@ def nsihgen():
             print "ERROR"
             break
 
-        for j in i :
-            temp2 |= hex(int(j,16))
-            print temp2
-            
-#        genFile.write(temp2[0])
-        
+        #for j in i :
+        print binascii.unhexlify(i)
+        genFile.write(binascii.unhexlify(i))
+          #  print binascii.unhexlify(hex(int(j,16)))
+                                    
     genFile.close()
 
-                        
+
+def test():
+    genFile = file("nsih.bin",'wb')
+    print binascii.unhexlify('1a')
+    genFile.write(binascii.unhexlify('1a'))
+    
 def main():
     nsihgen()
+    #test()
     
 if __name__ == "__main__":
     try : 
