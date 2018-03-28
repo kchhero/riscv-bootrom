@@ -17,7 +17,6 @@
 #define __NX_PRINTF__
 
 #include <stdarg.h>
-#include "debug.h"
 
 int _dprintf(const char *format, ...);
 

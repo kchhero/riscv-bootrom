@@ -36,22 +36,17 @@ ifeq ($(DEBUG_GDB), y)
 LDFLAGS		+= -g -ggdb
 endif
 
-SYS_OBJS	 = 	head.o
-
 ifeq ($(QEMU), y)
+SYS_OBJS	 = 	head_qemu.o
 SYS_OBJS	+=	kprintf.o
 else
+SYS_OBJS	 = 	head.o
 SYS_OBJS	+=	printf.o
 endif
 
 SYS_OBJS	+=	nx_clock.o
-SYS_OBJS	+= 	iROMBOOT.o libplat.o debug.o
-
+SYS_OBJS	+= 	iROMBOOT.o
 SYS_OBJS	+= 	iSDHCBOOT.o
-SYS_OBJS	+= 	iUSBBOOT.o
-SYS_OBJS	+= 	diskio.o
-
-SYS_OBJS	+= 	fnptr.o
 
 SYS_OBJS_LIST	= 	$(addprefix $(DIR_OBJOUTPUT)/,$(SYS_OBJS))
 

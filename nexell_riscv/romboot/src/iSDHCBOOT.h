@@ -257,5 +257,6 @@ CBOOL NX_SDMMC_ReadSectors(SDXCBOOTSTATUS *pSDXCBootStatus, U32 SectorNum,
 void NX_SDPADSetALT(U32 PortNum);
 
 void NX_SDPADSetGPIO(U32 PortNum);
+U32 iSDXCBOOT(U32 option);
 
 #endif //__ISDHCBOOT_H__

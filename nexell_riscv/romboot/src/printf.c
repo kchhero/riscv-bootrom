@@ -15,11 +15,7 @@
  */
 
 #include "include/nx_type.h"
-#include "include/nx_swallow_bootoption.h"
-#include "printf.h"
-
-#include "libplat.h"
-#include "fnptr.h"
+#include "include/nx_bootheader.h"
 
 #define nx_putchar DebugPutch
 
@@ -37,7 +33,6 @@ void printchar(char **str, int c)
 
 int prints(char **out, const char *string, int width, int pad)
 {
-	struct nx_bl0_fn *pbl0fn = Getbl0fnPtr();
 	register int pc = 0, padchar = ' ';
 
 	if (width > 0) {
@@ -54,16 +49,16 @@ int prints(char **out, const char *string, int width, int pad)
 	}
 	if (!(pad & PAD_RIGHT)) {
 		for (; width > 0; --width) {
-			pbl0fn->printchar(out, padchar);
+			printchar(out, padchar);
 			++pc;
 		}
 	}
 	for (; *string; ++string) {
-		pbl0fn->printchar(out, *string);
+		printchar(out, *string);
 		++pc;
 	}
 	for (; width > 0; --width) {
-		pbl0fn->printchar(out, padchar);
+		printchar(out, padchar);
 		++pc;
 	}
 
@@ -74,7 +69,6 @@ int prints(char **out, const char *string, int width, int pad)
 int printi(char **out, int i, int b, int sg, int width, int pad,
 		  int letbase)
 {
-	struct nx_bl0_fn *pbl0fn = Getbl0fnPtr();
 	char print_buf[PRINT_BUF_LEN];
 	register char *s;
 	register int t, neg = 0, pc = 0;
@@ -83,7 +77,7 @@ int printi(char **out, int i, int b, int sg, int width, int pad,
 	if (i == 0) {
 		print_buf[0] = '0';
 		print_buf[1] = '\0';
-		return pbl0fn->prints(out, print_buf, width, pad);
+		return prints(out, print_buf, width, pad);
 	}
 
 	if (sg && b == 10 && i < 0) {
@@ -104,7 +98,7 @@ int printi(char **out, int i, int b, int sg, int width, int pad,
 
 	if (neg) {
 		if (width && (pad & PAD_ZERO)) {
-			pbl0fn->printchar(out, '-');
+			printchar(out, '-');
 			++pc;
 			--width;
 		} else {
@@ -112,12 +106,11 @@ int printi(char **out, int i, int b, int sg, int width, int pad,
 		}
 	}
 
-	return pc + pbl0fn->prints(out, s, width, pad);
+	return pc + prints(out, s, width, pad);
 }
 
 int print(char **out, const char *format, va_list args)
 {
-	struct nx_bl0_fn *pbl0fn = Getbl0fnPtr();
 	register int width, pad;
 	register int pc = 0;
 	char scr[2];
@@ -144,26 +137,26 @@ int print(char **out, const char *format, va_list args)
 			}
 			if (*format == 's') {
 				register char *s = va_arg(args, char *);
-				pc += pbl0fn->prints(out, s ? s : "(null)", width, pad);
+				pc += prints(out, s ? s : "(null)", width, pad);
 				continue;
 			}
 			if (*format == 'd') {
-				pc += pbl0fn->printi(out, va_arg(args, int), 10, 1,
+				pc += printi(out, va_arg(args, int), 10, 1,
 					     width, pad, 'a');
 				continue;
 			}
 			if (*format == 'x') {
-				pc += pbl0fn->printi(out, va_arg(args, int), 16, 0,
+				pc += printi(out, va_arg(args, int), 16, 0,
 					     width, pad, 'a');
 				continue;
 			}
 			if (*format == 'X') {
-				pc += pbl0fn->printi(out, va_arg(args, int), 16, 0,
+				pc += printi(out, va_arg(args, int), 16, 0,
 					     width, pad, 'A');
 				continue;
 			}
 			if (*format == 'u') {
-				pc += pbl0fn->printi(out, va_arg(args, int), 10, 0,
+				pc += printi(out, va_arg(args, int), 10, 0,
 					     width, pad, 'a');
 				continue;
 			}
@@ -172,12 +165,12 @@ int print(char **out, const char *format, va_list args)
 				 * pushed on the stack */
 				scr[0] = (char)va_arg(args, int);
 				scr[1] = '\0';
-				pc += pbl0fn->prints(out, scr, width, pad);
+				pc += prints(out, scr, width, pad);
 				continue;
 			}
 		} else {
 		out:
-			pbl0fn->printchar(out, *format);
+			printchar(out, *format);
 			++pc;
 		}
 	}
@@ -190,7 +183,6 @@ int print(char **out, const char *format, va_list args)
 
 int _dprintf(const char *format, ...)
 {
-	struct nx_bl0_fn *pbl0fn = Getbl0fnPtr();
 	va_list args;
 	if ((GetBootOption() & 1 << NOBOOTMSG) &&
 			(GetBootOption() & 1 << EXNOBOOTMSG_SAVE))
@@ -199,11 +191,11 @@ int _dprintf(const char *format, ...)
 	va_start(args, format);
 	if (!(GetBootOption() & 1 << NOBOOTMSG) &&
 			!(GetBootOption() & 1 << EXNOBOOTMSG_SAVE))
-		return pbl0fn->print(0, format, args);
+		return print(0, format, args);
 
 	/* NOBOOTMSG ^ EXNOBOOTMSG == 1 */
 	char *stringptr = (char *)GetStringPtr();
-	int cnt = pbl0fn->print(&stringptr, format, args);
+	int cnt = print(&stringptr, format, args);
 	SetStringPtr(GetStringPtr() + cnt);
 	return cnt;
 }
