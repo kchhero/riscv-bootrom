@@ -34,11 +34,7 @@ endif
 # Top Names
 ###########################################################################
 PROJECT_NAME		= swallow
-ifeq ($(QEMU), y)
-LDS_NAME		= $(PROJECT_NAME)_qemu.lds
-else
-LDS_NAME		= $(PROJECT_NAME)_real.lds
-endif
+LDS_NAME		= $(PROJECT_NAME).lds
 
 
 ###########################################################################
@@ -111,7 +107,7 @@ CFLAGS			+= \
                         -Wall -nostartfiles \
                         -fno-common -DENTROPY=0 \
                         -DNONSMP_HART=0 \
-                        -I ./src -I ./src/include -I ./src/include/devices
+                        -I ./src -I . -I ./include
 
 ifeq ($(DEBUG_GDB),y)
 CFLAGS                  += -g -ggdb

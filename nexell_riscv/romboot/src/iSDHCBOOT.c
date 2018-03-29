@@ -17,23 +17,22 @@
 //		2013.08.31 rev1 (port 0, 1, 2 selectable)
 //		2017.10.09 rev0 for nxp3220
 ////////////////////////////////////////////////////////////////////////////////
-#include "include/nx_swallow.h"
-#include "include/nx_type.h"
-#include "include/nx_bootheader.h"
+#include <nx_swallow.h>
+#include <nx_type.h>
+#include <nx_bootheader.h>
 
 #ifdef QEMU_RISCV
-#include "kprintf.h"
-#include "test.h"
+#include <kprintf.h>
+#include <test.h>
 #else
-#include "printf.h"
+#include <printf.h>
 #endif
 
-#include "include/nx_sdmmc.h"
-
-#include "iSDHCBOOT.h"
-
-#include "include/nx_chip_sfr.h"
-#include "include/nx_cmu.h"
+#include <nx_sdmmc.h>
+#include <nx_cmu.h>
+#include <nx_chip_iomux.h>
+#include <iSDHCBOOT.h>
+#include <libplat.h>
 
 #define NX_ASSERT(x)
 
@@ -63,31 +62,52 @@ NX_SDMMC_RegisterSet * const pgSDXCReg[3] =
     (NX_SDMMC_RegisterSet *)PHY_BASEADDR_SDMMC2_MODULE
 };
 
+const union nxpad sdmmcpad[2][10] = {
+{
+	{PI_SDMMC0_CDATA_0_},
+	{PI_SDMMC0_CDATA_1_},
+	{PI_SDMMC0_CDATA_2_},
+	{PI_SDMMC0_CDATA_3_},
+	{PI_SDMMC0_CDATA_4_},
+	{PI_SDMMC0_CDATA_5_},
+	{PI_SDMMC0_CDATA_6_},
+	{PI_SDMMC0_CDATA_7_},
+	{PI_SDMMC0_CCLK},
+	{PI_SDMMC0_CMD}
+},
+{
+	{PI_SDMMC1_CDATA_0_},
+	{PI_SDMMC1_CDATA_1_},
+	{PI_SDMMC1_CDATA_2_},
+	{PI_SDMMC1_CDATA_3_},
+	{PI_SDMMC1_CDATA_4_},
+	{PI_SDMMC1_CDATA_5_},
+	{PI_SDMMC1_CDATA_6_},
+	{PI_SDMMC1_CDATA_7_},
+	{PI_SDMMC1_CCLK},
+	{PI_SDMMC1_CMD}
+}};
+
 //------------------------------------------------------------------------------
 CBOOL NX_SDMMC_SetClock(SDXCBOOTSTATUS *pSDXCBootStatus,
 				CBOOL enb, U32 divider)
 {
-#ifndef QEMU_RISCV
+#ifdef QEMU_RISCV
+    _dprintf("<<bootrom>>%s : setdeviceclock cannot setting on QEMU mode\n", __func__);
+    return CTRUE;
+#else
+    
     volatile U32 timeout;
-#endif
     U32 i = pSDXCBootStatus->SDPort;
         
     register NX_SDMMC_RegisterSet * const pSDXCReg =
 					pgSDXCReg[i];
 
-#ifdef DEBUG
-    _dprintf("<<bootrom>> %s start\n",__func__);
-#endif
-        
-	//--------------------------------------------------------------------------
-	// 1. Confirm that no card is engaged in any transaction.
-	//	If there's a transaction, wait until it has been finished.
-//	while(NX_SDXC_IsDataTransferBusy())
-//		;
-//	while(NX_SDXC_IsCardDataBusy())
-//		;
-
+    //--------------------------------------------------------------------------
+    // 1. Confirm that no card is engaged in any transaction.
+    //	If there's a transaction, wait until it has been finished.
 #if defined(DEBUG)
+    _dprintf("<<bootrom>> %s start\n",__func__);
     if (pSDXCReg->STATUS & (NX_SDXC_STATUS_DATABUSY | NX_SDXC_STATUS_FSMBUSY))
     {
 	if (pSDXCReg->STATUS & NX_SDXC_STATUS_DATABUSY)
@@ -107,23 +127,17 @@ CBOOL NX_SDMMC_SetClock(SDXCBOOTSTATUS *pSDXCBootStatus,
     pSDXCReg->CLKENA |= NX_SDXC_CLKENA_LOWPWR;
     pSDXCReg->CLKENA &= ~NX_SDXC_CLKENA_CLKENB;
 
-#ifndef QEMU_RISCV    
     if (divider == SDXC_DIVIDER_400KHZ)
         setdeviceclock(&sdmmcclk[i][2], 1, 1);
     if (divider == SDXC_CLKDIV_LOW)
         setdeviceclock(&sdmmcclk[i][1], 1, 1);
-#else
-    _dprintf("<<bootrom>>%s : setdeviceclock cannot setting on QEMU mode\n", __func__);
-#endif
     
     pSDXCReg->CLKENA &= ~NX_SDXC_CLKENA_LOWPWR;	// low power mode & clock disable
 
 
     //--------------------------------------------------------------------------
     // 4. Start a command with NX_SDXC_CMDFLAG_UPDATECLKONLY flag.
-#ifndef QEMU_RISCV    
  repeat_4 :
-#endif    
     pSDXCReg->CMD = 0 | NX_SDXC_CMDFLAG_STARTCMD |
         NX_SDXC_CMDFLAG_UPDATECLKONLY |
         NX_SDXC_CMDFLAG_STOPABORT;
@@ -131,7 +145,6 @@ CBOOL NX_SDMMC_SetClock(SDXCBOOTSTATUS *pSDXCBootStatus,
     //--------------------------------------------------------------------------
     // 5. Wait until a update clock command is taken by the SDXC module.
     //	If a HLE is occurred, repeat 4.
-#ifndef QEMU_RISCV
     timeout = 0;
     while (pSDXCReg->CMD & NX_SDXC_CMDFLAG_STARTCMD) {
         if (++timeout > NX_SDMMC_TIMEOUT) {
@@ -145,7 +158,6 @@ CBOOL NX_SDMMC_SetClock(SDXCBOOTSTATUS *pSDXCBootStatus,
         pSDXCReg->RINTSTS = NX_SDXC_RINTSTS_HLE;
         goto repeat_4;
     }
-#endif
     if (CFALSE == enb)
         return CTRUE;
 
@@ -155,9 +167,7 @@ CBOOL NX_SDMMC_SetClock(SDXCBOOTSTATUS *pSDXCBootStatus,
 
 	//--------------------------------------------------------------------------
 	// 7. Start a command with NX_SDXC_CMDFLAG_UPDATECLKONLY flag.
-#ifndef QEMU_RISCV
 repeat_7 :
-#endif
 	pSDXCReg->CMD = 0 | NX_SDXC_CMDFLAG_STARTCMD |
 		NX_SDXC_CMDFLAG_UPDATECLKONLY |
 		NX_SDXC_CMDFLAG_STOPABORT;
@@ -165,7 +175,6 @@ repeat_7 :
 	//--------------------------------------------------------------------------
 	// 8. Wait until a update clock command is taken by the SDXC module.
 	//	If a HLE is occurred, repeat 7.
-#ifndef QEMU_RISCV        
 	timeout = 0;
 	while (pSDXCReg->CMD & NX_SDXC_CMDFLAG_STARTCMD) {
 		if (++timeout > NX_SDMMC_TIMEOUT) {
@@ -179,13 +188,9 @@ repeat_7 :
 		pSDXCReg->RINTSTS = NX_SDXC_RINTSTS_HLE;
 		goto repeat_7;
 	}
-#endif
-
-#ifdef DEBUG
-    _dprintf("<<bootrom>> %s end\n",__func__);
-#endif
 
 	return CTRUE;
+#endif //QEMU_RISCV        
 }
 
 //------------------------------------------------------------------------------
@@ -205,11 +210,6 @@ U32 NX_SDMMC_SendCommandInternal(
 
     cmd	= pCommand->cmdidx & 0xFF;
     flag	= pCommand->flag;
-
-/* #ifdef DEBUG */
-/*     _dprintf("<<bootrom>> %s start\n",__func__); */
-/*     _dprintf("<<bootrom>> %s cmd = 0x%x\n",__func__,cmd); */
-/* #endif */
 
     pSDXCReg->RINTSTS = 0xFFFFFFFF;
 
@@ -310,11 +310,6 @@ End:
 #endif
     pCommand->status = status;
 
-/* #ifdef DEBUG */
-/*     _dprintf("<<bootrom>> %s pCommand->status 0x%x\n",__func__,status); */
-/*     _dprintf("<<bootrom>> %s end\n",__func__); */
-/* #endif */
-
     return status;
 }
 
@@ -330,10 +325,6 @@ U32 NX_SDMMC_SendStatus(SDXCBOOTSTATUS *pSDXCBootStatus)
         NX_SDXC_CMDFLAG_CHKRSPCRC |
         NX_SDXC_CMDFLAG_SHORTRSP;
 
-/* #ifdef DEBUG */
-/*     _dprintf("<<bootrom>> %s start\n",__func__); */
-/* #endif */
-        
     status = NX_SDMMC_SendCommandInternal(pSDXCBootStatus, &cmd);
 
 #ifdef DEBUG
@@ -401,10 +392,6 @@ U32 NX_SDMMC_SendStatus(SDXCBOOTSTATUS *pSDXCBootStatus)
     }
 #endif
 
-/* #ifdef DEBUG */
-/*     _dprintf("<<bootrom>> %s end\n",__func__); */
-/* #endif */
-
     return status;
 }
 
@@ -414,18 +401,10 @@ U32 NX_SDMMC_SendCommand(SDXCBOOTSTATUS *pSDXCBootStatus,
 {
     U32 status;
 
-/* #ifdef DEBUG */
-/*     _dprintf("<<bootrom>> %s start\n",__func__); */
-/* #endif */
-
     status = NX_SDMMC_SendCommandInternal(pSDXCBootStatus, pCommand);
     if (NX_SDMMC_STATUS_NOERROR != status) {
         NX_SDMMC_SendStatus(pSDXCBootStatus);
     }
-
-/* #ifdef DEBUG */
-/*     _dprintf("<<bootrom>> %s end\n",__func__); */
-/* #endif */
 
     return status;
 }
@@ -436,10 +415,6 @@ U32 NX_SDMMC_SendAppCommand(SDXCBOOTSTATUS *pSDXCBootStatus,
 {
     U32 status;
     NX_SDMMC_COMMAND cmd;
-
-/* #ifdef DEBUG */
-/*     _dprintf("<<bootrom>> %s start\n",__func__); */
-/* #endif */
     
     cmd.cmdidx	= APP_CMD;
     cmd.arg		= pSDXCBootStatus->rca;
@@ -452,10 +427,6 @@ U32 NX_SDMMC_SendAppCommand(SDXCBOOTSTATUS *pSDXCBootStatus,
     if (NX_SDMMC_STATUS_NOERROR == status) {
         NX_SDMMC_SendCommand(pSDXCBootStatus, pCommand);
     }
-
-/* #ifdef DEBUG */
-/*     _dprintf("<<bootrom>> %s end\n",__func__); */
-/* #endif */
     
     return status;
 }
@@ -598,7 +569,7 @@ CBOOL NX_SDMMC_IdentifyCard(SDXCBOOTSTATUS *pSDXCBootStatus)
         } while (0==(cmd.response[0] & (1UL << 31)));
 #endif
         _dprintf("MMC ");
-#if defined(VERBOSE)
+#if defined(DEBUG)
         _dprintf("--> SEND_OP_COND Response = 0x%X\n", cmd.response[0]);
 #endif
 
@@ -689,10 +660,6 @@ CBOOL NX_SDMMC_SetCardDetectPullUp(SDXCBOOTSTATUS *pSDXCBootStatus,
     U32 status;
     NX_SDMMC_COMMAND cmd;
 
-#ifdef DEBUG
-    _dprintf("<<bootrom>> %s start\n",__func__);
-#endif
-   
     cmd.cmdidx	= SET_CLR_CARD_DETECT;
     cmd.arg		= (bEnb) ? 1 : 0;
     cmd.flag	= NX_SDXC_CMDFLAG_STARTCMD |
@@ -701,10 +668,6 @@ CBOOL NX_SDMMC_SetCardDetectPullUp(SDXCBOOTSTATUS *pSDXCBootStatus,
         NX_SDXC_CMDFLAG_SHORTRSP;
 
     status = NX_SDMMC_SendAppCommand(pSDXCBootStatus, &cmd);
-
-#ifdef DEBUG
-    _dprintf("<<bootrom>> %s end\n",__func__);
-#endif
     
     return (NX_SDMMC_STATUS_NOERROR == status) ? CTRUE : CFALSE;
 }
@@ -793,57 +756,6 @@ CBOOL NX_SDMMC_SetBlockLength(SDXCBOOTSTATUS *pSDXCBootStatus,
     return CTRUE;
 }
 
-#if 0
-//------------------------------------------------------------------------------
-CBOOL NX_SDMMC_SelectPartition(SDXCBOOTSTATUS *pSDXCBootStatus,
-					U32 partition)
-{
-	U32 status;
-	NX_SDMMC_COMMAND cmd;
-
-	#define IMMEDIATE_RESPONSE		(1 <<  0)
-	#define DEFERRED_RESPONSE		(1 << 17)
-
-	if (pSDXCBootStatus->CardType == NX_SDMMC_CARDTYPE_SDMEM) {
-		NX_ASSERT( partition < 256 );
-
-		cmd.cmdidx	= SELECT_PARTITION;
-		cmd.arg		= (partition << 24) | IMMEDIATE_RESPONSE;
-		cmd.flag	= NX_SDXC_CMDFLAG_STARTCMD |
-				NX_SDXC_CMDFLAG_WAITPRVDAT |
-				NX_SDXC_CMDFLAG_CHKRSPCRC |
-				NX_SDXC_CMDFLAG_SHORTRSP;
-	} else {
-		NX_ASSERT(partition == 1 || partition == 2);
-
-		/* Set Bits : BOOT_CONFIG[1:0] = 1 or 2	// R/W Boot Partition */
-		cmd.cmdidx	= SWITCH_FUNC;
-		cmd.arg		=	  (1 << 24) |
-					(179 << 16) |
-				  (partition << 8) |
-					  (0 << 0);
-		cmd.flag	= NX_SDXC_CMDFLAG_STARTCMD |
-				NX_SDXC_CMDFLAG_WAITPRVDAT |
-				NX_SDXC_CMDFLAG_CHKRSPCRC |
-				NX_SDXC_CMDFLAG_SHORTRSP;
-	}
-
-	status = NX_SDMMC_SendCommand(pSDXCBootStatus, &cmd);
-
-	if (NX_SDMMC_STATUS_NOERROR != status) {
-		return CFALSE;
-	}
-
-	if (cmd.response[0] & DEFERRED_RESPONSE) {
-		status = NX_SDMMC_SendStatus(pSDXCBootStatus);
-		if (NX_SDMMC_STATUS_NOERROR != status)
-			return CFALSE;
-	}
-
-	return CTRUE;
-}
-#endif
-
 //------------------------------------------------------------------------------
 CBOOL NX_SDMMC_Init(SDXCBOOTSTATUS *pSDXCBootStatus)
 {
@@ -914,10 +826,6 @@ CBOOL NX_SDMMC_Terminate(SDXCBOOTSTATUS *pSDXCBootStatus)
     register NX_SDMMC_RegisterSet * const pSDXCReg =
         pgSDXCReg[pSDXCBootStatus->SDPort];
     
-#ifdef DEBUG
-    _dprintf("<<bootrom>> %s start\n",__func__);
-#endif
-
     // Clear All interrupts
     pSDXCReg->RINTSTS = 0xFFFFFFFF;
 
@@ -935,7 +843,7 @@ CBOOL NX_SDMMC_Terminate(SDXCBOOTSTATUS *pSDXCBootStatus)
     setdeviceclock(&sdmmcclk[pSDXCBootStatus->SDPort][0], 2, 0);
 
 #ifdef DEBUG
-    _dprintf("<<bootrom>> %s end\n",__func__);
+    _dprintf("<<bootrom>> %s Done\n",__func__);
 #endif
 
     return CTRUE;
@@ -1004,7 +912,7 @@ CBOOL NX_SDMMC_Close(SDXCBOOTSTATUS *pSDXCBootStatus)
     NX_SDMMC_SetClock(pSDXCBootStatus, CFALSE, SDXC_DIVIDER_400KHZ);
 
 #ifdef DEBUG
-    _dprintf("<<bootrom>> %s\n",__func__);
+    _dprintf("<<bootrom>> %s Done\n",__func__);
 #endif
         
     return CTRUE;
@@ -1197,9 +1105,6 @@ CBOOL NX_SDMMC_ReadSectors(SDXCBOOTSTATUS *pSDXCBootStatus,
             NX_SDXC_CMDFLAG_CHKRSPCRC |
             NX_SDXC_CMDFLAG_SHORTRSP;
         status = NX_SDMMC_SendCommand(pSDXCBootStatus, &cmd);
-        //    (*qemu_extern_var)[0] = SectorNum;
-    //    _dprintf("<<bootrom>> %s qemu_extern_var 0: 0x%x\n",__func__,(*qemu_extern_var)[0]);
-        //    _dprintf("<<bootrom>> %s qemu_extern_var 0: 0x%x\n",__func__,(*qemu_extern_var)[0]);
 #endif //QEMU_RISCV
     
     NX_ASSERT(NX_SDXC_STATUS_FIFOEMPTY ==
@@ -1296,7 +1201,7 @@ End:
     }
 
 #ifdef DEBUG
-    _dprintf("<<bootrom>> %s end\n\n",__func__);
+    _dprintf("<<bootrom>> %s Done\n\n",__func__);
 #endif
 
     return result;
@@ -1315,8 +1220,7 @@ CBOOL SDMMCBOOT(SDXCBOOTSTATUS *pSDXCBootStatus, U32 option)
 
     if (CTRUE != NX_SDMMC_Open(pSDXCBootStatus, option)) {
         _dprintf("device open fail\r\n");
-        //goto error;
-        return CFALSE;
+        goto error;
     }
 
     if (0 == (pSDXCReg->STATUS & NX_SDXC_STATUS_FIFOEMPTY)) {
@@ -1348,8 +1252,6 @@ CBOOL SDMMCBOOT(SDXCBOOTSTATUS *pSDXCBootStatus, U32 option)
     
 #ifdef DEBUG    
     _dprintf("<<bootrom>>+++++++++++++++++++++++++++++++++++++++++++++\n");
-    
-    _dprintf("<<bootrom>>+++++++++++++++++++++++++++++++++++++++++++++\n");
     _dprintf("<<bootrom>>%s: 2nd ReadSectors\n",__func__);
     _dprintf("<<bootrom>>+++++++++++++++++++++++++++++++++++++++++++++\n");
 #endif
@@ -1363,8 +1265,6 @@ CBOOL SDMMCBOOT(SDXCBOOTSTATUS *pSDXCBootStatus, U32 option)
     }
     
 #ifdef DEBUG
-    _dprintf("<<bootrom>>+++++++++++++++++++++++++++++++++++++++++++++\n");
-    
     _dprintf("<<bootrom>>+++++++++++++++++++++++++++++++++++++++++++++\n");
     _dprintf("<<bootrom>>%s: 3rd ReadSectors\n",__func__);
     _dprintf("<<bootrom>>+++++++++++++++++++++++++++++++++++++++++++++\n");
@@ -1475,7 +1375,7 @@ CBOOL SDMMCBOOT(SDXCBOOTSTATUS *pSDXCBootStatus, U32 option)
     /* #endif */
     /* 	} */
 #ifdef DEBUG
-    _dprintf("<<bootrom>> %s ----end----\n",__func__);
+    _dprintf("<<bootrom>> %s ----Done----\n",__func__);
 #endif
     return result;
     
@@ -1488,18 +1388,12 @@ CBOOL SDMMCBOOT(SDXCBOOTSTATUS *pSDXCBootStatus, U32 option)
 
 void NX_SDPADSetALT(U32 PortNum)
 {
-    //    setpad(sdmmcpad[PortNum], 10, 1);
-#ifdef DEBUG
-    _dprintf("<<bootrom>> %s end \n",__func__);
-#endif    
+    setpad(sdmmcpad[PortNum], 10, 1);
 }
 
 void NX_SDPADSetGPIO(U32 PortNum)
 {
-    //    setpad(sdmmcpad[PortNum], 10, 0);
-#ifdef DEBUG
-    _dprintf("<<bootrom>> %s end \n",__func__);
-#endif    
+    setpad(sdmmcpad[PortNum], 10, 0);
 }
 
 //------------------------------------------------------------------------------
@@ -1522,24 +1416,19 @@ U32 iSDXCBOOT(U32 option)
     } else
         pSDXCBootStatus->bHighSpeed = CFALSE;
 
-#ifndef QEMU_RISCV
     NX_SDPADSetALT(pSDXCBootStatus->SDPort);
-#endif
     NX_SDMMC_Init(pSDXCBootStatus);
 
     _dprintf("<<bootrom>> SD boot:%d\r\n", pSDXCBootStatus->SDPort);
     result = SDMMCBOOT(pSDXCBootStatus, option);
 
-    //    _dprintf("<<bootrom>> %s: SDMMCBOOT Done!! result=0x%x\n",__func__,result);
     NX_SDMMC_Close(pSDXCBootStatus);
     NX_SDMMC_Terminate(pSDXCBootStatus);
 
-#ifndef QEMU_RISCV
     NX_SDPADSetGPIO(pSDXCBootStatus->SDPort);
-#endif
     
 #ifdef DEBUG
-    _dprintf("<<bootrom>> %s end \n",__func__);
+    _dprintf("<<bootrom>> %s Done \n",__func__);
 #endif    
 
     return result;

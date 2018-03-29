@@ -1,10 +1,9 @@
-//#include "include/nx_chip_sfr.h"
-#include "include/nx_cmu.h"
-#include "include/nx_pll.h"
+#include <nx_cmu.h>
+#include <nx_pll.h>
 #ifdef QEMU_RISCV
-#include "include/qemu_platform.h"
+#include <qemu_platform.h>
 #else
-#include "include/platform.h"
+#include <platform.h>
 #endif
 
 static struct NX_CMU_RegisterSet *const pCMUCPU =

@@ -18,10 +18,10 @@
 #ifndef __ISDHCBOOT_H__
 #define __ISDHCBOOT_H__
 
-#include "include/nx_swallow.h"
-#include "include/nx_type.h"
+#include "nx_swallow.h"
+#include "nx_type.h"
 
-#include "include/nx_sdmmc.h"
+#include "nx_sdmmc.h"
 
 #define SDXC_CLKSRC			(2)	/* PLL2 = 100 MHz */
 #define SDXC_CLKDIV_LOW			(1)	/* PLL2 / 1 / 4 = 25 MHz */
@@ -93,50 +93,6 @@
 #define	SD_SEND_OP_COND		((41) | ((NX_SDMMC_RSPIDX_R3	) << 8) | (APP_CMD << 16))
 #define	SET_CLR_CARD_DETECT	((42) | ((NX_SDMMC_RSPIDX_R1	) << 8) | (APP_CMD << 16))
 #define SEND_SCR		((51) | ((NX_SDMMC_RSPIDX_R1	) << 8) | (APP_CMD << 16))
-
-
-/* EXT_CSD fields */
-
-#define EXT_CSD_PARTITIONING_SUPPORT	160	/* RO */
-#define EXT_CSD_ERASE_GROUP_DEF		175	/* R/W */
-#define EXT_CSD_PART_CONF		179	/* R/W */
-#define EXT_CSD_BUS_WIDTH		183	/* R/W */
-#define EXT_CSD_HS_TIMING		185	/* R/W */
-#define EXT_CSD_REV			192	/* RO */
-#define EXT_CSD_CARD_TYPE		196	/* RO */
-#define EXT_CSD_SEC_CNT			212	/* RO, 4 bytes */
-#define EXT_CSD_HC_ERASE_GRP_SIZE	224	/* RO */
-#define EXT_CSD_BOOT_MULT		226	/* RO */
-
-#define EXT_CSD_BOOT_CONFIG 		179	/* R/W */
-#define EXT_CSD_BOOT_BUS_WIDTH  	177	/*R/W */
-
-/* EXT_CSD field definitions */
-#define EXT_CSD_CMD_SET_NORMAL		(1 << 0)
-#define EXT_CSD_CMD_SET_SECURE		(1 << 1)
-#define EXT_CSD_CMD_SET_CPSECURE	(1 << 2)
-
-#define EXT_CSD_CARD_TYPE_26		(1  <<  0)/* Card can run at 26MHz */
-#define EXT_CSD_CARD_TYPE_52		(1  <<  1)/* Card can run at 52MHz */
-
-#define EXT_CSD_BUS_WIDTH_1		0	/* Card is in 1 bit mode */
-#define EXT_CSD_BUS_WIDTH_4		1	/* Card is in 4 bit mode */
-#define EXT_CSD_BUS_WIDTH_8		2	/* Card is in 8 bit mode */
-
- #define EXT_CSD_NO_BOOT		(0 << 6)
- #define EXT_CSD_BOOT_ACK		(1 << 6)
-
- #define EXT_CSD_BOOT_PARTITION_NOT_ENABLE	(0x0 << 3)
- #define EXT_CSD_BOOT_PARTITION_1_ENABLE	(0x1 << 3)
- #define EXT_CSD_BOOT_PARTITION_2_ENABLE	(0x2 << 3)
-
- #define EXT_CSD_BOOT_PARTITION_NO_ACCESS	(0x0)
- #define EXT_CSD_BOOT_PARTITION_1_ACCESS	(0x1)
- #define EXT_CSD_BOOT_PARTITION_2_ACCESS	(0x2)
-
- #define EXT_CSD_BOOT_BUS_WIDTH_1		(0x0)
- #define EXT_CSD_BOOT_BUS_WIDTH_4		(0x1)
- #define EXT_CSD_BOOT_BUS_WIDTH_8		(0x2)
 
 
 #define MMC_SWITCH_MODE_CMD_SET		0x00 /* Change the command set */
@@ -240,22 +196,13 @@ typedef struct __attribute__ ((aligned(4))) tag_SDXCBOOTSTATUS
 
 
 CBOOL NX_SDMMC_Init(SDXCBOOTSTATUS *pSDXCBootStatus);
-
-/*----------------------------------------------------------------------------*/
 CBOOL NX_SDMMC_Terminate(SDXCBOOTSTATUS *pSDXCBootStatus);
-
-/*----------------------------------------------------------------------------*/
 CBOOL NX_SDMMC_Open(SDXCBOOTSTATUS *pSDXCBootStatus, U32 option);
-
-/*----------------------------------------------------------------------------*/
 CBOOL NX_SDMMC_Close(SDXCBOOTSTATUS *pSDXCBootStatus);
-
-/*----------------------------------------------------------------------------*/
 CBOOL NX_SDMMC_ReadSectors(SDXCBOOTSTATUS *pSDXCBootStatus, U32 SectorNum,
 			U32 numberOfSector, U32 *pdwBuffer);
 
 void NX_SDPADSetALT(U32 PortNum);
-
 void NX_SDPADSetGPIO(U32 PortNum);
 U32 iSDXCBOOT(U32 option);
 

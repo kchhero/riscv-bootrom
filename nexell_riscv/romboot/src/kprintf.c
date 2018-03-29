@@ -3,7 +3,7 @@
 #include <stdint.h>
 #include <stdbool.h>
 
-#include "kprintf.h"
+#include <kprintf.h>
 
 static inline void _kputs(const char *s)
 {

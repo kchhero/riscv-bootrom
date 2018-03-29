@@ -21,26 +21,15 @@
 #ifndef NX_ETACARINAE_H
 #define NX_ETACARINAE_H
 
-
-
-#define PRIMARY_CPU 0
 //;==================================================================
 //; Porting defines
 //;==================================================================
+//todo
 #define NX_CLKSRCPLL0_FREQ	(550000000UL)
 #define NX_CLKSRCPLL1_FREQ	(147456000UL)
-#define NX_CLKSRCPLL2_FREQ	( 96000000UL)
-#define NX_CLKSRCPLL3_FREQ	(125000000UL)
 
 #define USBD_VID		0x2375
 #define USBD_PID		0x0322
-
-#define GPIO_GROUP_A		0
-#define GPIO_GROUP_B		1
-#define GPIO_GROUP_C		2
-#define GPIO_GROUP_D		3
-#define GPIO_GROUP_E		4
-#define GPIO_GROUP_F		5
 
 #ifdef QEMU_RISCV
 #define BASEADDR_SRAM		(0xFFFF0000)
@@ -52,8 +41,5 @@
 #define SECONDBOOT_FSIZENCRC	(64*1024)
 #define SECONDBOOT_FSIZE	(SECONDBOOT_FSIZENCRC-(128/8))
 #define SECONDBOOT_STACK	0x2000
-
-#define BASEADDR_NFMEM		(0x0C000000)
-#define BASEADDR_DDRSDRAM	(0x40000000)
 
 #endif	/* NX_ETACARINAE_H */

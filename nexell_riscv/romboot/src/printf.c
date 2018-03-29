@@ -14,8 +14,8 @@
  * History         :
  */
 
-#include "include/nx_type.h"
-#include "include/nx_bootheader.h"
+#include <nx_type.h>
+#include <nx_bootheader.h>
 
 #define nx_putchar DebugPutch
 

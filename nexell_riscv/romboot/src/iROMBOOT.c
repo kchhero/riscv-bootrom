@@ -17,23 +17,22 @@
 //		2017-10-09	Hans modified for NXP3220
 //		2018-01-15	Hans sim done
 ////////////////////////////////////////////////////////////////////////////////
-#include "include/nx_swallow.h"
-#include "include/nx_bootheader.h"
-#include "include/nx_type.h"
+#include <nx_swallow.h>
+#include <nx_bootheader.h>
+#include <nx_type.h>
 
-#include "include/nx_chip_sfr.h"
-#include "include/nx_cmu.h"
+#include <nx_cmu.h>
 
-#include "include/nx_clock.h"
+#include <nx_clock.h>
 
-#include "iSDHCBOOT.h"
+#include <iSDHCBOOT.h>
 
 #ifdef QEMU_RISCV
-#include "kprintf.h"
-#include "include/qemu_platform.h"
+#include <kprintf.h>
+#include <qemu_platform.h>
 #else
-#include "printf.h"
-#include "include/platform.h"
+#include <printf.h>
+#include <platform.h>
 #endif
 
 
@@ -49,12 +48,18 @@ const unsigned int iv[4] = {
 };
 
 struct nx_bootmm *const pbm = (struct nx_bootmm * const)BASEADDR_SRAM;
-
 //------------------------------------------------------------------------------
 unsigned int iROMBOOT(unsigned int OrgBootOption)
 {
-    unsigned int option = OrgBootOption & 0x1FF;
-    unsigned int soption = 0;
+    //    unsigned int option = 1 | OrgBootOption & 0xFF;
+    const U32 option = OrgBootOption - 20;
+    /* if (asdf >= 1) { */
+    /*     _dprintf("<<bootrom>> kkkk = 0x%x\n", kkkk);         */
+    _dprintf("<<bootrom>> option %s = 0x%x\n", __func__, option); 
+    /*     _dprintf("<<bootrom>> %s asdf = 0x%x\n",__func__, asdf); */
+    /* _dprintf("<<bootrom>> %s asdf = 0x%x\n",__func__, bootoptionss); */
+    /* } */
+    
 
     /* if (option & (1 << EXNOBOOTMSG)) */
     /*     option = (option & ~(1 << EXNOBOOTMSG)) | 1 << EXNOBOOTMSG_SAVE; */
@@ -87,17 +92,16 @@ unsigned int iROMBOOT(unsigned int OrgBootOption)
     //	SetMempoolPtr(PHY_BASEADDR_CAN0_MODULE_RAM);
     //	SetStringPtr((unsigned int *)PHY_BASEADDR_CAN1_MODULE_RAM);
     //	Setbl0fnPtr(&bl0fn);
-
+#ifndef QEMU_RISCV
     U32 speedup = 0;
-    if ((soption & 1 << SPEEDUP) || (OrgBootOption & 1 << ICACHE))
+    /* if ((soption & 1 << SPEEDUP) || (OrgBootOption & 1 << ICACHE)) */
         speedup = 1;
-    else if (soption & 1 << SPEEDUP)
-        speedup = 2;
+    /* else if (soption & 1 << SPEEDUP) */
+    /*     speedup = 2; */
 	
     setcpuclock(speedup);
     setsystemclock(speedup);
 
-#ifndef QEMU_RISCV
 	// external usb boot is top priority, always first checked.
 	if ((OrgBootOption & 0x7 << BOOTMODE) == (USBBOOT << BOOTMODE)) {
 		_dprintf("force usb boot\r\n");
@@ -143,20 +147,6 @@ lastboot:
 
 
 	int ret = 1;
-	/* if (option & 0x3 << VERIFY) { */
-	/* 	unsigned int *pCMU_SYS_APB_SRST = (unsigned int *)0x27010234; */
-	/* 	*pCMU_SYS_APB_SRST = 0x1 << 2;	// set register */
-	/* 	nx_memset((void*)GetMempoolPtr(), 0, 8192); */
-	/* 	ret = authenticate_image( */
-	/* 			pbm->rsa_public.rsaencryptedsha256hash,  */
-	/* 			pbm->rsa_public.rsapublicbootkey, */
-	/* 			(unsigned char *)pbm->image, */
-	/* 			(int)pbm->bi.LoadSize); */
-	/* } */
-
-	/* if (option & 1 << DECRYPT) */
-	/* 	setdeviceclock(sssclk, 2, 0); */
-
 	if (ret) {
 		struct nx_bootinfo *pbi = (struct nx_bootinfo *)BASEADDR_SRAM;
 		_dprintf("Launch to 0x%X\r\n", pbi->StartAddr);
@@ -169,14 +159,22 @@ lastboot:
     {
         U32 result;
         struct nx_bootinfo *pbi = (struct nx_bootinfo *)BASEADDR_SRAM;
-        result = iSDXCBOOT(option);
+        //    _dprintf("<<bootrom>> %s option = 0x%x\n",__func__, option);
+        if (option) {
+            _dprintf("-----------------\n");            
+            result = iSDXCBOOT(1);//option);
+
+        }
+        else
+            _dprintf("asdfasdfasdfasdfasdf\n");
+        
         //	while (1);
         __asm__ __volatile__ ("fence.i" : : : "memory");
-        _dprintf("Launch to 0x%x\r\n", pbi->StartAddr);
+        //        _dprintf("Launch to 0x%x\r\n", pbi->StartAddr);
         //		void (*plaunch)(void) = (void (*)(void))pbi->StartAddr;
         //		plaunch();
         //        return pbi->StartAddr;
-        return result;
+        return 18;
     }
 #endif
 }

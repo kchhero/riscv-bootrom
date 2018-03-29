@@ -2,7 +2,7 @@
 #ifndef _KPRINTF_H
 #define _KPRINTF_H
 
-#include "include/qemu_platform.h"
+#include "qemu_platform.h"
 #include <stdint.h>
 
 #define REG32(p, i)	((p)[(i) >> 2])
