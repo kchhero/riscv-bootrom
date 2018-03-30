@@ -19,8 +19,6 @@
 #define __ISDHCBOOT_H__
 
 #include "nx_swallow.h"
-#include "nx_type.h"
-
 #include "nx_sdmmc.h"
 
 #define SDXC_CLKSRC			(2)	/* PLL2 = 100 MHz */
@@ -106,11 +104,11 @@
 
 typedef struct tag_NX_SDMMC_COMMAND
 {
-	U32	cmdidx;
-	U32	arg;
-	U32	flag;
-	U32	status;
-	U32	response[4];
+	unsigned int	cmdidx;
+	unsigned int	arg;
+	unsigned int	flag;
+	unsigned int	status;
+	unsigned int	response[4];
 } NX_SDMMC_COMMAND;
 
 /*----------------------------------------------------------------------------*/
@@ -124,10 +122,10 @@ typedef enum
 
 typedef struct __attribute__ ((aligned(4))) tag_SDXCBOOTSTATUS
 {
-	U32			rca;	/* relative card address of device */
-	CBOOL			bHighCapacity;
-	U32			SDPort;
-	CBOOL			bHighSpeed;
+	unsigned int			rca;	/* relative card address of device */
+	int			bHighCapacity;
+	unsigned int			SDPort;
+	int			bHighSpeed;
 	NX_SDMMC_CARDTYPE	CardType;
 } SDXCBOOTSTATUS;
 
@@ -195,15 +193,15 @@ typedef struct __attribute__ ((aligned(4))) tag_SDXCBOOTSTATUS
 #define NX_SDXC_RINTSTS_RE			(1U <<  1)
 
 
-CBOOL NX_SDMMC_Init(SDXCBOOTSTATUS *pSDXCBootStatus);
-CBOOL NX_SDMMC_Terminate(SDXCBOOTSTATUS *pSDXCBootStatus);
-CBOOL NX_SDMMC_Open(SDXCBOOTSTATUS *pSDXCBootStatus, U32 option);
-CBOOL NX_SDMMC_Close(SDXCBOOTSTATUS *pSDXCBootStatus);
-CBOOL NX_SDMMC_ReadSectors(SDXCBOOTSTATUS *pSDXCBootStatus, U32 SectorNum,
-			U32 numberOfSector, U32 *pdwBuffer);
+int NX_SDMMC_Init(SDXCBOOTSTATUS *pSDXCBootStatus);
+int NX_SDMMC_Terminate(SDXCBOOTSTATUS *pSDXCBootStatus);
+int NX_SDMMC_Open(SDXCBOOTSTATUS *pSDXCBootStatus, unsigned int option);
+int NX_SDMMC_Close(SDXCBOOTSTATUS *pSDXCBootStatus);
+int NX_SDMMC_ReadSectors(SDXCBOOTSTATUS *pSDXCBootStatus, unsigned int SectorNum,
+			unsigned int numberOfSector, unsigned int *pdwBuffer);
 
-void NX_SDPADSetALT(U32 PortNum);
-void NX_SDPADSetGPIO(U32 PortNum);
-U32 iSDXCBOOT(U32 option);
+void NX_SDPADSetALT(unsigned int PortNum);
+void NX_SDPADSetGPIO(unsigned int PortNum);
+unsigned int iSDXCBOOT(unsigned int option);
 
 #endif //__ISDHCBOOT_H__

@@ -1,10 +1,6 @@
 #include <nx_cmu.h>
 #include <nx_pll.h>
-#ifdef QEMU_RISCV
-#include <qemu_platform.h>
-#else
-#include <platform.h>
-#endif
+#include <nx_platform.h>
 
 static struct NX_CMU_RegisterSet *const pCMUCPU =
 	(struct NX_CMU_RegisterSet *)PHY_BASEADDR_CMU_CPU_MODULE;

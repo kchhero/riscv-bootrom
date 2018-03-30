@@ -39,20 +39,22 @@ endif
 SYS_OBJS	 = 	head.o
 
 ifeq ($(QEMU), y)
-SYS_OBJS	+=	kprintf.o
+SYS_OBJS	+=	nx_qemu_printf.o
 else
-SYS_OBJS	+=	printf.o
+SYS_OBJS	+=	nx_swallow_printf.o
+SYS_OBJS	+=	nx_clock.o
+SYS_OBJS	+=	nx_debug.o
 endif
 
-SYS_OBJS	+=	nx_clock.o
 SYS_OBJS	+= 	iROMBOOT.o
-SYS_OBJS	+= 	iSDHCBOOT.o libplat.o
+SYS_OBJS	+= 	iSDHCBOOT.o nx_libplat.o
 
 SYS_OBJS_LIST	= 	$(addprefix $(DIR_OBJOUTPUT)/,$(SYS_OBJS))
 
 SYS_INCLUDES 	=	-I. \
 			-I ./src			\
-			-I ./include
+			-I ./include			\
+			-I ./include/debug
 
 ################################################################################
 $(DIR_OBJOUTPUT)/%.o: src/%.c

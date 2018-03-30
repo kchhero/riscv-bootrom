@@ -107,7 +107,7 @@ CFLAGS			+= \
                         -Wall -nostartfiles \
                         -fno-common -DENTROPY=0 \
                         -DNONSMP_HART=0 \
-                        -I ./src -I . -I ./include
+                        -I ./src -I . -I ./include -I ./include/debug
 
 ifeq ($(DEBUG_GDB),y)
 CFLAGS                  += -g -ggdb

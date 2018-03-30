@@ -2,7 +2,7 @@
 #ifndef _KPRINTF_H
 #define _KPRINTF_H
 
-#include "qemu_platform.h"
+#include "platform.h"
 #include <stdint.h>
 
 #define REG32(p, i)	((p)[(i) >> 2])
@@ -37,5 +37,13 @@ static inline void kputc(char c)
 
 extern void kputs(const char *);
 extern void _dprintf(const char *, ...);
+
+#ifdef DEBUG
+#define dprintf(s, ...)	_dprintf((s), ##__VA_ARGS__)
+#define dputs(s)	kputs((s))
+#else
+#define dprintf(s, ...) do { } while (0)
+#define dputs(s)	do { } while (0)
+#endif
 
 #endif /* _KPRINTF_H */

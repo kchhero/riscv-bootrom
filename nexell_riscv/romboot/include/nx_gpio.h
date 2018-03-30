@@ -16,35 +16,36 @@
 
 #ifndef __NX_GPIO_H__
 #define __NX_GPIO_H__
+
 struct	NX_GPIO_RegisterSet
 {
-	volatile U32 GPIOx_OUT;			// 0x000: Output Register
-	volatile U32 GPIOx_OUTENB;		// 0x004: Output Enable Register
-	volatile U32 GPIOx_DETMODE[2];		// 0x008: Event Detect Mode Register
-	volatile U32 GPIOx_INTENB;		// 0x010: Interrupt Enable Register
-	volatile U32 GPIOx_DET;			// 0x014: Event Detect Register
-	volatile U32 GPIOx_PAD;			// 0x018: PAD Status Register
-	volatile U32 GPIOx_PUENB;		// 0x01C: Pull Up Enable Register /// @note charles - THIS REGISTER IS NOT USED
-	volatile U32 GPIOx_ALTFN[2];		// 0x020: Alternate Function Select Register
-	volatile U32 __Reserved[5];		// 0x028:
-	volatile U32 GPIOx_DETENB;		// 0x03C: IntPend Detect Enable Register
-	volatile U32 GPIOx_SLEW;		// 0x040
-	volatile U32 GPIOx_SLEW_DISABLE_DEFAULT;	// 0x044
-	volatile U32 GPIOx_DRV1;			// 0x048
-	volatile U32 GPIOx_DRV1_DISABLE_DEFAULT;	// 0x04C
-	volatile U32 GPIOx_DRV0;			// 0x050
-	volatile U32 GPIOx_DRV0_DISABLE_DEFAULT;	// 0x054
-	volatile U32 GPIOx_PULLSEL;			// 0x058
-	volatile U32 GPIOx_PULLSEL_DISABLE_DEFAULT;	// 0x05C
-	volatile U32 GPIOx_PULLENB;			// 0x060
-	volatile U32 GPIOx_PULLENB_DISABLE_DEFAULT;	// 0x064
-	volatile U32 GPIOx_InputMuxSelect[2];		// 0x068
-	volatile U32 GPIOx_SECURE_MARKING;		// 0x070
-	volatile U32 GPIOx_INPUTENB;			// 0x074
-	volatile U32 GPIOx_INPUTENB_DISABLE_DEFAULT;	// 0x078
-	volatile U32 GPIOx_ALTFN_2;			// 0x07C
+	volatile unsigned int GPIOx_OUT;			// 0x000: Output Register
+	volatile unsigned int GPIOx_OUTENB;		// 0x004: Output Enable Register
+	volatile unsigned int GPIOx_DETMODE[2];		// 0x008: Event Detect Mode Register
+	volatile unsigned int GPIOx_INTENB;		// 0x010: Interrupt Enable Register
+	volatile unsigned int GPIOx_DET;			// 0x014: Event Detect Register
+	volatile unsigned int GPIOx_PAD;			// 0x018: PAD Status Register
+	volatile unsigned int GPIOx_PUENB;		// 0x01C: Pull Up Enable Register /// @note charles - THIS REGISTER IS NOT USED
+	volatile unsigned int GPIOx_ALTFN[2];		// 0x020: Alternate Function Select Register
+	volatile unsigned int __Reserved[5];		// 0x028:
+	volatile unsigned int GPIOx_DETENB;		// 0x03C: IntPend Detect Enable Register
+	volatile unsigned int GPIOx_SLEW;		// 0x040
+	volatile unsigned int GPIOx_SLEW_DISABLE_DEFAULT;	// 0x044
+	volatile unsigned int GPIOx_DRV1;			// 0x048
+	volatile unsigned int GPIOx_DRV1_DISABLE_DEFAULT;	// 0x04C
+	volatile unsigned int GPIOx_DRV0;			// 0x050
+	volatile unsigned int GPIOx_DRV0_DISABLE_DEFAULT;	// 0x054
+	volatile unsigned int GPIOx_PULLSEL;			// 0x058
+	volatile unsigned int GPIOx_PULLSEL_DISABLE_DEFAULT;	// 0x05C
+	volatile unsigned int GPIOx_PULLENB;			// 0x060
+	volatile unsigned int GPIOx_PULLENB_DISABLE_DEFAULT;	// 0x064
+	volatile unsigned int GPIOx_InputMuxSelect[2];		// 0x068
+	volatile unsigned int GPIOx_SECURE_MARKING;		// 0x070
+	volatile unsigned int GPIOx_INPUTENB;			// 0x074
+	volatile unsigned int GPIOx_INPUTENB_DISABLE_DEFAULT;	// 0x078
+	volatile unsigned int GPIOx_ALTFN_2;			// 0x07C
 
-	U8 __Reserved_MID0[0x80];
+	unsigned char __Reserved_MID0[0x80];
 };
 
 struct NX_GPIO
@@ -52,7 +53,7 @@ struct NX_GPIO
 	struct NX_GPIO_RegisterSet RWGPIO;
 	struct NX_GPIO_RegisterSet SGPIO;
 	struct NX_GPIO_RegisterSet CGPIO;
-	U8 __Rev[0x1000 - 3 * sizeof(struct NX_GPIO_RegisterSet)];
+	unsigned char __Rev[0x1000 - 3 * sizeof(struct NX_GPIO_RegisterSet)];
 };
 
 ///@brief	GPIO Interrupts for interrupt interface
