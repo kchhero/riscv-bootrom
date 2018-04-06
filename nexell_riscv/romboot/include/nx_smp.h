@@ -1,6 +1,5 @@
-#ifndef NEXELL_SMP
-#define NEXELL_SMP
-//#include "nx_platform.h"
+#ifndef __NEXELL_SMP__
+#define __NEXELL_SMP__
 
 // The maximum number of HARTs this code supports
 #ifndef MAX_HARTS
@@ -139,4 +138,4 @@ hart0_entry:
 
 #endif  /* ifdef CLINT1_CTRL_ADDR */
 
-#endif
+#endif // __NX_SMP__

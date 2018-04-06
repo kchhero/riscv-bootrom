@@ -229,20 +229,6 @@ extern "C" {
 #define PI_GPIOB_GPIO_31_			((1 << 16) | (1 << 8) | (31 << 3) | 0) 
 #define PI_SDMMC1_CCLK				((1 << 16) | (1 << 8) | ( 1 << 3) | 1) 
 #define PI_SDMMC1_CMD				((1 << 16) | (1 << 8) | ( 2 << 3) | 1) 
-#define PI_SDMMC2_CDATA_0_			((1 << 16) | (1 << 8) | ( 3 << 3) | 1) 
-#define PI_SDMMC2_CDATA_1_			((1 << 16) | (1 << 8) | ( 4 << 3) | 1) 
-#define PI_SDMMC2_CDATA_2_			((1 << 16) | (1 << 8) | ( 5 << 3) | 1) 
-#define PI_SDMMC2_CDATA_3_			((1 << 16) | (1 << 8) | ( 6 << 3) | 1) 
-#define PI_SDMMC2_CCLK				((1 << 16) | (1 << 8) | ( 7 << 3) | 1) 
-#define PI_SDMMC2_CMD				((1 << 16) | (1 << 8) | ( 8 << 3) | 1) 
-#define PI_NANDC_SD_0_				((1 << 16) | (1 << 8) | ( 9 << 3) | 1) 
-#define PI_NANDC_SD_1_				((1 << 16) | (1 << 8) | (10 << 3) | 1) 
-#define PI_NANDC_SD_2_				((1 << 16) | (1 << 8) | (11 << 3) | 1) 
-#define PI_NANDC_SD_3_				((1 << 16) | (1 << 8) | (12 << 3) | 1) 
-#define PI_NANDC_SD_4_				((1 << 16) | (1 << 8) | (13 << 3) | 1) 
-#define PI_NANDC_SD_5_				((1 << 16) | (1 << 8) | (14 << 3) | 1) 
-#define PI_NANDC_SD_6_				((1 << 16) | (1 << 8) | (15 << 3) | 1) 
-#define PI_NANDC_SD_7_				((1 << 16) | (1 << 8) | (16 << 3) | 1) 
 #define PI_SDMMC0_CDATA_0_			((1 << 16) | (1 << 8) | ( 9 << 3) | 2) 
 #define PI_SDMMC0_CDATA_1_			((1 << 16) | (1 << 8) | (10 << 3) | 2) 
 #define PI_SDMMC0_CDATA_2_			((1 << 16) | (1 << 8) | (11 << 3) | 2) 
@@ -333,14 +319,14 @@ extern "C" {
 #define PI_SDMMC1_CARD_WritePrt			((1 << 16) | (2 << 8) | (10 << 3) | 1) 
 #define PI_I2S3_I2SBCLK				((1 << 16) | (2 << 8) | (10 << 3) | 3) 
 #define PI_UART2_BAUDOUT_n			((1 << 16) | (2 << 8) | (10 << 3) | 4) 
-#define PI_SDMMC2_nRST				((1 << 16) | (2 << 8) | (11 << 3) | 1) 
+
 #define PI_I2S3_I2SCODCLK			((1 << 16) | (2 << 8) | (11 << 3) | 3) 
 #define PI_UART3_BAUDOUT_n			((1 << 16) | (2 << 8) | (11 << 3) | 4) 
-#define PI_SDMMC2_CARD_nDetect			((1 << 16) | (2 << 8) | (12 << 3) | 1) 
+
 #define PI_CMU_SRC_EXT_SRC_CLK0			((1 << 16) | (2 << 8) | (12 << 3) | 2) 
 #define PI_I2S3_I2SLRCLK			((1 << 16) | (2 << 8) | (12 << 3) | 3) 
 #define PI_UART4_BAUDOUT_n			((1 << 16) | (2 << 8) | (12 << 3) | 4) 
-#define PI_SDMMC2_CARD_WritePrt			((1 << 16) | (2 << 8) | (13 << 3) | 1) 
+
 #define PI_UART5_BAUDOUT_n			((1 << 16) | (2 << 8) | (13 << 3) | 4) 
 #define PI_GMAC_RGMII_aux_ts_trig		((1 << 16) | (2 << 8) | (14 << 3) | 1) 
 #define PI_USB20OTG_i_VBUSVLDEXT		((1 << 16) | (2 << 8) | (14 << 3) | 2) 
@@ -350,7 +336,7 @@ extern "C" {
 #define PI_GMAC_RGMII_phy_intr			((1 << 16) | (2 << 8) | (16 << 3) | 1) 
 #define PI_SDMMC1_CARD_nInt			((1 << 16) | (2 << 8) | (16 << 3) | 2) 
 #define PI_GMAC_RMII_phy_intr			((1 << 16) | (2 << 8) | (17 << 3) | 1) 
-#define PI_SDMMC2_CARD_nInt			((1 << 16) | (2 << 8) | (17 << 3) | 2) 
+
 #define PI_CSSYS_NTRST				((0 << 16) | (0 << 8) | ( 0 << 3) | 0) 
 #define PI_CSSYS_TMS				((0 << 16) | (0 << 8) | ( 0 << 3) | 0) 
 #define PI_CSSYS_TDI				((0 << 16) | (0 << 8) | ( 0 << 3) | 0) 
@@ -599,11 +585,6 @@ extern "C" {
 #define PI_SDMMC1_CDATA_6_			0 
 #define PI_SDMMC1_CDATA_7_			0 
 #define PI_SDMMC1_CDATASTROBE			0 
-#define PI_SDMMC2_CDATA_4_			0 
-#define PI_SDMMC2_CDATA_5_			0 
-#define PI_SDMMC2_CDATA_6_			0 
-#define PI_SDMMC2_CDATA_7_			0 
-#define PI_SDMMC2_CDATASTROBE			0 
 #define PI_UART0_nCTS				0 
 #define PI_UART0_nRTS				0 
 #define PI_UART0_SIR_IN				0 

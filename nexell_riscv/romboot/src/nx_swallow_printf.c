@@ -16,8 +16,9 @@
 
 #include <nx_bootheader.h>
 #include <nx_swallow_printf.h>
+#include <nx_debug.h>
 
-#define nx_putchar DebugPutch
+#define nx_putchar(c) DebugPutch(c)
 
 void printchar(char **str, int c)
 {

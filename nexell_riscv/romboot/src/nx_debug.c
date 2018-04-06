@@ -17,11 +17,12 @@
  */
 
 #include <nx_uart.h>
-#include <nx_libplat.h>
+#include <nx_lib.h>
 #include <nx_bootheader.h>
 #include <nx_chip_iomux.h>
-#include <nx_cmu.h>
-#include <nx_platform.h>
+#include <nx_gpio.h>
+#include <nx_swallow_platform.h>
+#include <nx_clock.h>
 
 #define NX_CLKSRC_UART 1
 #define SOURCE_DIVID	(4UL)
@@ -30,13 +31,13 @@
 
 
 static struct NX_UART_RegisterSet * const pUART =
-    (struct NX_UART_RegisterSet *)PHY_BASEADDR_UART2_MODULE;
-const struct cmu_device_clk dbguart[2] = {
-    {	// core
-        0x1C00, 13, 2, NX_CLKSRC_PLL1, 0
-    }, {	// apb
-        0x1E00, 14, 2, NX_CLKSRC_PLL1, 0
-    }
+    (struct NX_UART_RegisterSet *)PHY_BASEADDR_UART0_MODULE;
+const CMU_DEVICE_CLK dbguart[2] = {
+    /* {	// core */
+    /*     0x1C00, 13, 2, NX_CLKSRC_PLL1, 0 */
+    /* }, {	// apb */
+    /*     0x1E00, 14, 2, NX_CLKSRC_PLL1, 0 */
+    /* } */
 };
 
 //------------------------------------------------------------------------------
@@ -46,7 +47,7 @@ int DebugInit(void)
     static const union nxpad uartpad = {PI_UART2_TXD};
 
     setpad(&uartpad, 1, 1);
-    setdeviceclock(dbguart, 2, 1);
+    nxSetDeviceClock(dbguart, 2, 1);
     //------------------------------------------------------------------------------
     // Uart Initialize
     //------------------------------------------------------------------------------

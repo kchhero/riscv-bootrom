@@ -1,18 +1,22 @@
-#include <nx_cmu.h>
 #include <nx_pll.h>
-#include <nx_platform.h>
+#include <nx_clock.h>
+#include <nx_cpuif_regmap.h>
+#include <nx_chip_sfr.h>
 
-static struct NX_CMU_RegisterSet *const pCMUCPU =
-	(struct NX_CMU_RegisterSet *)PHY_BASEADDR_CMU_CPU_MODULE;
-static struct NX_CMU_RegisterSet *const pCMUSYS =
-	(struct NX_CMU_RegisterSet *)PHY_BASEADDR_CMU_SYS_MODULE;
-static struct NX_CMU_RegisterSet *const pCMUSRC =
-	(struct NX_CMU_RegisterSet *)PHY_BASEADDR_CMU_SRC_MODULE;
+#ifdef QEMU_RISCV
+#include <nx_qemu_platform.h>
+#else
+#include <nx_swallow_platform.h>
+#endif
 
-static struct NX_PLL_RegisterSet *const pPLLCPU =
-	(struct NX_PLL_RegisterSet *)PHY_BASEADDR_PLL_CPU_MODULE;
-static struct NX_PLL_RegisterSet *const pPLL0 =
-	(struct NX_PLL_RegisterSet *)PHY_BASEADDR_PLL0_MODULE;
+unsigned int *__PLL_CPUIF_BASEADDR[NUMBER_OF_PLL_CPUIF_MODULE];
+
+/* static struct NX_CMU_RegisterSet *const pCMUCPU = (struct NX_CMU_RegisterSet *)PHY_BASEADDR_CMU_CPU_MODULE; */
+/* static struct NX_CMU_RegisterSet *const pCMUSYS = (struct NX_CMU_RegisterSet *)PHY_BASEADDR_CMU_SYS_MODULE; */
+
+/* static struct NX_PLL_RegisterSet *const pPLLCPU = (struct NX_PLL_RegisterSet *)PHY_BASEADDR_PLL_CPU_MODULE; */
+/* static struct NX_PLL_RegisterSet *const pPLL0 =   (struct NX_PLL_RegisterSet *)PHY_BASEADDR_PLL0_MODULE; */
+extern _SFR_INFO SFR_INFO;
 
 struct nx_pll_info {
 	unsigned short m;
@@ -56,71 +60,39 @@ struct nx_cpuclkdiv_info {
 	}
 };
 
-struct NX_PLL_RegisterSet *const gppll[5] = {
-	(struct NX_PLL_RegisterSet *)PHY_BASEADDR_PLL_CPU_MODULE,
-	(struct NX_PLL_RegisterSet *)PHY_BASEADDR_PLL0_MODULE,
-	(struct NX_PLL_RegisterSet *)PHY_BASEADDR_PLL1_MODULE,
-	(struct NX_PLL_RegisterSet *)PHY_BASEADDR_PLL_DDR0_MODULE,
-	(struct NX_PLL_RegisterSet *)PHY_BASEADDR_PLL_DDR1_MODULE
-};
-#define PLL_P	0
-#define PLL_M	16
-#define PLL_S	0
-#define PLL_K	16
+/* struct NX_PLL_RegisterSet *const gppll[5] = { */
+/* 	(struct NX_PLL_RegisterSet *)PHY_BASEADDR_PLL_CPUIF0_MODULE, */
+/* 	(struct NX_PLL_RegisterSet *)PHY_BASEADDR_PLL_CPUIF1_MODULE, */
+/* 	(struct NX_PLL_RegisterSet *)PHY_BASEADDR_PLL_CPUIF2_MODULE, */
+/* 	(struct NX_PLL_RegisterSet *)PHY_BASEADDR_PLL_CPUIF3_MODULE, */
+/* 	(struct NX_PLL_RegisterSet *)PHY_BASEADDR_PLL_CPUIF4_MODULE, */
+/* }; */
+/* #define PLL_P	0 */
+/* #define PLL_M	16 */
+/* #define PLL_S	0 */
+/* #define PLL_K	16 */
 
-#define __g_OSC_KHz	24000
-unsigned int NX_PLL_GetFrequency(unsigned int PllNumber)
-{
-	struct NX_PLL_RegisterSet *const ppll = gppll[PllNumber];
-	unsigned int regvalue, regvalue1, nP, nM, nS, nK;
-	unsigned int temp = 0;
+/* #define __g_OSC_KHz	24000 */
+/* unsigned int NX_PLL_GetFrequency(unsigned int PllNumber) */
+/* { */
+/* 	struct NX_PLL_RegisterSet *const ppll = gppll[PllNumber]; */
+/* 	unsigned int regvalue, regvalue1, nP, nM, nS, nK; */
+/* 	unsigned int temp = 0; */
 
-	regvalue = ppll->CFG1;
-	regvalue1 = ppll->CFG2;
-	nP = (regvalue >> PLL_P) & 0x3F;
-	nM = (regvalue >> PLL_M) & 0x3FF;
-	nS = (regvalue1 >> PLL_S) & 0xFF;
-	nK = (regvalue1 >> PLL_K) & 0xFFFF;
+/* 	regvalue = ppll->CFG1; */
+/* 	regvalue1 = ppll->CFG2; */
+/* 	nP = (regvalue >> PLL_P) & 0x3F; */
+/* 	nM = (regvalue >> PLL_M) & 0x3FF; */
+/* 	nS = (regvalue1 >> PLL_S) & 0xFF; */
+/* 	nK = (regvalue1 >> PLL_K) & 0xFFFF; */
 
-	if (nK)
-		temp = ((((nK * 1000) / 65536) * __g_OSC_KHz) / nP) >> nS;
+/* 	if (nK) */
+/* 		temp = ((((nK * 1000) / 65536) * __g_OSC_KHz) / nP) >> nS; */
 
-	temp = ((((nM * __g_OSC_KHz) / nP) >> nS) * 1000) + temp;
-	return temp;
-}
+/* 	temp = ((((nM * __g_OSC_KHz) / nP) >> nS) * 1000) + temp; */
+/* 	return temp; */
+/* } */
 
-void setcpuclock(unsigned int clklvl)
-{
-
-	pCMUCPU->CMUBLK[0].DIV[5] = 0x1 & 0xFFFF;	/* cpu dbgapb div 2 */
-	pCMUCPU->CMUBLK[0].DIV[6] = 0x1 & 0xFFFF;	/* cpu apb div 2 */
-
-	while (5000 < pPLLCPU->DBG0)
-		;
-	pPLLCPU->CTRL |= (1 << 3);	/* bypass off, use pll value */
-
-	if (clklvl != 0) {
-		pCMUCPU->CMUBLK[0].DIV[1] = cpuclkdiv[clklvl].axi - 1;		/* cpu axi */
-		pCMUCPU->CMUBLK[0].DIV[2] = cpuclkdiv[clklvl].atclk - 1;	/* cpu atclk */
-		pCMUCPU->CMUBLK[0].DIV[3] = cpuclkdiv[clklvl].cntclk - 1;	/* cpu cntclk */
-		pCMUCPU->CMUBLK[0].DIV[4] = cpuclkdiv[clklvl].tsclk - 1;	/* cpu tsclk */
-		pCMUCPU->CMUBLK[0].DIV[5] = cpuclkdiv[clklvl].dbgapb - 1;	/* cpu dbgapb */
-		pCMUCPU->CMUBLK[0].DIV[6] = cpuclkdiv[clklvl].apb - 1;		/* cpu apb */
-
-		pPLLCPU->CFG1 =
-			pllpms[clklvl].m << 16 |	/* M */
-					3 << 0;		/* P */
-		pPLLCPU->CFG2 =
-					0 << 16 |	/* K */
-			pllpms[clklvl].s <<  0;		/* S */
-
-		pPLLCPU->CTRL |= 1 << 1;	/* dirtyflag */
-		pPLLCPU->CTRL |= 1 << 0;	/* run change */
-
-		while (((pPLLCPU->CTRL >> 8) & 0x1F) != 1)
-			;
-	}
-}
 
 struct nx_sysclkdiv_info {
 	unsigned char axi;
@@ -130,43 +102,8 @@ struct nx_sysclkdiv_info {
 	unsigned char cmu_apb;
 	unsigned char smc_axi;
 };
-void setsystemclock(unsigned int clklvl)
-{
-	if (clklvl != 0) {
-		pCMUSRC->CMUSRC.SSRCOFF[0] = 0xFFFFFFDC;	/* clock off all device */
-		pCMUSRC->CMUSRC.SSRCOFF[1] = 0xFFFF7FFF;
-		pCMUSRC->CMUSRC.SSRCOFF[2] = 0xFFFFFFFF;
-		pCMUSRC->CMUSRC.SSRCOFF[3] = 0xFFFFFFFF;
 
-		pCMUSYS->CMUBLK[0].DIV[0] = 0x2 & 0xFFFF;	/* sys axi div 3 */
-		pCMUSYS->CMUBLK[0].DIV[1] = 0x1 & 0xFFFF;	/* sys apb div 2 */
-		pCMUSYS->CMUBLK[1].DIV[0] = 0x3 & 0xFFFF;	/* sys hsif axi div 4 */
-		pCMUSYS->CMUBLK[1].DIV[1] = 0x1 & 0xFFFF;	/* sys hsif apb div 2 */
-		pCMUSYS->CMUBLK[5].DIV[0] = 0x7 & 0xFFFF;	/* sys cmu apb div 8 */
-		pCMUSYS->CMUBLK[47].DIV[0] = 0x4 & 0xFFFF;	/* sys smc axi div 5 */
-	}
-
-	while (5000 < pPLL0->DBG0)
-		;
-	pPLL0->CTRL |= (1 << 3);	/* bypass off, use pll value */
-
-	if (clklvl != 0) {
-		pPLL0->CFG1 =
-			pllpms[clklvl].m << 16 |	/* M */
-					3 <<  0;	/* P */
-		pPLL0->CFG2 =
-					0 << 16 |	/* K */
-			pllpms[clklvl].s <<  0;		/* S */
-
-		pPLL0->CTRL |= 1 << 1;	/* dirtyflag */
-		pPLL0->CTRL |= 1 << 0;	/* run change */
-
-		while (((pPLL0->CTRL >> 8) & 0x1F) != 1)
-			;
-	}
-}
-
-void setdeviceclock(const struct cmu_device_clk *pdclk, int num, int enb)
+void nxSetDeviceClock(const CMU_DEVICE_CLK *pdclk, int num, int enb)
 {
 	int i;
 	for (i = 0; i < num; i++) {
@@ -193,4 +130,62 @@ void setdeviceclock(const struct cmu_device_clk *pdclk, int num, int enb)
 
 		pCMUSRC->CMUBLK[of - 1].SCLKENB[egrp] = 1 << ebit;
 	}
+}
+
+
+/* static unsigned int  NX_PLL_TYPE[NUMBER_OF_PLL_MODULE] = { */
+/*     TYPE_PLL_0    */
+/*     ,TYPE_PLL_1    */
+/*     ,TYPE_PLL_CPU  */
+/*     ,TYPE_PLL_DDR0 */
+/*     ,TYPE_PLL_DDR1 */
+/* }; */
+
+void __PLL_CPUIF_SET_BASEADDR (unsigned int moduleindex, unsigned int *baseaddr) {
+    __PLL_CPUIF_BASEADDR[moduleindex] = baseaddr;
+} 
+
+void NX_PLL_SetBaseAddress(unsigned int inst_index, unsigned int BaseAddress)
+{
+    //CHECK_MODULE_INDEX;
+    __PLL_CPUIF_SET_BASEADDR (inst_index, BaseAddress);
+}
+
+struct __nx_cpuif_PLL_CPUIFregmap_struct__ g_PLL_CPUIFregmap[NUMBER_OF_PLL_CPUIF_MODULE];
+
+void NX_PLL_SetOSCMUX( unsigned int inst_index, unsigned int MUXSEL )
+{
+    nx_cpuif_reg_write_one(g_PLL_CPUIFregmap[inst_index].OSCCLK_MUXSEL, MUXSEL);
+}
+
+void nxSetClockInit(void)
+{
+    //    unsigned int rm_blk_usb, rm_blk_mm;
+
+    NX_PLL_SetBaseAddress(INDEX_PLL_0, SFR_INFO.PLL[0]);
+    NX_PLL_SetBaseAddress(INDEX_PLL_1, SFR_INFO.PLL[1]);
+
+    nx_cpuif_reg_write_one(CMU_INFO_DEF__SYS_0___CLK400__group_clock_source     , 1  ); // PLL[0]
+
+    nx_cpuif_reg_write_one(CMU_INFO_DEF__SYS_0___CLK400__dynamic_divider_value	, 1-1); // div 1
+    nx_cpuif_reg_write_one(CMU_INFO_DEF__SYS_0___AXI__dynamic_divider_value	, 2-1); // div 2
+    nx_cpuif_reg_write_one(CMU_INFO_DEF__SYS_0___APB__dynamic_divider_value	, 4-1); // div 4
+    nx_cpuif_reg_write_one(CMU_INFO_DEF__SYS_0___CLK133__dynamic_divider_value	, 3-1); // div 3
+    nx_cpuif_reg_write_one(CMU_INFO_DEF__SYS_0___CLK50__dynamic_divider_value	, 8-1); // div 8
+    nx_cpuif_reg_write_one(CMU_INFO_DEF__SYS_0___CLK40__dynamic_divider_value	,10-1); // div 10
+
+    nx_cpuif_reg_write_one(CMU_INFO_DEF__CPU_0___CORE__group_clock_source       , 2  ); // PLL[1]
+    nx_cpuif_reg_write_one(CMU_INFO_DEF__CPU_0___CORE__dynamic_divider_value    , 2-1); // div 2
+
+    //TODO
+    /* while(1) { */
+    /*     if (lock == 1) { */
+            NX_PLL_SetOSCMUX(INDEX_PLL_0, PLL_MUX_PLL_FOUT);
+            NX_PLL_SetOSCMUX(INDEX_PLL_1, PLL_MUX_PLL_FOUT);
+            //            __asm__ __volatile__ ("dmb");
+    /*         break; */
+    /*     } */
+                     
+    /* } */
+
 }

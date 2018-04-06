@@ -1,5 +1,5 @@
 // See LICENSE for license details.
-#include <nx_platform.h>
+#include <nx_swallow.h>
 #include <nx_smp.h>
 
 	.section .text.init
@@ -9,9 +9,9 @@ _prog_start:
 	smp_pause(s1, s2)
 	li sp, (SRAM_ADDR + SRAM_SIZE - 1)
 
-        li a0,77        //boot mode, temporary bootoption value=77
+        li a0,22        //boot mode, temporary bootoption value=22
 
-        call iROMBOOT
+        call romboot
         
 	smp_resume(s1, s2)
 	csrr a0, mhartid

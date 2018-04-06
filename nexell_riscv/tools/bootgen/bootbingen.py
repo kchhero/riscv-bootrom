@@ -17,6 +17,7 @@ def nsihgen():
         temp2 = 0
         if (len(i) != 8) :
             print "ERROR"
+            binascii.
             break
 
         #for j in i :

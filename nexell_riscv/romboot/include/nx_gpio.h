@@ -130,4 +130,25 @@ typedef enum
 	NX_GPIO_PULL_UP		= 1UL,
 	NX_GPIO_PULL_OFF	= 2UL
 } NX_GPIO_PULL;
+
+void udelay(unsigned int utime);
+
+struct nxpadi {
+	unsigned int alt: 3;    /* alt function */
+	unsigned int pin: 5;    /* pin number of group */
+	unsigned int grp: 8;    /* gpio group number */
+	unsigned int flag: 16;  /* pad property 0: not controlable */
+};
+
+union nxpad {
+	unsigned int padd;
+	struct nxpadi padi;
+};
+
+void GPIOSetAltFunction(const struct nxpadi *pad, int setalt);
+void GPIOSetDrvSt(const struct nxpadi *pad, NX_GPIO_DRVSTRENGTH str);
+void GPIOSetPullup(const struct nxpadi *pad, NX_GPIO_PULL pull);
+void GPIOReleasePAD(const struct nxpadi *pad);
+void setpad(const union nxpad *const ppad, int num, int enable);
+
 #endif //__NX_GPIO_H__

@@ -20,7 +20,7 @@
 DEBUG			= y
 DEBUG_GDB               = y
 
-QEMU                    = y
+QEMU                    = n
 
 CROSS_TOOL_TOP		=
 ifeq ($(OS),Windows_NT)
@@ -34,8 +34,11 @@ endif
 # Top Names
 ###########################################################################
 PROJECT_NAME		= swallow
+ifeq ($(QEMU), y)
+LDS_NAME		= $(PROJECT_NAME)_qemu.lds
+else
 LDS_NAME		= $(PROJECT_NAME).lds
-
+endif
 
 ###########################################################################
 # Directories
@@ -97,23 +100,3 @@ ARFLAGS_REMOVE		= -d
 ARLIBFLAGS		= -v -s
 
 ASFLAG			= -D__ASSEMBLY__
-
-
-CFLAGS			+= \
-                        -march=$(ARCH) \
-                        -mabi=$(ABI) \
-                        -mcmodel=medany \
-                        -O2 -std=gnu11 \
-                        -Wall -nostartfiles \
-                        -fno-common -DENTROPY=0 \
-                        -DNONSMP_HART=0 \
-                        -I ./src -I . -I ./include -I ./include/debug
-
-ifeq ($(DEBUG_GDB),y)
-CFLAGS                  += -g -ggdb
-endif
-                        
-
-ifeq ($(QEMU),y)
-CFLAGS			+= -DQEMU_RISCV
-endif

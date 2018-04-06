@@ -16,15 +16,15 @@
 
 include config.mak
 
-
-# LDFLAGS		= -Bstatic						\
-# 		-Wl,-Map=$(DIR_TARGETOUTPUT)/$(PROJECT_NAME).map,--cref	\
-# 		-T$(LDS_NAME)						\
-# 		-Wl,--start-group					\
-# 		-L$(DIR_OBJOUTPUT)					\
-# 		-Wl,--end-group						\
-# 		-Wl,--build-id=none					\
-# 		-nostdlib
+CFLAGS		+= \
+		-march=$(ARCH) \
+		-mabi=$(ABI) \
+		-mcmodel=medany \
+		-O2 -std=gnu11 \
+		-Wall -nostartfiles \
+		-fno-common -DENTROPY=0 \
+		-DNONSMP_HART=0 \
+		-I ./src -I . -I ./include -I ./include/debug
 
 LDFLAGS	=	-static -nostdlib -L ./ -T$(LDS_NAME) \
 		-Wl,-Map=$(DIR_TARGETOUTPUT)/$(PROJECT_NAME).map,--cref	\
@@ -32,7 +32,12 @@ LDFLAGS	=	-static -nostdlib -L ./ -T$(LDS_NAME) \
 		-march=$(ARCH) \
                 -mabi=$(ABI)
 
+ifeq ($(QEMU),y)
+CFLAGS		+= -DQEMU_RISCV
+endif
+
 ifeq ($(DEBUG_GDB), y)
+CFLAGS		+= -g -ggdb
 LDFLAGS		+= -g -ggdb
 endif
 
@@ -42,12 +47,14 @@ ifeq ($(QEMU), y)
 SYS_OBJS	+=	nx_qemu_printf.o
 else
 SYS_OBJS	+=	nx_swallow_printf.o
-SYS_OBJS	+=	nx_clock.o
-SYS_OBJS	+=	nx_debug.o
+SYS_OBJS	+=	nx_clock.o \
+			nx_debug.o \
+			nx_cpuif_regmap.o \
+			nx_chip_sfr.o
 endif
 
-SYS_OBJS	+= 	iROMBOOT.o
-SYS_OBJS	+= 	iSDHCBOOT.o nx_libplat.o
+SYS_OBJS	+= 	iROMBOOT.o iSDBOOT.o
+SYS_OBJS	+= 	nx_gpio.o nx_gpt.o nx_lib.o
 
 SYS_OBJS_LIST	= 	$(addprefix $(DIR_OBJOUTPUT)/,$(SYS_OBJS))
 

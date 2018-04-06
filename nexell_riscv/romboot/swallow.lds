@@ -4,16 +4,27 @@ ENTRY(_prog_start)
 MEMORY
 {
   debug_ctrl (rwx) : ORIGIN = 0x0, LENGTH = 0x100
-  maskrom_mem (rx) : ORIGIN = 0x1000, LENGTH = 0x20000
+  maskrom_mem (rx) : ORIGIN = 0x10000, LENGTH = 0x10000
   clint_ctrl (rw) : ORIGIN = 0x2000000, LENGTH = 0x10000
   plic_ctrl (rw) : ORIGIN = 0xc000000, LENGTH = 0x4000000
-  gpio_ctrl (rw) : ORIGIN = 0x10012000, LENGTH = 0x1000
-  uart_ctrl (rw) : ORIGIN = 0x10013000, LENGTH = 0x1000
-  spi_ctrl (rw) : ORIGIN = 0x10014000, LENGTH = 0x1000
-  sdmmc0_ctrl (rw) : ORIGIN = 0x26080000, LENGTH = 0x10000
-  sdmmc1_ctrl (rw) : ORIGIN = 0x26090000, LENGTH = 0x10000
-  sdmmc2_ctrl (rw) : ORIGIN = 0x260A0000, LENGTH = 0x10000
-  memory_mem (rwx) : ORIGIN = 0x80000000, LENGTH = 0x40000000
+  gpio0_ctrl (rw) : ORIGIN = 0x20700000, LENGTH = 0x1000
+  gpio1_ctrl (rw) : ORIGIN = 0x20710000, LENGTH = 0x1000
+  gpio2_ctrl (rw) : ORIGIN = 0x20720000, LENGTH = 0x1000
+  gpio3_ctrl (rw) : ORIGIN = 0x20730000, LENGTH = 0x1000
+  gpio4_ctrl (rw) : ORIGIN = 0x20740000, LENGTH = 0x1000
+  gpio5_ctrl (rw) : ORIGIN = 0x20750000, LENGTH = 0x1000
+  gpio6_ctrl (rw) : ORIGIN = 0x20760000, LENGTH = 0x1000
+  gpio7_ctrl (rw) : ORIGIN = 0x20770000, LENGTH = 0x1000
+  uart0_ctrl (rw) : ORIGIN = 0x208A0000, LENGTH = 0x1000
+  uart1_ctrl (rw) : ORIGIN = 0x208B0000, LENGTH = 0x1000
+  uart2_ctrl (rw) : ORIGIN = 0x208C0000, LENGTH = 0x1000
+  uart3_ctrl (rw) : ORIGIN = 0x208D0000, LENGTH = 0x1000
+  spi0_ctrl  (rw) : ORIGIN = 0x20800000, LENGTH = 0x1000
+  spi1_ctrl  (rw) : ORIGIN = 0x20810000, LENGTH = 0x1000
+  spi2_ctrl  (rw) : ORIGIN = 0x20820000, LENGTH = 0x1000  
+  sdmmc0_ctrl (rw) : ORIGIN = 0x20930000, LENGTH = 0x10000
+  sdmmc1_ctrl (rw) : ORIGIN = 0x20940000, LENGTH = 0x10000
+  memory_mem (rwx) : ORIGIN = 0x40000000, LENGTH = 0x8000
 }
 
 
