@@ -39,21 +39,21 @@
 extern struct nx_bootmm * const pbm;
 
 //const struct cmu_device_clk sdmmcclk[3][2] = {
-const CMU_DEVICE_CLK sdmmcclk[3][3] = {
-	{
-		{0x0400,  1, 2, 18, 1},	// ahb
-		{0x3000, 23, 0, 18, 1},	// core
-		{0x3000, 23, 0, 18, 250}	// core
-	}, {                    
-		{0x0400,  1, 3, 18, 1},	// ahb
-		{0x3200, 24, 0, 18, 1},	// core
-		{0x3200, 24, 0, 18, 250}	// core
-	}, {                    
-		{0x0400,  1, 4, 18, 1},	// ahb
-		{0x3400, 25, 0, 18, 1},	// core
-		{0x3400, 25, 0, 18, 250}	// core
-	}
-};
+/* const CMU_DEVICE_CLK sdmmcclk[3][3] = { */
+/* 	{ */
+/* 		{0x0400,  1, 2, 18, 1},	// ahb */
+/* 		{0x3000, 23, 0, 18, 1},	// core */
+/* 		{0x3000, 23, 0, 18, 250}	// core */
+/* 	}, {                     */
+/* 		{0x0400,  1, 3, 18, 1},	// ahb */
+/* 		{0x3200, 24, 0, 18, 1},	// core */
+/* 		{0x3200, 24, 0, 18, 250}	// core */
+/* 	}, {                     */
+/* 		{0x0400,  1, 4, 18, 1},	// ahb */
+/* 		{0x3400, 25, 0, 18, 1},	// core */
+/* 		{0x3400, 25, 0, 18, 250}	// core */
+/* 	} */
+/* }; */
 
 NX_SDMMC_RegisterSet * const pgSDXCReg[2] =
 {
@@ -61,35 +61,26 @@ NX_SDMMC_RegisterSet * const pgSDXCReg[2] =
     (NX_SDMMC_RegisterSet *)PHY_BASEADDR_SDMMC1_MODULE,
 };
 
-const union nxpad sdmmcpad[2][10] = {
+const union nxpad sdmmcpad[2][6] = {
 {
-	{PI_SDMMC0_CDATA_0_},
-	{PI_SDMMC0_CDATA_1_},
-	{PI_SDMMC0_CDATA_2_},
-	{PI_SDMMC0_CDATA_3_},
-	{PI_SDMMC0_CDATA_4_},
-	{PI_SDMMC0_CDATA_5_},
-	{PI_SDMMC0_CDATA_6_},
-	{PI_SDMMC0_CDATA_7_},
-	{PI_SDMMC0_CCLK},
-	{PI_SDMMC0_CMD}
+    {PADINDEX_OF_OSDMMC0_CDATA_0_},
+    {PADINDEX_OF_OSDMMC0_CDATA_1_},
+    {PADINDEX_OF_OSDMMC0_CDATA_2_},
+    {PADINDEX_OF_OSDMMC0_CDATA_3_},
+    {PADINDEX_OF_OSDMMC0_CCLK},
+    {PADINDEX_OF_OSDMMC0_CMD},
 },
 {
-	{PI_SDMMC1_CDATA_0_},
-	{PI_SDMMC1_CDATA_1_},
-	{PI_SDMMC1_CDATA_2_},
-	{PI_SDMMC1_CDATA_3_},
-	{PI_SDMMC1_CDATA_4_},
-	{PI_SDMMC1_CDATA_5_},
-	{PI_SDMMC1_CDATA_6_},
-	{PI_SDMMC1_CDATA_7_},
-	{PI_SDMMC1_CCLK},
-	{PI_SDMMC1_CMD}
+    {PADINDEX_OF_OSDMMC1_CDATA_0_},
+    {PADINDEX_OF_OSDMMC1_CDATA_1_},
+    {PADINDEX_OF_OSDMMC1_CDATA_2_},
+    {PADINDEX_OF_OSDMMC1_CDATA_3_},
+    {PADINDEX_OF_OSDMMC1_CCLK},
+    {PADINDEX_OF_OSDMMC1_CMD},
 }};
 
 //------------------------------------------------------------------------------
-int NX_SDMMC_SetClock(SDBOOTSTATUS *pSDXCBootStatus,
-				int enb, unsigned int divider)
+int NX_SDMMC_SetClock(SDBOOTSTATUS *pSDXCBootStatus, int enb)
 {
 #ifdef QEMU_RISCV
     _dprintf("<<bootrom>>%s : nxSetDeviceClock cannot setting on QEMU mode\n", __func__);
@@ -126,10 +117,7 @@ int NX_SDMMC_SetClock(SDBOOTSTATUS *pSDXCBootStatus,
     pSDXCReg->CLKENA |= NX_SDXC_CLKENA_LOWPWR;
     pSDXCReg->CLKENA &= ~NX_SDXC_CLKENA_CLKENB;
 
-    if (divider == SDXC_DIVIDER_400KHZ)
-        nxSetDeviceClock(&sdmmcclk[i][2], 1, 1);
-    if (divider == SDXC_CLKDIV_LOW)
-        nxSetDeviceClock(&sdmmcclk[i][1], 1, 1);
+    //    nxSetDeviceClock(&sdmmcclk[i][1], 1, 1);
     
     pSDXCReg->CLKENA &= ~NX_SDXC_CLKENA_LOWPWR;	// low power mode & clock disable
 
@@ -446,9 +434,7 @@ int NX_SDMMC_IdentifyCard(SDBOOTSTATUS *pSDXCBootStatus)
     _dprintf("<<bootrom>> %s start\n",__func__);
 #endif
         
-    if (0 == NX_SDMMC_SetClock(pSDXCBootStatus,
-                                            1,
-                                            SDXC_DIVIDER_400KHZ))
+    if (0 == NX_SDMMC_SetClock(pSDXCBootStatus,1))
         return 0;
 
     // Data Bus Width : 0(1-bit), 1(4-bit)
@@ -766,9 +752,9 @@ int NX_SDMMC_Init(SDBOOTSTATUS *pSDXCBootStatus)
     _dprintf("<<bootrom>> %s start\n",__func__);
 #endif
 
-#ifndef QEMU_RISCV
-    nxSetDeviceClock(&sdmmcclk[i][0], 2, 1);
-#endif
+/* #ifndef QEMU_RISCV */
+/*     nxSetDeviceClock(&sdmmcclk[i][0], 2, 1); */
+/* #endif */
 
     pSDXCReg->PWREN = 0 << 0;	// Set Power Disable
 
@@ -777,8 +763,7 @@ int NX_SDMMC_Init(SDBOOTSTATUS *pSDXCBootStatus)
     pSDXCReg->TIESMPPHASE   = NX_SDMMC_CLOCK_SHIFT_0  << 8;
 
     pSDXCReg->CLKSRC = 0;	// prescaler 0
-    pSDXCReg->CLKDIV = (SDCLK_DIVIDER_WORK >> 1) << 8 |
-        (SDCLK_DIVIDER_ENUM >> 1) << 0;	// 2*n divider (0 : bypass)
+    pSDXCReg->CLKDIV = (SDCLK_DIVIDER_WORK >> 1) << 8 | (SDCLK_DIVIDER_ENUM >> 1) << 0;
     // fifo mode, not read wait(only use sdio mode)
     pSDXCReg->CTRL &= ~(NX_SDXC_CTRL_DMAMODE_EN | NX_SDXC_CTRL_READWAIT);
     // Reset the controller & DMA interface & FIFO
@@ -840,7 +825,7 @@ int NX_SDMMC_Terminate(SDBOOTSTATUS *pSDXCBootStatus)
                              NX_SDXC_CTRL_CTRLRST))
         pSDXCReg->CTRL;
 
-    nxSetDeviceClock(&sdmmcclk[pSDXCBootStatus->SDPort][0], 2, 0);
+    //    nxSetDeviceClock(&sdmmcclk[pSDXCBootStatus->SDPort][0], 2, 0);
 #endif
 
 #ifdef DEBUG
@@ -863,10 +848,7 @@ int NX_SDMMC_Open(SDBOOTSTATUS *pSDXCBootStatus, unsigned int option)
     return 1;
 #endif
 
-    if (pSDXCBootStatus->bHighSpeed == 1)
-        SDSpeed = SDXC_CLKDIV_HIGH;
-    else
-        SDSpeed = SDXC_CLKDIV_LOW;
+    SDSpeed = SDXC_CLKDIV;
     //--------------------------------------------------------------------------
     // card identification mode : Identify & Initialize
     if (0 == NX_SDMMC_IdentifyCard(pSDXCBootStatus)) {
@@ -910,7 +892,7 @@ int NX_SDMMC_Open(SDBOOTSTATUS *pSDXCBootStatus, unsigned int option)
 //------------------------------------------------------------------------------
 int NX_SDMMC_Close(SDBOOTSTATUS *pSDXCBootStatus)
 {
-    NX_SDMMC_SetClock(pSDXCBootStatus, 0, SDXC_DIVIDER_400KHZ);
+    NX_SDMMC_SetClock(pSDXCBootStatus, 0);
 
 #ifdef DEBUG
     _dprintf("<<bootrom>> %s Done\n",__func__);
@@ -1391,7 +1373,7 @@ int SDMMCBOOT(SDBOOTSTATUS *pSDXCBootStatus, unsigned int option)
 
 void NX_SDPADSetALT(unsigned int PortNum)
 {
-    setpad(sdmmcpad[PortNum], 10, 1);
+    setpad(sdmmcpad[PortNum], 6, 1);
 
 /* #define PADINDEX_WITH_CHANNEL_LIST(NAME,CHANNEL)    _GET_MACRO_LIST(NAME, PADINDEX_OF_ ,_ ## CHANNEL,NUMBER_OF_ ## NAME ## _MODULE ) */
 /* #define CAT(a, ...) a ## __VA_ARGS__ */
@@ -1401,7 +1383,7 @@ void NX_SDPADSetALT(unsigned int PortNum)
 
 void NX_SDPADSetGPIO(unsigned int PortNum)
 {
-    setpad(sdmmcpad[PortNum], 10, 0);
+    setpad(sdmmcpad[PortNum], 6, 0);
 }
 
 //------------------------------------------------------------------------------

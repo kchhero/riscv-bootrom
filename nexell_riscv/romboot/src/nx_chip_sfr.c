@@ -1,4 +1,4 @@
-#include <nx_swallow_platform.h>
+#include <nx_swallow.h>
 #include <nx_chip_sfr.h>
 
 _SFR_INFO SFR_INFO = {

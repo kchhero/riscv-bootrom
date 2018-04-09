@@ -21,13 +21,10 @@
 #include "nx_swallow.h"
 #include "nx_sdmmc.h"
 
-#define SDXC_CLKSRC			(2)	/* PLL2 = 100 MHz */
-#define SDXC_CLKDIV_LOW			(1)	/* PLL2 / 1 / 4 = 25 MHz */
-#define SDXC_CLKDIV_HIGH		(1)	/* PLL2 / 1 / 4 = 25 MHz */
-#define	SDXC_DIVIDER_400KHZ		(250)	/* PLL2 / 250 / 4 = 400KHz */
+#define SDXC_CLKDIV		        (1)	/* PLL2 / 1 / 4 = 25 MHz */
 
-#define	SDCLK_DIVIDER_ENUM		(1)	/* 0.4MHz / 1 = 400KHz */
-#define	SDCLK_DIVIDER_WORK		(1)	/* 25MHz / 1 = 25MHz */
+#define	SDCLK_DIVIDER_ENUM		(1)	/* Internal Clock Enable 0:Stop, 1:Oscillate */
+#define	SDCLK_DIVIDER_WORK		(1)	/* Base Clock */
 
 #define BLOCK_LENGTH			(512)
 

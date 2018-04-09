@@ -77,6 +77,7 @@ int romboot(int OrgBootOption)
     unsigned int result;
     struct nx_bootinfo *pbi = (struct nx_bootinfo *)BASEADDR_SRAM;
 
+    nxSetClockInit();
     _dprintf("<<bootrom>> option %s = 0x%x\n", __func__, option); 
     if (option != 0) {
         _dprintf("<<bootrom>> iSDBOOT go\n");            

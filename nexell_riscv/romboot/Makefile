@@ -46,12 +46,13 @@ SYS_OBJS	 = 	head.o
 ifeq ($(QEMU), y)
 SYS_OBJS	+=	nx_qemu_printf.o
 else
-SYS_OBJS	+=	nx_swallow_printf.o
+SYS_OBJS	+=	nx_swallow_printf.o \
+			nx_debug.o
+endif
 SYS_OBJS	+=	nx_clock.o \
-			nx_debug.o \
 			nx_cpuif_regmap.o \
 			nx_chip_sfr.o
-endif
+
 
 SYS_OBJS	+= 	iROMBOOT.o iSDBOOT.o
 SYS_OBJS	+= 	nx_gpio.o nx_gpt.o nx_lib.o

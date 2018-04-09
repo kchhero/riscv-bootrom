@@ -103,34 +103,34 @@ struct nx_sysclkdiv_info {
 	unsigned char smc_axi;
 };
 
-void nxSetDeviceClock(const CMU_DEVICE_CLK *pdclk, int num, int enb)
-{
-	int i;
-	for (i = 0; i < num; i++) {
-		int of = pdclk[i].offset / 0x200;
-		int sgrp = pdclk[i].srcbit >> 5;
-		int sbit = pdclk[i].srcbit & 0x1F;
-		int egrp = pdclk[i].clkenbbit >> 5;
-		int ebit = pdclk[i].clkenbbit & 0x1F;
+/* void nxSetDeviceClock(const CMU_DEVICE_CLK *pdclk, int num, int enb) */
+/* { */
+/*     int i; */
+/*     for (i = 0; i < num; i++) { */
+/*         int of = pdclk[i].offset / 0x200; */
+/*         int sgrp = pdclk[i].srcbit >> 5; */
+/*         int sbit = pdclk[i].srcbit & 0x1F; */
+/*         int egrp = pdclk[i].clkenbbit >> 5; */
+/*         int ebit = pdclk[i].clkenbbit & 0x1F; */
 
-		if (!enb) {
-			pCMUSRC->CMUSRC.SSRCOFF[sgrp] = 1 << sbit;
-			pCMUSRC->CMUBLK[of - 1].CRST[egrp] = 1 << ebit;
-			return;
-		}
+/*         if (!enb) { */
+/*             pCMUSRC->CMUSRC.SSRCOFF[sgrp] = 1 << sbit; */
+/*             pCMUSRC->CMUBLK[of - 1].CRST[egrp] = 1 << ebit; */
+/*             return; */
+/*         } */
 
 
-		pCMUSRC->CMUBLK[of - 1].CLKMUXSEL = NX_CLKSRC_OSC;
-		pCMUSRC->CMUBLK[of - 1].CCLKENB[egrp] = 1 << ebit;
-		pCMUSRC->CMUSRC.CSRCOFF[sgrp] = 1 << sbit;
-		pCMUSRC->CMUBLK[of - 1].DIV[0] = pdclk[i].div;
-		pCMUSRC->CMUBLK[of - 1].CLKMUXSEL = pdclk[i].clksrc;
+/*         pCMUSRC->CMUBLK[of - 1].CLKMUXSEL = NX_CLKSRC_OSC; */
+/*         pCMUSRC->CMUBLK[of - 1].CCLKENB[egrp] = 1 << ebit; */
+/*         pCMUSRC->CMUSRC.CSRCOFF[sgrp] = 1 << sbit; */
+/*         pCMUSRC->CMUBLK[of - 1].DIV[0] = pdclk[i].div; */
+/*         pCMUSRC->CMUBLK[of - 1].CLKMUXSEL = pdclk[i].clksrc; */
 
-		pCMUSRC->CMUBLK[of - 1].SRST[egrp] = 1 << ebit;
+/*         pCMUSRC->CMUBLK[of - 1].SRST[egrp] = 1 << ebit; */
 
-		pCMUSRC->CMUBLK[of - 1].SCLKENB[egrp] = 1 << ebit;
-	}
-}
+/*         pCMUSRC->CMUBLK[of - 1].SCLKENB[egrp] = 1 << ebit; */
+/*     } */
+/* } */
 
 
 /* static unsigned int  NX_PLL_TYPE[NUMBER_OF_PLL_MODULE] = { */
@@ -155,13 +155,15 @@ struct __nx_cpuif_PLL_CPUIFregmap_struct__ g_PLL_CPUIFregmap[NUMBER_OF_PLL_CPUIF
 
 void NX_PLL_SetOSCMUX( unsigned int inst_index, unsigned int MUXSEL )
 {
+    _dprintf("<<bootrom>> %s, g_PLL_CPUIFregmap[0x%x].OSCCLK_MUXSEL=0x%x\n",__func__, inst_index, g_PLL_CPUIFregmap[inst_index].OSCCLK_MUXSEL);
     nx_cpuif_reg_write_one(g_PLL_CPUIFregmap[inst_index].OSCCLK_MUXSEL, MUXSEL);
 }
 
 void nxSetClockInit(void)
 {
     //    unsigned int rm_blk_usb, rm_blk_mm;
-
+    _dprintf("<<bootrom>> %s, SFR_INFO.PLL[0]=0x%x\n",__func__, SFR_INFO.PLL[0]);
+    _dprintf("<<bootrom>> %s, SFR_INFO.PLL[1]=0x%x\n",__func__, SFR_INFO.PLL[1]);
     NX_PLL_SetBaseAddress(INDEX_PLL_0, SFR_INFO.PLL[0]);
     NX_PLL_SetBaseAddress(INDEX_PLL_1, SFR_INFO.PLL[1]);
 
@@ -177,6 +179,7 @@ void nxSetClockInit(void)
     nx_cpuif_reg_write_one(CMU_INFO_DEF__CPU_0___CORE__group_clock_source       , 2  ); // PLL[1]
     nx_cpuif_reg_write_one(CMU_INFO_DEF__CPU_0___CORE__dynamic_divider_value    , 2-1); // div 2
 
+    _dprintf("<<bootrom>> %s, PLL setting Done\n",__func__);
     //TODO
     /* while(1) { */
     /*     if (lock == 1) { */
