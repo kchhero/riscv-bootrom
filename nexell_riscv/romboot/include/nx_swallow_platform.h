@@ -8,17 +8,8 @@ extern "C"
 {
 #endif
 
-//--------------------------------------------------------------------------    
-// RISC-V
-//--------------------------------------------------------------------------    
-#if __riscv_xlen == 32
-  #define MCAUSE_INT         0x80000000UL
-  #define MCAUSE_CAUSE       0x7FFFFFFFUL
-#else
-   #define MCAUSE_INT         0x8000000000000000UL
-   #define MCAUSE_CAUSE       0x7FFFFFFFFFFFFFFFUL
-#endif
-    
+#define NULL 0
+
 #define CLINT_CTRL_ADDR _AC(0x2000000,UL)
 #define CLINT_CTRL_SIZE _AC(0x10000,UL)
 

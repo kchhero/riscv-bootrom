@@ -17,37 +17,28 @@
  */
 
 #include <nx_uart.h>
+#include <nx_debug.h>
 #include <nx_lib.h>
 #include <nx_bootheader.h>
 #include <nx_chip_iomux.h>
 #include <nx_gpio.h>
-#include <nx_swallow_platform.h>
+#include <nx_swallow.h>
 #include <nx_clock.h>
 
 #define NX_CLKSRC_UART 1
 #define SOURCE_DIVID	(4UL)
 #define BAUD_RATE	(115200)
-//#define BAUD_RATE	(19200)
-
 
 static struct NX_UART_RegisterSet * const pUART =
     (struct NX_UART_RegisterSet *)PHY_BASEADDR_UART0_MODULE;
-const CMU_DEVICE_CLK dbguart[2] = {
-    /* {	// core */
-    /*     0x1C00, 13, 2, NX_CLKSRC_PLL1, 0 */
-    /* }, {	// apb */
-    /*     0x1E00, 14, 2, NX_CLKSRC_PLL1, 0 */
-    /* } */
-};
 
 //------------------------------------------------------------------------------
-
 int DebugInit(void)
 {
-    static const union nxpad uartpad = {PI_UART2_TXD};
+    static const union nxpad uartpad = {PADINDEX_OF_UART0_TXD};
 
     setpad(&uartpad, 1, 1);
-    nxSetDeviceClock(dbguart, 2, 1);
+    //    nxSetDeviceClock(dbguart, 2, 1);
     //------------------------------------------------------------------------------
     // Uart Initialize
     //------------------------------------------------------------------------------
@@ -87,13 +78,21 @@ int DebugInit(void)
 //#define SIMUL
 void DebugPutch(char ch)
 {
+#ifdef SOC_SIMULATION
+    volatile unsigned int * reg = (unsigned int*)PHY_BASEADDR_DUMMY_MODULE;
+    char* pstr = ch;
+    while(*pstr != 0) {
+        *reg = (unsigned int)*pstr++;
+    }    
+#else
     const unsigned int TX_FIFO_FULL = 1 << 1;
     while (!(pUART->USR & TX_FIFO_FULL))
         ;
     pUART->RBR_DLL_THR = (unsigned int)ch;
+#endif
 }
 
-int	DebugIsBusy(void)
+int DebugIsBusy(void)
 {
     const unsigned char UART_TX_EMPTY = 1 << 2;
     const unsigned char UART_SR_BUSY = 1 << 0;

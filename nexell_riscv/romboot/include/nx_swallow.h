@@ -7,6 +7,18 @@
 #include "nx_swallow_platform.h"
 #endif
 
+//--------------------------------------------------------------------------    
+// RISC-V
+//--------------------------------------------------------------------------
+   
+#if __riscv_xlen == 32
+  #define MCAUSE_INT         0x80000000UL
+  #define MCAUSE_CAUSE       0x7FFFFFFFUL
+#else
+   #define MCAUSE_INT         0x8000000000000000UL
+   #define MCAUSE_CAUSE       0x7FFFFFFFFFFFFFFFUL
+#endif
+
 //CPU core num
 #define RISCV_NUM_CORES 2
 
@@ -17,12 +29,16 @@
 #define SRAM_ADDR (0x40000000)
 #define SRAM_SIZE (0x8000) //32KB
 #endif
+#define DRAM_ADDR (0x80000000)
+#define DRAM_SIZE (0x40000000) //64KB
 
 #define USBD_VID		0x2375
 #define USBD_PID		0x0322
 
 #define BASEADDR_SRAM		SRAM_ADDR
 #define INTERNAL_SRAM_SIZE	SRAM_SIZE
+#define BASEADDR_DRAM		DRAM_ADDR
+#define INTERNAL_DRAM_SIZE	DRAM_SIZE
 #define SECONDBOOT_FSIZENCRC	(64*1024)
 #define SECONDBOOT_FSIZE	(SECONDBOOT_FSIZENCRC-(128/8))
 #define SECONDBOOT_STACK	0x2000

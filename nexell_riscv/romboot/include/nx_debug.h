@@ -31,4 +31,9 @@ char	DebugGetch(void);
 void    nx_putchar(char ch);
 char    nx_getchar(void);
 
+#ifdef SOC_SIMULATION
+#define PHY_BASEADDR_DUMMY_MODULE 0x20A00000
+#define MAX_MESSAGE_LEN 1024
+#endif //SOC_SIMULATION
+
 #endif // __DEBUG_H__

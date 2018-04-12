@@ -38,23 +38,6 @@
 
 extern struct nx_bootmm * const pbm;
 
-//const struct cmu_device_clk sdmmcclk[3][2] = {
-/* const CMU_DEVICE_CLK sdmmcclk[3][3] = { */
-/* 	{ */
-/* 		{0x0400,  1, 2, 18, 1},	// ahb */
-/* 		{0x3000, 23, 0, 18, 1},	// core */
-/* 		{0x3000, 23, 0, 18, 250}	// core */
-/* 	}, {                     */
-/* 		{0x0400,  1, 3, 18, 1},	// ahb */
-/* 		{0x3200, 24, 0, 18, 1},	// core */
-/* 		{0x3200, 24, 0, 18, 250}	// core */
-/* 	}, {                     */
-/* 		{0x0400,  1, 4, 18, 1},	// ahb */
-/* 		{0x3400, 25, 0, 18, 1},	// core */
-/* 		{0x3400, 25, 0, 18, 250}	// core */
-/* 	} */
-/* }; */
-
 NX_SDMMC_RegisterSet * const pgSDXCReg[2] =
 {
     (NX_SDMMC_RegisterSet *)PHY_BASEADDR_SDMMC0_MODULE,
@@ -287,12 +270,12 @@ unsigned int NX_SDMMC_SendCommandInternal(
         }
     }
 
-#ifndef QEMU_RISCV
+#if !defined(QEMU_RISCV) && defined(DEBUG)
 End:
     if (NX_SDMMC_STATUS_NOERROR != status) {
-        //		_dprintf("err: cmd:%x, arg:%x => sts:%x, resp:%x\r\n",
-        //			pCommand->cmdidx, pCommand->arg,
-        //			status, pCommand->response[0]);
+        		_dprintf("err: cmd:%x, arg:%x => sts:%x, resp:%x\r\n",
+        			pCommand->cmdidx, pCommand->arg,
+        			status, pCommand->response[0]);
     }
 #endif
     pCommand->status = status;
@@ -317,8 +300,6 @@ unsigned int NX_SDMMC_SendStatus(SDBOOTSTATUS *pSDXCBootStatus)
 #ifdef DEBUG
     if (NX_SDMMC_STATUS_NOERROR == status)
         return status;
-
-    //	_dprintf("err: cmd.resp:%x\r\n", cmd.response[0]);
 
     if (cmd.response[0] & (1UL << 31))
         _dprintf("\t\t ERROR : OUT_OF_RANGE\n");
@@ -752,9 +733,7 @@ int NX_SDMMC_Init(SDBOOTSTATUS *pSDXCBootStatus)
     _dprintf("<<bootrom>> %s start\n",__func__);
 #endif
 
-/* #ifndef QEMU_RISCV */
-/*     nxSetDeviceClock(&sdmmcclk[i][0], 2, 1); */
-/* #endif */
+    //nxSetDeviceClock(&sdmmcclk[i][0], 2, 1);
 
     pSDXCReg->PWREN = 0 << 0;	// Set Power Disable
 
@@ -823,8 +802,9 @@ int NX_SDMMC_Terminate(SDBOOTSTATUS *pSDXCBootStatus)
     while (pSDXCReg->CTRL & (NX_SDXC_CTRL_DMARST |
                              NX_SDXC_CTRL_FIFORST |
                              NX_SDXC_CTRL_CTRLRST))
+    {
         pSDXCReg->CTRL;
-
+    }
     //    nxSetDeviceClock(&sdmmcclk[pSDXCBootStatus->SDPort][0], 2, 0);
 #endif
 
@@ -838,8 +818,6 @@ int NX_SDMMC_Terminate(SDBOOTSTATUS *pSDXCBootStatus)
 //------------------------------------------------------------------------------
 int NX_SDMMC_Open(SDBOOTSTATUS *pSDXCBootStatus, unsigned int option)
 {
-    unsigned int SDSpeed;
-
 #ifdef DEBUG
     _dprintf("<<bootrom>> %s start\n",__func__);
 #endif
@@ -848,7 +826,6 @@ int NX_SDMMC_Open(SDBOOTSTATUS *pSDXCBootStatus, unsigned int option)
     return 1;
 #endif
 
-    SDSpeed = SDXC_CLKDIV;
     //--------------------------------------------------------------------------
     // card identification mode : Identify & Initialize
     if (0 == NX_SDMMC_IdentifyCard(pSDXCBootStatus)) {
@@ -858,8 +835,7 @@ int NX_SDMMC_Open(SDBOOTSTATUS *pSDXCBootStatus, unsigned int option)
 
     //--------------------------------------------------------------------------
     // data transfer mode : Stand-by state
-    if (0 == NX_SDMMC_SetClock(pSDXCBootStatus, 1,
-                                            SDSpeed)) {
+    if (0 == NX_SDMMC_SetClock(pSDXCBootStatus, 1)) {
         _dprintf("Card Clk rst fail\r\n");
         return 0;
     }
@@ -931,12 +907,6 @@ int NX_SDMMC_ReadSectorData(
     NX_ASSERT(0 == (count % 32));
 
 #ifdef DEBUG
-    /* _dprintf("<<bootrom>> --- test binary write check -------\n",numberOfSector); */
-    /* _dprintf("<<bootrom>> %s seek number1 : 0x%x\n",__func__,seek_qemu); */
-    /* _dprintf("<<bootrom>> %s BOOT_STATUS : 0x%x\n",__func__,pSDXCReg->STATUS);     */
-    /* _dprintf("<<bootrom>> %s sd_body check: 0x%x\n",__func__,sd_body); */
-    /* _dprintf("<<bootrom>> %s sd bin size : 0x%x\n\n",__func__,sd_body_size); */
-    /* _dprintf("**** Original sdboot.bin binary data ****\n"); */
     for(unsigned int j = seek_qemu; j < count; j++) {
         _dprintf("%c",(unsigned char)(sd_body[j]));
     }
@@ -1041,25 +1011,12 @@ int NX_SDMMC_ReadSectors(SDBOOTSTATUS *pSDXCBootStatus,
 			unsigned int SectorNum, unsigned int numberOfSector, unsigned int *pdwBuffer)
 {
     int	result = 0;
-    unsigned int		status;
+    unsigned int    status;
 #if defined(DEBUG)
-    unsigned int	response;
+    unsigned int    response;
 #endif
     NX_SDMMC_COMMAND cmd;
-    register NX_SDMMC_RegisterSet * const pSDXCReg =
-        pgSDXCReg[pSDXCBootStatus->SDPort];
-/* #ifdef DEBUG */
-/*     _dprintf("<<bootrom>> %s ---------------start----------------\n",__func__); */
-/*     _dprintf("<<bootrom>> %s bootStatus           rca: 0x%x\n",__func__,pSDXCBootStatus->rca); */
-/*     _dprintf("<<bootrom>> %s bootStatus bHighCapacity: 0x%x\n",__func__,pSDXCBootStatus->bHighCapacity); */
-/*     _dprintf("<<bootrom>> %s bootStatus        SDPort: 0x%x\n",__func__,pSDXCBootStatus->SDPort); */
-/*     _dprintf("<<bootrom>> %s bootStatus    bHighSpeed: 0x%x\n",__func__,pSDXCBootStatus->bHighSpeed); */
-/*     _dprintf("<<bootrom>> %s bootStatus      CardType: 0x%x\n",__func__,pSDXCBootStatus->CardType);     */
-/*     _dprintf("<<bootrom>> %s SectorNum: 0x%x\n",__func__,SectorNum); */
-/*     _dprintf("<<bootrom>> %s numberOfSector: 0x%x\n",__func__,numberOfSector); */
-/*     _dprintf("<<bootrom>> %s pdwBuffer addr: 0x%x\n",__func__,pdwBuffer); */
-/*     _dprintf("<<bootrom>> %s ----------------------------------\n\n",__func__); */
-/* #endif */
+    register NX_SDMMC_RegisterSet * const pSDXCReg = pgSDXCReg[pSDXCBootStatus->SDPort];
         
     NX_ASSERT(0 == ((unsigned int)pdwBuffer & 3));
 
@@ -1374,11 +1331,6 @@ int SDMMCBOOT(SDBOOTSTATUS *pSDXCBootStatus, unsigned int option)
 void NX_SDPADSetALT(unsigned int PortNum)
 {
     setpad(sdmmcpad[PortNum], 6, 1);
-
-/* #define PADINDEX_WITH_CHANNEL_LIST(NAME,CHANNEL)    _GET_MACRO_LIST(NAME, PADINDEX_OF_ ,_ ## CHANNEL,NUMBER_OF_ ## NAME ## _MODULE ) */
-/* #define CAT(a, ...) a ## __VA_ARGS__ */
-/* #define _GET_MACRO_LIST(NAME,PRE,POST,COUNT)        CAT( _GET_MACRO_LIST_, COUNT )(NAME,PRE,POST) */
-    
 }
 
 void NX_SDPADSetGPIO(unsigned int PortNum)

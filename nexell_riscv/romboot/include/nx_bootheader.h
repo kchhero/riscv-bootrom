@@ -42,7 +42,6 @@ struct nx_bootinfo {
 
 struct nx_bootmm {
 	struct nx_bootinfo bi;
-//	unsigned int image[(65536 - 512 - 3 * 256) / 4];
 	unsigned int image[(32768 - 512 - 3 * 256) / 4];
 };
 
@@ -71,19 +70,5 @@ struct nx_bootmm {
  *	1	    0		memory save
  *	1	    1		no message out
  */
-
-/* ========================= efuse =====================*/
-
-#define NOBOOTMSG		10	// 0: boot message, 1: no boot message
-
-#define VALIDFIELD		11	// 0: valid, 1: invalid
-#define BOOTCFGUSE		12	// 0: not use, 1: use
-
-#define BOOTHALT		13	// 1: boot stop
-#define EXNOBOOTMSG_SAVE	13	// saved external boot mode pin status
-
-#define VERIFY			11 // 12 // 0: 0, 1: 1, 2:2, 3: no verify
-
-#define SPEEDUP			14	// system speed up
 
 #endif

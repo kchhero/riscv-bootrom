@@ -28,26 +28,22 @@
 #include <nx_swallow_printf.h>
 #endif
 
-struct nx_bootmm *const pbm = (struct nx_bootmm * const)BASEADDR_SRAM;
+struct nx_bootmm *const pbm = (struct nx_bootmm * const)BASEADDR_DRAM;
 //------------------------------------------------------------------------------
-int romboot(int OrgBootOption)
+int romboot(int bootmode)
 {
-    int option = OrgBootOption;
-    //todo check!!!
-    //	SetBootOption(option);
-    //	SetMempoolPtr(PHY_BASEADDR_CAN0_MODULE_RAM);
-    //	SetStringPtr((unsigned int *)PHY_BASEADDR_CAN1_MODULE_RAM);
-    //	Setbl0fnPtr(&bl0fn);
+    int option = bootmode;
 #ifndef QEMU_RISCV
+    _dprintf("ROMBOOT Start!!!!!!\r\n");
     nxSetClockInit();
 
-    //todo : force USBBoot flow add. here
+    //todo
+    // DDR1 setup
     
     do {
         int Result = 0;
         switch (option) {
-            /* case USBBOOT: */
-            /* 	Result = iUSBBOOT(option); */
+            /* case XIPBOOT: */
             /* 	break; */
         case SDBOOT:	// iSDHCBOOT (SD/MMC/eSD/eMMC)
             Result = iSDBOOT(option);
@@ -67,15 +63,9 @@ int romboot(int OrgBootOption)
             break;
 
     } while (0);
-    /* int ret = 1; */
-    /* if (ret) { */
-    /*     struct nx_bootinfo *pbi = (struct nx_bootinfo *)BASEADDR_SRAM; */
-    /*     _dprintf("Launch to 0x%X\r\n", pbi->StartAddr); */
-    /*     return pbi->StartAddr; */
-    /* } */
 #else
     unsigned int result;
-    struct nx_bootinfo *pbi = (struct nx_bootinfo *)BASEADDR_SRAM;
+    struct nx_bootinfo *pbi = (struct nx_bootinfo *)BASEADDR_DRAM;
 
     nxSetClockInit();
     _dprintf("<<bootrom>> option %s = 0x%x\n", __func__, option); 
@@ -88,10 +78,6 @@ int romboot(int OrgBootOption)
         _dprintf("<<bootrom>> boot option is strange!\n");
         
     __asm__ __volatile__ ("fence.i" : : : "memory");
-    //        _dprintf("Launch to 0x%x\r\n", pbi->StartAddr);
-    //		void (*plaunch)(void) = (void (*)(void))pbi->StartAddr;
-    //		plaunch();
-    //        return pbi->StartAddr;
 #endif
 
     return 1;

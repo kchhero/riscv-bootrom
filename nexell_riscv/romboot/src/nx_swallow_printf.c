@@ -184,8 +184,8 @@ int print(char **out, const char *format, va_list args)
 
 int _dprintf(const char *format, ...)
 {
-	va_list args;
-	va_start(args, format);
-
-        return print(0, format, args);
+    va_list args;
+    va_start(args, format);
+    return print(0, format, args);
 }
+

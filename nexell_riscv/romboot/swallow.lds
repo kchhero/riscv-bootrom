@@ -24,7 +24,7 @@ MEMORY
   spi2_ctrl  (rw) : ORIGIN = 0x20820000, LENGTH = 0x1000  
   sdmmc0_ctrl (rw) : ORIGIN = 0x20930000, LENGTH = 0x10000
   sdmmc1_ctrl (rw) : ORIGIN = 0x20940000, LENGTH = 0x10000
-  memory_mem (rwx) : ORIGIN = 0x40000000, LENGTH = 0x8000
+  memory_mem (rwx) : ORIGIN = 0x80000000, LENGTH = 0x40000000
 }
 
 

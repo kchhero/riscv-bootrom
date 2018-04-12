@@ -6,15 +6,6 @@
 #include "nx_const.h"
 #include "nx_uart.h"
 
- // Some things missing from the official encoding.h
-#if __riscv_xlen == 32
-  #define MCAUSE_INT         0x80000000UL
-  #define MCAUSE_CAUSE       0x7FFFFFFFUL
-#else
-   #define MCAUSE_INT         0x8000000000000000UL
-   #define MCAUSE_CAUSE       0x7FFFFFFFFFFFFFFFUL
-#endif
-
 /****************************************************************************
  * Platform definitions
  *****************************************************************************/
@@ -36,7 +27,7 @@
 #define CLINT_CTRL_ADDR _AC(0x2000000,UL)
 #define CLINT_CTRL_SIZE _AC(0x10000,UL)
 
-#define PLIC_CTRL_ADDR _AC(0xc000000,UL)
+#define PLIC_CTRL_ADDR _AC(0xC000000,UL)
 #define PLIC_CTRL_SIZE _AC(0x4000000,UL)
 
 #define GPIO_CTRL_ADDR _AC(0x20700000,UL) //#define GPIO_CTRL_ADDR _AC(0x54002000,UL)
@@ -44,9 +35,6 @@
 
 #define UART_CTRL_ADDR _AC(0x208A0000,UL)  //#define UART_CTRL_ADDR _AC(0x54000000,UL)
 #define UART_CTRL_SIZE _AC(0x1000,UL)
-
-#define MEMORY_MEM_ADDR _AC(0x80000000,UL)
-#define MEMORY_MEM_SIZE _AC(0x10000000,UL)
 
 
 // Interrupt numbers

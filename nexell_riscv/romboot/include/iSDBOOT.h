@@ -119,9 +119,9 @@ typedef enum
 
 typedef struct __attribute__ ((aligned(4))) tag_SDBOOTSTATUS
 {
-	unsigned int			rca;	/* relative card address of device */
+	unsigned int		rca;	/* relative card address of device */
 	int			bHighCapacity;
-	unsigned int			SDPort;
+	unsigned int		SDPort;
 	int			bHighSpeed;
 	NX_SDMMC_CARDTYPE	CardType;
 } SDBOOTSTATUS;

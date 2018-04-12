@@ -18,26 +18,18 @@
 
 #ifdef QEMU_RISCV
 #include <nx_qemu_printf.h>
-#include <nx_qemu_printf.h>
 #else
 #include <nx_swallow_printf.h>
-#include <nx_swallow_platform.h>
+#include <nx_swallow.h>
 #endif
-
-/* static	struct */
-/* { */
-/* 	struct NX_GPIO_RegisterSet *pRegister; */
-
-/* } __g_ModuleVariables[NUMBER_OF_GPIO_MODULE] = { {0,}, }; */
 
 struct NX_GPIO (*const pGPIOReg)[1] =
 	(struct NX_GPIO (*)[])PHY_BASEADDR_GPIO0_MODULE;
-/* struct NX_ALIVE_RegisterSet * const pAlive = */
-/*     (struct NX_ALIVE_RegisterSet *)PHY_BASEADDR_SYS_CON0_MODULE_APB; */
-void GPIOReleasePAD(const struct nxpadi *pad)
-{
-    //pAlive->GPIO_PWR[pad->grp].DOWN &= ~(1 << pad->pin);	// pad retention
-}
+
+/* void GPIOReleasePAD(const struct nxpadi *pad) */
+/* { */
+/*     pAlive->GPIO_PWR[pad->grp].DOWN &= ~(1 << pad->pin);	// pad retention */
+/* } */
 void GPIOSetAltFunction(const struct nxpadi *pad, int setalt)
 {
 	unsigned int regvalue;
@@ -108,8 +100,8 @@ void setpad(const union nxpad *const ppad, int num, int enable)
 			GPIOSetAltFunction(&ppad[i].padi, 1);
 			GPIOSetDrvSt(&ppad[i].padi, NX_GPIO_DRVSTRENGTH_3);
 			GPIOSetPullup(&ppad[i].padi, NX_GPIO_PULL_OFF);
-			if (ppad[i].padd)
-				GPIOReleasePAD(&ppad[i].padi);
+			/* if (ppad[i].padd) */
+			/* 	GPIOReleasePAD(&ppad[i].padi); */
 		} else {
 			GPIOSetAltFunction(&ppad[i].padi, 0);
 			GPIOSetDrvSt(&ppad[i].padi, NX_GPIO_DRVSTRENGTH_3);
