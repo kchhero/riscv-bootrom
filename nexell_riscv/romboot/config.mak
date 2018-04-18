@@ -21,7 +21,7 @@ DEBUG			= y
 DEBUG_GDB               = y
 
 QEMU                    = n
-SIMULATION              = y
+SIM                     = y
 
 CROSS_TOOL_TOP		=
 ifeq ($(OS),Windows_NT)
@@ -53,7 +53,7 @@ CODE_MAIN_INCLUDE	=
 ###########################################################################
 # Build Environment
 ###########################################################################
-ARCH			= rv64g #imafdc
+ARCH			= rv64g #imafd
 ABI			= lp64d
 
 CC			= $(CROSS_TOOL)gcc

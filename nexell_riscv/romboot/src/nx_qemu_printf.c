@@ -6,9 +6,9 @@
 
 static inline void _kputs(const char *s)
 {
-	char c;
-	for (; (c = *s) != '\0'; s++)
-		kputc(c);
+    char c;
+    for (; (c = *s) != '\0'; s++)
+	kputc(c);
 }
 
 void kputs(const char *s)

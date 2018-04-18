@@ -153,14 +153,13 @@ unsigned int crc32 (unsigned int crc, const unsigned char *p, unsigned int len)
 // "EFI PART"
 #define GPT_HEADER_SIGNATURE 0x5452415020494645
 
-const unsigned char gpths[] = {
-	0x45, 0x46, 0x49, 0x20, 0x50, 0x41, 0x52, 0x54
-};
 int is_gpt_valid(unsigned char *psector)
 {
 	unsigned int crc_backup;
 	struct gpt_header *gpt = (struct gpt_header *)psector;
-
+        const unsigned char gpths[] = {
+            0x45, 0x46, 0x49, 0x20, 0x50, 0x41, 0x52, 0x54
+        };
 	unsigned char *a = (unsigned char *)&gpt->signature;
 	if (nx_memcmp(a, gpths, 8) != 0) {
 		_dprintf("wrong gpt signature : 0x%x\r\n", gpt->signature);

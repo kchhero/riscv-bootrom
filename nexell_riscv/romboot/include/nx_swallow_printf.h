@@ -18,6 +18,11 @@
 
 #include <stdarg.h>
 
+#ifndef SOC_SIM
 int _dprintf(const char *format, ...);
-
+#else
+#include <nx_debug.h>
+extern void kputs(const char *);
+extern void _dprintf(const char *, ...);
+#endif //SOC_SIM
 #endif

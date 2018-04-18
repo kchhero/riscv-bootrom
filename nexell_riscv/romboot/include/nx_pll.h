@@ -88,6 +88,6 @@ struct __nx_cpuif_PLL_CPUIFregmap_struct__ {
 #define TYPE_PLL_DDR0 TYPE_PLL2555X
 #define TYPE_PLL_DDR1 TYPE_PLL2651X
 
-extern	unsigned int *__PLL_CPUIF_BASEADDR[NUMBER_OF_PLL_CPUIF_MODULE];
+//extern	unsigned int *__PLL_CPUIF_BASEADDR[NUMBER_OF_PLL_CPUIF_MODULE];
 
 #endif /* __NX_PLL_H__ */

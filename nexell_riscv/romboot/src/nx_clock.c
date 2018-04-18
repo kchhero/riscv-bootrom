@@ -1,3 +1,4 @@
+#include <nx_debug.h>
 #include <nx_pll.h>
 #include <nx_clock.h>
 #include <nx_cpuif_regmap.h>
@@ -12,35 +13,20 @@
 
 #define NULL 0
 
-unsigned int *__PLL_CPUIF_BASEADDR[NUMBER_OF_PLL_CPUIF_MODULE];
-
-extern _SFR_INFO SFR_INFO;
-
-void __PLL_CPUIF_SET_BASEADDR (unsigned int moduleindex, unsigned int *baseaddr) {
-    __PLL_CPUIF_BASEADDR[moduleindex] = baseaddr;
-} 
-
-void NX_PLL_SetBaseAddress(unsigned int inst_index, unsigned int BaseAddress)
-{
-    __PLL_CPUIF_SET_BASEADDR(inst_index, (unsigned int*)BaseAddress);
-}
-
-struct __nx_cpuif_PLL_CPUIFregmap_struct__ g_PLL_CPUIFregmap[NUMBER_OF_PLL_CPUIF_MODULE];
-
-void NX_PLL_SetOSCMUX( unsigned int inst_index, unsigned int MUXSEL )
-{
-    nx_cpuif_reg_write_one(g_PLL_CPUIFregmap[inst_index].OSCCLK_MUXSEL, MUXSEL);
-}
-
 void nxSetClockInit(void)
 {
-    //    unsigned int rm_blk_usb, rm_blk_mm;
-    /* _dprintf("<<bootrom>> %s, SFR_INFO.PLL[0]=0x%x\n",__func__, SFR_INFO.PLL[0]); */
-    /* _dprintf("<<bootrom>> %s, SFR_INFO.PLL[1]=0x%x\n",__func__, SFR_INFO.PLL[1]); */
-    NX_PLL_SetBaseAddress(INDEX_PLL_0, SFR_INFO.PLL[0]);
-    NX_PLL_SetBaseAddress(INDEX_PLL_1, SFR_INFO.PLL[1]);
+    //    struct __nx_cpuif_PLL_CPUIFregmap_struct__ _PLL_CPUIFregmap[2];
+    /* __nx_cpuif_symbol__ oscclkMuxsel[2] = { */
+    /*     {(unsigned int*)&SFR_INFO.PLL[0], 0x0, 3, 1}, */
+    /*     {(unsigned int*)&SFR_INFO.PLL[1], 0x0, 3, 1}, */
+    /* }; */
+
+    /* NX_PLL_SetBaseAddress(INDEX_PLL_0, SFR_INFO.PLL[0]); */
+    /* NX_PLL_SetBaseAddress(INDEX_PLL_1, SFR_INFO.PLL[1]); */
+
 
     nx_cpuif_reg_write_one(CMU_INFO_DEF__SYS_0___CLK400__group_clock_source     , 1  ); // PLL[0]
+
 
     nx_cpuif_reg_write_one(CMU_INFO_DEF__SYS_0___CLK400__dynamic_divider_value	, 1-1); // div 1
     nx_cpuif_reg_write_one(CMU_INFO_DEF__SYS_0___AXI__dynamic_divider_value	, 2-1); // div 2
@@ -52,18 +38,19 @@ void nxSetClockInit(void)
     nx_cpuif_reg_write_one(CMU_INFO_DEF__CPU_0___CORE__group_clock_source       , 2  ); // PLL[1]
     nx_cpuif_reg_write_one(CMU_INFO_DEF__CPU_0___CORE__dynamic_divider_value    , 2-1); // div 2
 
-    _dprintf("<<bootrom>> %s, PLL setting Done\n",__func__);
+    nx_cpuif_reg_write_one(PLL_INFO_0_CPUIF, PLL_MUX_PLL_FOUT);
+    nx_cpuif_reg_write_one(PLL_INFO_1_CPUIF, PLL_MUX_PLL_FOUT);
 
-    NX_PLL_SetOSCMUX(INDEX_PLL_0, PLL_MUX_PLL_FOUT);
-    NX_PLL_SetOSCMUX(INDEX_PLL_1, PLL_MUX_PLL_FOUT);
+
+    /* NX_PLL_SetOSCMUX(INDEX_PLL_0, PLL_MUX_PLL_FOUT); */
+    /* NX_PLL_SetOSCMUX(INDEX_PLL_1, PLL_MUX_PLL_FOUT); */
     //            __asm__ __volatile__ ("dmb");
 
-    //DDR1 Clock Init
-    nx_cpuif_reg_write_one(	DDRC_REG_4   , 0x88   ); // address : bank, row, column
-    //nx_cpuif_reg_write_one(	DDRC_REG_8   , 0xC0C06   ); // reset default
-    nx_cpuif_reg_write_one(	DDRC_REG_8   , 0x0B270   ); // for 200MHz operation
-    nx_cpuif_reg_write_one(	DDRC_REG_0   , 0x1    );
+    /* //DDR1 Clock Init */
+    /* nx_cpuif_reg_write_one(	DDRC_REG_4   , 0x88   ); // address : bank, row, column */
+    /* //nx_cpuif_reg_write_one(	DDRC_REG_8   , 0xC0C06   ); // reset default */
+    /* nx_cpuif_reg_write_one(	DDRC_REG_8   , 0x0B270   ); // for 200MHz operation */
+    /* nx_cpuif_reg_write_one(	DDRC_REG_0   , 0x1    ); */
 
-    while(0 == nx_cpuif_reg_read_one(DDRC_REG_0, NULL) );
-
+    /* while(0 == nx_cpuif_reg_read_one(DDRC_REG_0, NULL) ); */
 }

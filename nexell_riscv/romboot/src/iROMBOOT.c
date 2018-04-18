@@ -20,6 +20,7 @@
 #include <nx_swallow.h>
 #include <nx_bootheader.h>
 #include <nx_clock.h>
+#include <nx_debug.h>
 #include <iSDBOOT.h>
 
 #ifdef QEMU_RISCV
@@ -28,13 +29,19 @@
 #include <nx_swallow_printf.h>
 #endif
 
-struct nx_bootmm *const pbm = (struct nx_bootmm * const)BASEADDR_DRAM;
+//struct nx_bootmm *const pbm = (struct nx_bootmm * const)BASEADDR_OF_PBM;
 //------------------------------------------------------------------------------
 int romboot(int bootmode)
 {
     int option = bootmode;
 #ifndef QEMU_RISCV
-    _dprintf("ROMBOOT Start!!!!!!\r\n");
+     /* volatile char *reg = (char*)PHY_BASEADDR_DUMMY_MODULE; */
+     /* char *s = "test rom"; */
+     /* char c = ' '; */
+     /* for (; (c = *s) != '\0'; s++) */
+     /*    *reg = (char)c; */
+
+     //     _dprintf("ROMBOOT");
     nxSetClockInit();
 
     //todo
@@ -49,14 +56,14 @@ int romboot(int bootmode)
             Result = iSDBOOT(option);
             break;
         default:
-            _dprintf("no support boot mode(%x)\r\n", option);
+            //            _dprintf("no support boot mode(%x)\r\n", option);
             break;
         }
 
         if (Result)
             break;
 
-        _dprintf("update boot\r\n");
+        //        _dprintf("update boot\r\n");
         Result = iSDBOOT(option);
 
         if (Result)
@@ -64,9 +71,9 @@ int romboot(int bootmode)
 
     } while (0);
 #else
+    /* struct nx_bootinfo *pbi = (struct nx_bootinfo *)BASEADDR_OF_PBM; */
     unsigned int result;
-    struct nx_bootinfo *pbi = (struct nx_bootinfo *)BASEADDR_DRAM;
-
+    _dprintf("ROMBOOT Start\n");
     nxSetClockInit();
     _dprintf("<<bootrom>> option %s = 0x%x\n", __func__, option); 
     if (option != 0) {
@@ -76,9 +83,8 @@ int romboot(int bootmode)
     }
     else
         _dprintf("<<bootrom>> boot option is strange!\n");
-        
+#endif        
     __asm__ __volatile__ ("fence.i" : : : "memory");
-#endif
 
     return 1;
 }

@@ -36,8 +36,8 @@ ifeq ($(QEMU),y)
 CFLAGS		+= -DQEMU_RISCV
 endif
 
-ifeq ($(SIMULATION),y)
-CFLAGS		+= -DSOC_SIMULATION
+ifeq ($(SIM),y)
+CFLAGS		+= -DSOC_SIM
 endif
 
 ifeq ($(DEBUG_GDB), y)
@@ -45,18 +45,19 @@ CFLAGS		+= -g -ggdb
 LDFLAGS		+= -g -ggdb
 endif
 
-SYS_OBJS	 = 	head.o
-
 ifeq ($(QEMU), y)
+SYS_OBJS	 = 	head_qemu.o
 SYS_OBJS	+=	nx_qemu_printf.o
-else
+else	#not QEMU, REAL
+SYS_OBJS	 = 	head.o
 SYS_OBJS	+=	nx_swallow_printf.o \
 			nx_debug.o
-endif
+endif	#QEMU
 
 SYS_OBJS	+=	nx_clock.o \
-			nx_cpuif_regmap.o \
-			nx_chip_sfr.o
+			nx_cpuif_regmap.o
+
+#nx_chip_sfr.o
 
 SYS_OBJS	+= 	iROMBOOT.o iSDBOOT.o
 SYS_OBJS	+= 	nx_gpio.o nx_gpt.o nx_lib.o

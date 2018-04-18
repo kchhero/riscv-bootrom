@@ -18,7 +18,8 @@ void nx_cpuif_reg_write_one(__nx_cpuif_symbol__ symbol, unsigned int  regval)
     unsigned int reg_bitwidth;
     unsigned int masked_writeval;
 
-    reg_addr     = (unsigned int*)(*symbol.baseaddr + symbol.offset);
+    //   reg_addr     = (unsigned int*)(*symbol.baseaddr + symbol.offset);
+    reg_addr     = (unsigned int*)(symbol.baseaddr + symbol.offset);    
     reg_startbit = symbol.startbit;
     reg_bitwidth = symbol.bitwidth;
 
@@ -38,14 +39,19 @@ void nx_cpuif_reg_write_one(__nx_cpuif_symbol__ symbol, unsigned int  regval)
     reg_writeval = masked_writeval << reg_startbit;
 
 #ifdef DEBUG
-    _dprintf("\n[DEBUG]------------------------ ");
-    _dprintf("\n[DEBUG] reg_addr        = 0x%x", reg_addr     );
-    _dprintf("\n[DEBUG] reg_startbit    = 0x%x", reg_startbit );
-    _dprintf("\n[DEBUG] reg_bitwidth    = 0x%x", reg_bitwidth );
-    _dprintf("\n[DEBUG] masked_writeval = 0x%x", masked_writeval );
-    _dprintf("\n[DEBUG] reg_writeval    = 0x%x", reg_writeval );
-    _dprintf("\n[DEBUG] reg_mask        = 0x%x", reg_mask     );
-    _dprintf("\n[DEBUG]------------------------");
+    _dprintf("\n<<bootrom>>[DEBUG]------------------------ ");
+    _dprintf("\n<<bootrom>>[DEBUG] symbol.baseaddr = 0x%x", symbol.baseaddr );
+    _dprintf("\n<<bootrom>>[DEBUG] symbol.baseaddr2 = 0x%x", *symbol.baseaddr );
+    _dprintf("\n<<bootrom>>[DEBUG] symbol.baseaddr3 = 0x%x", symbol.baseaddr+symbol.offset );
+    _dprintf("\n<<bootrom>>[DEBUG] symbol.baseaddr3 = 0x%x", symbol.baseaddr+200 );        
+    _dprintf("\n<<bootrom>>[DEBUG] reg             = 0x%x", reg          );
+    _dprintf("\n<<bootrom>>[DEBUG] reg_addr        = 0x%x", reg_addr     );
+    _dprintf("\n<<bootrom>>[DEBUG] reg_startbit    = 0x%x", reg_startbit );
+    _dprintf("\n<<bootrom>>[DEBUG] reg_bitwidth    = 0x%x", reg_bitwidth );
+    _dprintf("\n<<bootrom>>[DEBUG] masked_writeval = 0x%x", masked_writeval );
+    _dprintf("\n<<bootrom>>[DEBUG] reg_writeval    = 0x%x", reg_writeval );
+    _dprintf("\n<<bootrom>>[DEBUG] reg_mask        = 0x%x", reg_mask     );
+    _dprintf("\n<<bootrom>>[DEBUG]------------------------");
 #endif
 
     reg_val = reg_val & (~reg_mask);
@@ -76,9 +82,9 @@ unsigned int nx_cpuif_reg_read_one(__nx_cpuif_symbol__ symbol, unsigned int * re
 
     reg = (unsigned int*) reg_addr;
     reg_val  = ReadIODW(reg);
-#ifdef DEBUG
-    _dprintf("\n[DEBUG] reg_val = 0x%x(%d), reg_addr = 0x%x", reg_val, reg_val, reg_addr);
-#endif
+/* #ifdef DEBUG */
+/*     _dprintf("\n[DEBUG] reg_val = 0x%x(%d), reg_addr = 0x%x", reg_val, reg_val, reg_addr); */
+/* #endif */
 
     reg_mask = reg_bitwidth < 32 ? ((1<<(reg_bitwidth))-1) << reg_startbit : ~0;
 
@@ -91,15 +97,15 @@ unsigned int nx_cpuif_reg_read_one(__nx_cpuif_symbol__ symbol, unsigned int * re
 
     //NX_ASSERT( reg_bitwidth != 0 );
 
-#ifdef DEBUG
-    _dprintf("\n[DEBUG]------------------------ ");
-    _dprintf("\n[DEBUG] reg_addr     = 0x%x", reg_addr     );
-    _dprintf("\n[DEBUG] reg_startbit = 0x%x", reg_startbit );
-    _dprintf("\n[DEBUG] reg_bitwidth = 0x%x", reg_bitwidth );
-    _dprintf("\n[DEBUG] reg_mask     = 0x%x", reg_mask     );
-    _dprintf("\n[DEBUG] reg_readval  = 0x%x", reg_readval  );
-    _dprintf("\n[DEBUG] reg_val      = 0x%x(%d)", reg_val, reg_val);
-    _dprintf("\n[DEBUG]------------------------");
-#endif
+/* #ifdef DEBUG */
+/*     _dprintf("\n[DEBUG]------------------------ "); */
+/*     _dprintf("\n[DEBUG] reg_addr     = 0x%x", reg_addr     ); */
+/*     _dprintf("\n[DEBUG] reg_startbit = 0x%x", reg_startbit ); */
+/*     _dprintf("\n[DEBUG] reg_bitwidth = 0x%x", reg_bitwidth ); */
+/*     _dprintf("\n[DEBUG] reg_mask     = 0x%x", reg_mask     ); */
+/*     _dprintf("\n[DEBUG] reg_readval  = 0x%x", reg_readval  ); */
+/*     _dprintf("\n[DEBUG] reg_val      = 0x%x(%d)", reg_val, reg_val); */
+/*     _dprintf("\n[DEBUG]------------------------"); */
+/* #endif */
     return reg_readval;
 }

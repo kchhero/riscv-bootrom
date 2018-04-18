@@ -13,8 +13,8 @@ MEMORY
   uart1_ctrl (rw) : ORIGIN = 0x208B0000, LENGTH = 0x1000
   sdmmc0_ctrl (rw) : ORIGIN = 0x20930000, LENGTH = 0x10000
   sdmmc1_ctrl (rw) : ORIGIN = 0x20940000, LENGTH = 0x10000
-  memory_mem (rwx) : ORIGIN = 0x80000000, LENGTH = 0x10000000
-  memory_smem (rwx) : ORIGIN = 0xFFFF0000, LENGTH = 0x10000
+  memory_dmem (rwx) : ORIGIN = 0x80000000, LENGTH = 0x10000000
+  memory_mem (rwx) : ORIGIN = 0xFFFF0000, LENGTH = 0x10000
 }
 
 

@@ -36,7 +36,7 @@
 
 #define NX_ASSERT(x)
 
-extern struct nx_bootmm * const pbm;
+//extern struct nx_bootmm * const pbm;
 
 NX_SDMMC_RegisterSet * const pgSDXCReg[2] =
 {
@@ -270,14 +270,15 @@ unsigned int NX_SDMMC_SendCommandInternal(
         }
     }
 
-#if !defined(QEMU_RISCV) && defined(DEBUG)
-End:
-    if (NX_SDMMC_STATUS_NOERROR != status) {
-        		_dprintf("err: cmd:%x, arg:%x => sts:%x, resp:%x\r\n",
-        			pCommand->cmdidx, pCommand->arg,
-        			status, pCommand->response[0]);
-    }
-#endif
+ End:
+/* #if !defined(QEMU_RISCV) && defined(DEBUG) */
+/* End: */
+/*     if (NX_SDMMC_STATUS_NOERROR != status) { */
+/*         		_dprintf("err: cmd:%x, arg:%x => sts:%x, resp:%x\r\n", */
+/*         			pCommand->cmdidx, pCommand->arg, */
+/*         			status, pCommand->response[0]); */
+/*     } */
+/* #endif */
     pCommand->status = status;
 
     return status;
@@ -1152,6 +1153,7 @@ int SDMMCBOOT(SDBOOTSTATUS *pSDXCBootStatus, unsigned int option)
 {
     int	result = 0;
     int ret = 0;
+    struct nx_bootmm *const pbm = (struct nx_bootmm * const)BASEADDR_OF_PBM;
     NX_SDMMC_RegisterSet * const pSDXCReg = pgSDXCReg[pSDXCBootStatus->SDPort];
 
 #ifdef DEBUG

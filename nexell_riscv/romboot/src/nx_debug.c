@@ -75,21 +75,17 @@ int DebugInit(void)
     return 1;
 }
 
-//#define SIMUL
 void DebugPutch(char ch)
 {
-#ifdef SOC_SIMULATION
-    volatile unsigned int * reg = (unsigned int*)PHY_BASEADDR_DUMMY_MODULE;
-    char* pstr = ch;
-    while(*pstr != 0) {
-        *reg = (unsigned int)*pstr++;
-    }    
-#else
+/* #ifdef SOC_SIM */
+/*     volatile char *reg = (char*)PHY_BASEADDR_DUMMY_MODULE; */
+/*     *reg = ch; */
+/* #else */
     const unsigned int TX_FIFO_FULL = 1 << 1;
     while (!(pUART->USR & TX_FIFO_FULL))
         ;
     pUART->RBR_DLL_THR = (unsigned int)ch;
-#endif
+    //#endif
 }
 
 int DebugIsBusy(void)

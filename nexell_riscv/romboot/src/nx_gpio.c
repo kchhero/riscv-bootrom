@@ -23,7 +23,7 @@
 #include <nx_swallow.h>
 #endif
 
-struct NX_GPIO (*const pGPIOReg)[1] =
+static struct NX_GPIO (*const pGPIOReg)[1] =
 	(struct NX_GPIO (*)[])PHY_BASEADDR_GPIO0_MODULE;
 
 /* void GPIOReleasePAD(const struct nxpadi *pad) */
