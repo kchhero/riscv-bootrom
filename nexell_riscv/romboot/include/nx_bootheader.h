@@ -52,17 +52,9 @@ struct nx_bootmm {
 #define SDBOOT			22	// data sector boot
 #define XIP			33
 
-
-#define PORTNUMBER		5
-
-#define SERIALFLASHBUS		3	// 0: 1 bit  1: 4 bit
-#define SERIALFLASHSPEED	4	// 0: 16MHz, 1: 1MHz
-
 #define UARTBAUDRATE		3	// 0: 115200, 1:921600
 #define UARTPORT		4 // 5, 6	// 0 ~ 6 port
 
-#define ICACHE			7	// rstcfg only. 0: disable, 1: enable
-#define EXNOBOOTMSG		8	// 0: no message, 1:uart0 message output
 /*
  * EXNOBOOTMSG	NOBOOTMSG
  *	0	    0		uart out

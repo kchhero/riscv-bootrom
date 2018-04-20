@@ -15,8 +15,8 @@
  */
 
 #include <nx_lib.h>
-#ifdef QEMU_RISCV
-#include <nx_qemu_printf.h>
+#if defined(QEMU_RISCV) || defined(SOC_SIM)
+#include <nx_qemu_sim_printf.h>
 #else
 #include <nx_swallow_printf.h>
 #endif

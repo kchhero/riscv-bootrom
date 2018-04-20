@@ -5,30 +5,25 @@
 .section .text.start, "ax", @progbits
 .globl _start
 _start:
-        nop
-        nop
-//	smp_pause(s1, s2)        
         li sp, (SRAM_ADDR + SRAM_SIZE)
-        csrr a0, mhartid
-        bnez a0, stop_and_go
-
-	li a0,22        //boot mode, temporary bootoption value=22
-
         call romboot
-        nop
-        nop
-//      	smp_resume(s1, s2)
-        li s1, SRAM_ADDR
-	jr s1
-
-stop_and_go:
-        j stop_and_go
+        li s0, SRAM_ADDR
+        csrr a0, mhartid
+        la a1, _dtb
+        jr s0
 
 .section .text.hang, "ax", @progbits
 .globl _hang
 _hang:
         csrr a0, mhartid
-
+        la a1, _dtb
 1:
         wfi
         j 1b
+
+.section .rodata.dtb, "a", @progbits
+.globl _dtb
+.align 5, 0
+_dtb:
+        .ascii "DTB goes here"
+        

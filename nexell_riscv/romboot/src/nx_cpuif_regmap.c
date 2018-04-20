@@ -1,7 +1,7 @@
 #include <nx_cpuif_regmap.h>
 #include <nx_swallow_platform.h>
-#ifdef QEMU_RISCV
-#include <nx_qemu_printf.h>
+#if defined(QEMU_RISCV) || defined(SOC_SIM)
+#include <nx_qemu_sim_printf.h>
 #else
 #include <nx_swallow_printf.h>
 #endif
@@ -38,7 +38,7 @@ void nx_cpuif_reg_write_one(__nx_cpuif_symbol__ symbol, unsigned int  regval)
     masked_writeval = (reg_bitwidth < 32) ? regval & ((1<<(reg_bitwidth))-1) : regval ;
     reg_writeval = masked_writeval << reg_startbit;
 
-#ifdef DEBUG
+#ifdef QEMU_RISCV
     _dprintf("\n<<bootrom>>[DEBUG]------------------------ ");
     _dprintf("\n<<bootrom>>[DEBUG] symbol.baseaddr = 0x%x", symbol.baseaddr );
     _dprintf("\n<<bootrom>>[DEBUG] symbol.baseaddr2 = 0x%x", *symbol.baseaddr );
@@ -58,7 +58,7 @@ void nx_cpuif_reg_write_one(__nx_cpuif_symbol__ symbol, unsigned int  regval)
     reg_val = reg_val | reg_writeval;
 
     WriteIODW(reg, reg_val);
-#ifdef DEBUG
+#ifdef QEMU_RISCV
     _dprintf("\n[DEBUG] reg_val = 0x%x(%d)", reg_val, reg_val );
     _dprintf("\n[DEBUG] ===============================================");
     _dprintf("\n");
@@ -76,7 +76,8 @@ unsigned int nx_cpuif_reg_read_one(__nx_cpuif_symbol__ symbol, unsigned int * re
     unsigned int reg_startbit;
     unsigned int reg_bitwidth;
 
-    reg_addr     = (unsigned int*)(*symbol.baseaddr + symbol.offset);
+    //reg_addr     = (unsigned int*)(*symbol.baseaddr + symbol.offset);
+    reg_addr     = (unsigned int*)(symbol.baseaddr + symbol.offset);
     reg_startbit = symbol.startbit;
     reg_bitwidth = symbol.bitwidth;
 

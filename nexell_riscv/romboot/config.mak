@@ -18,7 +18,7 @@
 # Build Environment
 ###########################################################################
 DEBUG			= y
-DEBUG_GDB               = y
+DEBUG_GDB               = n
 
 QEMU                    = n
 SIM                     = y

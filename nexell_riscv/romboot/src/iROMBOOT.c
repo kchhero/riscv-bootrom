@@ -23,8 +23,8 @@
 #include <nx_debug.h>
 #include <iSDBOOT.h>
 
-#ifdef QEMU_RISCV
-#include <nx_qemu_printf.h>
+#if defined(QEMU_RISCV) || defined(SOC_SIM)
+#include <nx_qemu_sim_printf.h>
 #else
 #include <nx_swallow_printf.h>
 #endif
@@ -35,13 +35,7 @@ int romboot(int bootmode)
 {
     int option = bootmode;
 #ifndef QEMU_RISCV
-     /* volatile char *reg = (char*)PHY_BASEADDR_DUMMY_MODULE; */
-     /* char *s = "test rom"; */
-     /* char c = ' '; */
-     /* for (; (c = *s) != '\0'; s++) */
-     /*    *reg = (char)c; */
-
-     //     _dprintf("ROMBOOT");
+    _dprintf("<<bootrom>>romboot start\n");
     nxSetClockInit();
 
     //todo

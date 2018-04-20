@@ -47,12 +47,18 @@ endif
 
 ifeq ($(QEMU), y)
 SYS_OBJS	 = 	head_qemu.o
-SYS_OBJS	+=	nx_qemu_printf.o
+SYS_OBJS	+=	nx_qemu_sim_printf.o
 else	#not QEMU, REAL
 SYS_OBJS	 = 	head.o
-SYS_OBJS	+=	nx_swallow_printf.o \
-			nx_debug.o
-endif	#QEMU
+ifeq ($(SIM), y)
+SYS_OBJS	+=	nx_qemu_sim_printf.o
+else
+SYS_OBJS	+=	nx_swallow_printf.o
+ifeq ($(DEBUG), y)
+SYS_OBJS	+=	nx_debug.o
+endif   #DEBUG
+endif	#SIM
+endif   #QEMU
 
 SYS_OBJS	+=	nx_clock.o \
 			nx_cpuif_regmap.o

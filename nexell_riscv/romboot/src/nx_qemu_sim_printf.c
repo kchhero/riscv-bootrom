@@ -2,7 +2,15 @@
 #include <stdarg.h>
 #include <stdint.h>
 #include <stdbool.h>
-#include <nx_qemu_printf.h>
+#include <nx_qemu_sim_printf.h>
+
+#ifdef SOC_SIM
+static void kputc(char c)
+{
+    volatile unsigned char *reg = (unsigned char*)PHY_BASEADDR_DUMMY_MODULE;
+    *reg = (unsigned char)c;
+}
+#endif
 
 static inline void _kputs(const char *s)
 {
