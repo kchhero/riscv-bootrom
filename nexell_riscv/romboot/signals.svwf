@@ -17,6 +17,10 @@ catch {group new -name SYSCON -overlay 0}
 catch {group new -name apb -overlay 0}
 catch {group new -name cmu -overlay 0}
 catch {group new -name MMIO -overlay 0}
+catch {group new -name {Group 2} -overlay 0}
+catch {group new -name CPU1 -overlay 0}
+catch {group new -name CPU0 -overlay 0}
+catch {group new -name PLIC -overlay 0}
 
 group using {Group 1}
 group set -overlay 0
@@ -153,12 +157,81 @@ group insert \
     [subst  {[format {t.u_top_switch_wrap.u_top.u_CORE.CPU_0.CPU_0__AXI__MMIO_RVALID}]} ] \
     [subst  {[format {t.u_top_switch_wrap.u_top.u_CORE.CPU_0.CPU_0__AXI__MMIO_RDATA[63:0]}]} ]
 
+group using {Group 2}
+group set -overlay 0
+group set -comment {}
+group clear 0 end
+
+group insert \
+    [subst  {[format {t.u_top_switch_wrap.u_top.u_CORE.OSDMMC_0.AHB__HADDR[31:0]}]} ] \
+    [subst  {[format {t.u_top_switch_wrap.u_top.u_CORE.OSDMMC_0.AHB__HBURST[2:0]}]} ] \
+    [subst  {[format {t.u_top_switch_wrap.u_top.u_CORE.OSDMMC_0.AHB__HMASTLOCK}]} ] \
+    [subst  {[format {t.u_top_switch_wrap.u_top.u_CORE.OSDMMC_0.AHB__HPROT[3:0]}]} ] \
+    [subst  {[format {t.u_top_switch_wrap.u_top.u_CORE.OSDMMC_0.AHB__HRDATA[31:0]}]} ] \
+    [subst  {[format {t.u_top_switch_wrap.u_top.u_CORE.OSDMMC_0.AHB__HREADY}]} ] \
+    [subst  {[format {t.u_top_switch_wrap.u_top.u_CORE.OSDMMC_0.AHB__HRESP[1:0]}]} ] \
+    [subst  {[format {t.u_top_switch_wrap.u_top.u_CORE.OSDMMC_0.AHB__HSEL}]} ] \
+    [subst  {[format {t.u_top_switch_wrap.u_top.u_CORE.OSDMMC_0.AHB__HSIZE[2:0]}]} ] \
+    [subst  {[format {t.u_top_switch_wrap.u_top.u_CORE.OSDMMC_0.AHB__HTRANS[1:0]}]} ] \
+    [subst  {[format {t.u_top_switch_wrap.u_top.u_CORE.OSDMMC_0.AHB__HWDATA[31:0]}]} ] \
+    [subst  {[format {t.u_top_switch_wrap.u_top.u_CORE.OSDMMC_0.AHB__HWRITE}]} ] \
+    [subst  {[format {t.u_top_switch_wrap.u_top.u_CORE.OSDMMC_0.APB__PADDR[15:0]}]} ] \
+    [subst  {[format {t.u_top_switch_wrap.u_top.u_CORE.OSDMMC_0.APB__PENABLE}]} ] \
+    [subst  {[format {t.u_top_switch_wrap.u_top.u_CORE.OSDMMC_0.APB__PRDATA[31:0]}]} ] \
+    [subst  {[format {t.u_top_switch_wrap.u_top.u_CORE.OSDMMC_0.APB__PREADY}]} ] \
+    [subst  {[format {t.u_top_switch_wrap.u_top.u_CORE.OSDMMC_0.APB__PSEL}]} ] \
+    [subst  {[format {t.u_top_switch_wrap.u_top.u_CORE.OSDMMC_0.APB__PSLVERR}]} ] \
+    [subst  {[format {t.u_top_switch_wrap.u_top.u_CORE.OSDMMC_0.APB__PWDATA[31:0]}]} ] \
+    [subst  {[format {t.u_top_switch_wrap.u_top.u_CORE.OSDMMC_0.APB__PWRITE}]} ] \
+    [subst  {[format {t.u_top_switch_wrap.u_top.u_CORE.OSDMMC_0.CLK__AHB_CLK}]} ] \
+    [subst  {[format {t.u_top_switch_wrap.u_top.u_CORE.OSDMMC_0.CLK__CORE_CLK}]} ] \
+    [subst  {[format {t.u_top_switch_wrap.u_top.u_CORE.OSDMMC_0.IO__CARD_WritePrt}]} ] \
+    [subst  {[format {t.u_top_switch_wrap.u_top.u_CORE.OSDMMC_0.IO__CARD_nDetect}]} ] \
+    [subst  {[format {t.u_top_switch_wrap.u_top.u_CORE.OSDMMC_0.IO__CCLK}]} ] \
+    [subst  {[format {t.u_top_switch_wrap.u_top.u_CORE.OSDMMC_0.IO__CDATA_A[3:0]}]} ] \
+    [subst  {[format {t.u_top_switch_wrap.u_top.u_CORE.OSDMMC_0.IO__CDATA_EN[3:0]}]} ] \
+    [subst  {[format {t.u_top_switch_wrap.u_top.u_CORE.OSDMMC_0.IO__CDATA_Y[3:0]}]} ] \
+    [subst  {[format {t.u_top_switch_wrap.u_top.u_CORE.OSDMMC_0.IO__CMD_A}]} ] \
+    [subst  {[format {t.u_top_switch_wrap.u_top.u_CORE.OSDMMC_0.IO__CMD_EN}]} ] \
+    [subst  {[format {t.u_top_switch_wrap.u_top.u_CORE.OSDMMC_0.IO__CMD_Y}]} ] \
+    [subst  {[format {t.u_top_switch_wrap.u_top.u_CORE.OSDMMC_0.IO__nRST}]} ] \
+    [subst  {[format {t.u_top_switch_wrap.u_top.u_CORE.OSDMMC_0.IRQ__IRQ}]} ] \
+    [subst  {[format {t.u_top_switch_wrap.u_top.u_CORE.OSDMMC_0.RST__AHB_RSTN}]} ] \
+    {### cdivider}
+
+group using CPU1
+group set -overlay 0
+group set -comment {}
+group clear 0 end
+
+group insert \
+    [subst  {[format {t.u_top_switch_wrap.u_top.u_CORE.CPU_0.CPU_0.tile_1.core.csr_io_pc[39:0]}]} ] \
+    [subst  {[format {t.u_top_switch_wrap.u_top.u_CORE.CPU_0.CPU_0.tile_1.core.ex_pc_valid}]} ]
+
+group using CPU0
+group set -overlay 0
+group set -comment {}
+group clear 0 end
+
+group insert \
+    [subst  {[format {t.u_top_switch_wrap.u_top.u_CORE.CPU_0.CPU_0.tile.core.csr_io_pc[39:0]}]} ] \
+    [subst  {[format {t.u_top_switch_wrap.u_top.u_CORE.CPU_0.CPU_0.tile.core.ex_pc_valid}]} ]
+
+group using PLIC
+group set -overlay 0
+group set -comment {}
+group clear 0 end
+
+group insert \
+    [subst  {[format {t.u_top_switch_wrap.u_top.u_CORE.CPU_0.CPU_0.plic.Queue.initvar}]} ]
+
 set groupId0 [waveform add -groups {{Group 1}}]
 waveform hierarchy collapse $groupId0
 
 set id [waveform add -cdivider divider]
 
 set groupId0 [waveform add -groups SYSCON]
+waveform hierarchy collapse $groupId0
 
 set id [waveform add -label ------------ -comment {}]
 set id [waveform add -cdivider divider]
@@ -168,17 +241,104 @@ set groupId0 [waveform add -groups cmu]
 set groupId1 [waveform find -name apb]
 waveform hierarchy collapse $groupId1
 
+waveform hierarchy collapse $groupId0
 
 set id [waveform add -label ------------ -comment {}]
 set id [waveform add -cdivider divider]
+
+set groupId0 [waveform add -groups CPU0]
+
 set id [waveform add -signals [subst  {
-	{[format {t.u_top_switch_wrap.u_top.u_CORE.CPU_0.CPU_0.tile.core.csr.exception}]}
+	{[format {t.u_top_switch_wrap.u_top.u_CORE.CPU_0.CPU_0.tile.core.csr.io_hartid}]}
 	} ]]
+set id [waveform add -signals [subst  {
+	{[format {t.u_top_switch_wrap.u_top.u_CORE.CPU_0.CPU_0.tile.core.csr.io_interrupt}]}
+	} ]]
+set id [waveform add -signals [subst  {
+	{[format {t.u_top_switch_wrap.u_top.u_CORE.CPU_0.CPU_0.tile.core.csr.io_pc[39:0]}]}
+	} ]]
+waveform format $id -color #ffff00
 set id [waveform add -signals [subst  {
 	{[format {t.u_top_switch_wrap.u_top.u_CORE.CPU_0.CPU_0.tile.core.csr.io_cause[63:0]}]}
 	} ]]
+set id [waveform add -signals [subst  {
+	{[format {t.u_top_switch_wrap.u_top.u_CORE.CPU_0.CPU_0.tile.core.csr.io_pmp_4_cfg_r}]}
+	} ]]
+set id [waveform add -signals [subst  {
+	{[format {t.u_top_switch_wrap.u_top.u_CORE.CPU_0.CPU_0.tile.core.csr.io_pmp_0_addr[29:0]}]}
+	} ]]
+set id [waveform add -signals [subst  {
+	{[format {t.u_top_switch_wrap.u_top.u_CORE.CPU_0.CPU_0.tile.core.csr.io_pmp_0_cfg_a[1:0]}]}
+	} ]]
 set id [waveform add -cdivider divider]
+
+set groupId0 [waveform add -groups CPU1]
+
+set id [waveform add -signals [subst  {
+	{[format {t.u_top_switch_wrap.u_top.u_CORE.CPU_0.CPU_0.tile_1.core.csr.io_hartid}]}
+	} ]]
+set id [waveform add -signals [subst  {
+	{[format {t.u_top_switch_wrap.u_top.u_CORE.CPU_0.CPU_0.tile_1.core.csr.io_interrupt}]}
+	} ]]
+set id [waveform add -signals [subst  {
+	{[format {t.u_top_switch_wrap.u_top.u_CORE.CPU_0.CPU_0.tile_1.core.csr.io_pc[39:0]}]}
+	} ]]
+waveform format $id -color #ffff00
+set id [waveform add -signals [subst  {
+	{[format {t.u_top_switch_wrap.u_top.u_CORE.CPU_0.CPU_0.tile_1.core.csr.io_cause[63:0]}]}
+	} ]]
 set id [waveform add -cdivider divider]
+set id [waveform add -signals [subst  {
+	{[format {t.u_top_switch_wrap.u_top.u_CORE.CPU_0.CPU_0.tile.constants_reset_vector[31:0]}]}
+	} ]]
+set id [waveform add -cdivider divider]
+set id [waveform add -signals [subst  {
+	{[format {t.u_top_switch_wrap.u_top.u_CORE.CPU_0.CPU_0.clint.auto_in_a_bits_address[25:0]}]}
+	} ]]
+set id [waveform add -signals [subst  {
+	{[format {t.u_top_switch_wrap.u_top.u_CORE.CPU_0.CPU_0.clint.auto_in_a_bits_data[63:0]}]}
+	} ]]
+set id [waveform add -signals [subst  {
+	{[format {t.u_top_switch_wrap.u_top.u_CORE.CPU_0.CPU_0.clint.auto_in_a_bits_mask[7:0]}]}
+	} ]]
+set id [waveform add -signals [subst  {
+	{[format {t.u_top_switch_wrap.u_top.u_CORE.CPU_0.CPU_0.clint.auto_in_a_bits_source[6:0]}]}
+	} ]]
+set id [waveform add -signals [subst  {
+	{[format {t.u_top_switch_wrap.u_top.u_CORE.CPU_0.CPU_0.clint.auto_in_d_bits_data[63:0]}]}
+	} ]]
+set id [waveform add -signals [subst  {
+	{[format {t.u_top_switch_wrap.u_top.u_CORE.CPU_0.CPU_0.clint.auto_in_d_bits_opcode[2:0]}]}
+	} ]]
+set id [waveform add -signals [subst  {
+	{[format {t.u_top_switch_wrap.u_top.u_CORE.CPU_0.CPU_0.clint.auto_in_d_bits_source[6:0]}]}
+	} ]]
+set id [waveform add -cdivider divider]
+set id [waveform add -signals [subst  {
+	{[format {t.u_top_switch_wrap.u_top.u_CORE.CPU_0.CPU_0.clint.TLMonitor_io_in_a_bits_opcode[2:0]}]}
+	} ]]
+set id [waveform add -signals [subst  {
+	{[format {t.u_top_switch_wrap.u_top.u_CORE.CPU_0.CPU_0.clint.TLMonitor_io_in_d_bits_opcode[2:0]}]}
+	} ]]
+set id [waveform add -signals [subst  {
+	{[format {t.u_top_switch_wrap.u_top.u_CORE.CPU_0.CPU_0.clint._T_31_d_bits_opcode[2:0]}]}
+	} ]]
+set id [waveform add -signals [subst  {
+	{[format {t.u_top_switch_wrap.u_top.u_CORE.CPU_0.CPU_0.clint.auto_in_a_bits_opcode[2:0]}]}
+	} ]]
+set id [waveform add -signals [subst  {
+	{[format {t.u_top_switch_wrap.u_top.u_CORE.CPU_0.CPU_0.clint.auto_in_d_bits_opcode[2:0]}]}
+	} ]]
+set id [waveform add -cdivider divider]
+
+set groupId0 [waveform add -groups PLIC]
+
+set id [waveform add -signals [subst  {
+	{[format {t.u_top_switch_wrap.u_top.u_CORE.CPU_0.CPU_0.plic.Queue.io_deq_valid}]}
+	} ]]
+set id [waveform add -signals [subst  {
+	{[format {t.u_top_switch_wrap.u_top.u_CORE.CPU_0.CPU_0.plic.TLMonitor.io_in_a_bits_address[27:0]}]}
+	} ]]
 set id [waveform add -cdivider divider]
 set id [waveform add -signals [subst  {
 	{[format {t.u_top_switch_wrap.u_top.u_CORE.CPU_0.CPU_0__CLK__CLK}]}
@@ -204,7 +364,10 @@ set groupId0 [waveform add -groups MMIO]
 waveform hierarchy collapse $groupId0
 
 set id [waveform add -cdivider divider]
-set id [waveform add -cdivider divider]
+
+set groupId0 [waveform add -groups {{Group 2}}]
+waveform hierarchy collapse $groupId0
+
 set id [waveform add -cdivider divider]
 set id [waveform add -cdivider divider]
 set id [waveform add -label ------------ -comment {}]
@@ -254,4 +417,6 @@ set id [waveform add -label ------------ -comment {}]
 set id [waveform add -label ------------ -comment {}]
 set id [waveform add -label ------------ -comment {}]
 
-waveform xview limits 13423.141ns 13653.979ns
+waveform xview limits 296770.654ns 328817.796ns
+waveform set -signalfilterentry *pc*
+waveform set -signalfilter *reg*

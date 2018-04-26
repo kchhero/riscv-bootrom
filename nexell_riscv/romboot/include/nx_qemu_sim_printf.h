@@ -5,8 +5,9 @@
 #ifdef SOC_SIM
 
 #define PHY_BASEADDR_DUMMY_MODULE (0x20A00000)
-#define MAX_MESSAGE_LEN (1024)
-
+#define MAX_MESSAGE_LEN (128)
+extern void _kputs(const char *s);
+extern void kputc(char c);
 #else
 
 #include "nx_swallow.h"
@@ -43,9 +44,9 @@ static inline void kputc(char c)
 #endif
 }
 
+extern void kputs(const char *);
 #endif //SOC_SIM
 
-extern void kputs(const char *);
 extern void _dprintf(const char *, ...);
 
 #ifdef DEBUG

@@ -85,7 +85,11 @@ int NX_SDMMC_SetClock(SDBOOTSTATUS *pSDXCBootStatus, int enb)
     //    _dprintf("<<bootrom>> %s start\n",__func__);
     _dprintf("<<bootrom>> Setclock: pSDXCBootStatus = 0x%x\n", pSDXCBootStatus);
     _dprintf("<<bootrom>> Setclock: pSDXCReg = 0x%x\n", pSDXCReg);
+    _dprintf("<<bootrom>> Setclock: pSDXCReg->RESP = 0x%x\n", pSDXCReg->RESP[3]);
     _dprintf("<<bootrom>> Setclock: pSDXCReg->STATUS = 0x%x\n", pSDXCReg->STATUS);
+    _dprintf("<<bootrom>> Setclock: pSDXCReg->FIFOTH = 0x%x\n", pSDXCReg->FIFOTH);
+    _dprintf("<<bootrom>> Setclock: pSDXCReg->MINTSTS = 0x%x\n", pSDXCReg->MINTSTS);
+    _dprintf("<<bootrom>> Setclock: pSDXCReg->RINTSTS = 0x%x\n", pSDXCReg->RINTSTS);    
 #endif
 
 #if defined(DEBUG) && !defined(SOC_SIM)
@@ -181,7 +185,7 @@ unsigned int NX_SDMMC_SendCommandInternal(
     register NX_SDMMC_RegisterSet * const pSDXCReg = pgSDXCReg[pSDXCBootStatus->SDPort];
 
 #ifdef DEBUG
-    _dprintf("<<bootrom>> SendCommandInternal start\n",&cmd);
+    _dprintf("<<bootrom>> SendCommandInternal start\n");
     _dprintf("<<bootrom>> pCommand = 0x%x\n",pCommand);
 #endif
     
@@ -199,18 +203,26 @@ unsigned int NX_SDMMC_SendCommandInternal(
     do {
         pSDXCReg->RINTSTS	= NX_SDXC_RINTSTS_HLE;
         pSDXCReg->CMDARG	= pCommand->arg;
-        pSDXCReg->CMD		= cmd | flag |
-            NX_SDXC_CMDFLAG_USE_HOLD_REG;
-        while (pSDXCReg->CMD & NX_SDXC_CMDFLAG_STARTCMD) {
-            if (++timeout > NX_SDMMC_TIMEOUT) {
-#ifndef SOC_SIM                
-                _dprintf("TO send cmd\r\n");
+        pSDXCReg->CMD		= cmd | flag | NX_SDXC_CMDFLAG_USE_HOLD_REG;
+
+#ifdef DEBUG
+        _dprintf("<<bootrom>> pSDXCReg->CMD = 0x%x\n",pSDXCReg->CMD);
+        _dprintf("<<bootrom>> pSDXCReg->RINTSTS = 0x%x\n",pSDXCReg->RINTSTS);
+        _dprintf("<<bootrom>> pSDXCReg->CMD & NX_SDXC_CMDFLAG_STARTCMD = 0x%x\n",pSDXCReg->CMD & NX_SDXC_CMDFLAG_STARTCMD);
 #endif
+            
+        while (pSDXCReg->CMD & NX_SDXC_CMDFLAG_STARTCMD) {
+            _dprintf("*.");
+            if (++timeout > NX_SDMMC_TIMEOUT) {
+                //#ifndef SOC_SIM                
+                _dprintf("TO send cmd\r\n");
+                //#endif
                 status |= NX_SDMMC_STATUS_CMDBUSY;
                 INFINTE_LOOP();
                 goto End;
             }
         }
+        _dprintf(".*");
     } while (pSDXCReg->RINTSTS & NX_SDXC_RINTSTS_HLE);
 #else
     do {
@@ -219,6 +231,11 @@ unsigned int NX_SDMMC_SendCommandInternal(
         pSDXCReg->CMD		= cmd | flag |  NX_SDXC_CMDFLAG_USE_HOLD_REG;
     } while (0);
 #endif
+
+#ifdef DEBUG
+    _dprintf("<<bootrom>> SendCommandInternal step1\n");
+#endif
+    
     //--------------------------------------------------------------------------
     // Wait until Command sent to card and got response from card.
 #ifndef QEMU_RISCV
@@ -228,9 +245,9 @@ unsigned int NX_SDMMC_SendCommandInternal(
             break;
 
         if (++timeout > NX_SDMMC_TIMEOUT) {
-#ifndef SOC_SIM
+            //#ifndef SOC_SIM
             _dprintf("TO cmd done\r\n");
-#endif
+            //#endif
             status |= NX_SDMMC_STATUS_CMDTOUT;
             INFINTE_LOOP();
             goto End;
@@ -246,6 +263,11 @@ unsigned int NX_SDMMC_SendCommandInternal(
         }
     }
 #endif
+
+#ifdef DEBUG
+    _dprintf("<<bootrom>> SendCommandInternal step2\n");
+#endif
+    
     // Check Response Error
     if (pSDXCReg->RINTSTS & (NX_SDXC_RINTSTS_RCRC |
                              NX_SDXC_RINTSTS_RE |
@@ -306,7 +328,7 @@ unsigned int NX_SDMMC_SendStatus(SDBOOTSTATUS *pSDXCBootStatus)
     NX_SDMMC_COMMAND cmd;
 
     cmd.cmdidx	= SEND_STATUS;
-    cmd.arg		= pSDXCBootStatus->rca;
+    cmd.arg	= pSDXCBootStatus->rca;
     cmd.flag	= NX_SDXC_CMDFLAG_STARTCMD |
         NX_SDXC_CMDFLAG_CHKRSPCRC |
         NX_SDXC_CMDFLAG_SHORTRSP;
@@ -390,6 +412,9 @@ unsigned int NX_SDMMC_SendCommand(SDBOOTSTATUS *pSDXCBootStatus,
 {
     unsigned int status;
 
+#ifdef DEBUG
+    _dprintf("<<bootrom>> SendCommand\n");
+#endif
     status = NX_SDMMC_SendCommandInternal(pSDXCBootStatus, pCommand);
     if (NX_SDMMC_STATUS_NOERROR != status) {
         NX_SDMMC_SendStatus(pSDXCBootStatus);
@@ -411,6 +436,10 @@ unsigned int NX_SDMMC_SendAppCommand(SDBOOTSTATUS *pSDXCBootStatus,
         NX_SDXC_CMDFLAG_WAITPRVDAT |
         NX_SDXC_CMDFLAG_CHKRSPCRC |
         NX_SDXC_CMDFLAG_SHORTRSP;
+
+#ifdef DEBUG
+    _dprintf("<<bootrom>> SendAppCommand\n");
+#endif
 
     status = NX_SDMMC_SendCommandInternal(pSDXCBootStatus, &cmd);
     if (NX_SDMMC_STATUS_NOERROR == status) {
@@ -468,6 +497,10 @@ int NX_SDMMC_IdentifyCard(SDBOOTSTATUS *pSDXCBootStatus)
         NX_SDXC_CMDFLAG_WAITPRVDAT |
         NX_SDXC_CMDFLAG_CHKRSPCRC |
         NX_SDXC_CMDFLAG_SHORTRSP;
+
+#ifdef DEBUG
+    _dprintf("<<bootrom>> IdentifyCard step2: cmd = 0x%x\n",&cmd);
+#endif
 
     if (NX_SDMMC_STATUS_NOERROR ==
         NX_SDMMC_SendCommandInternal(pSDXCBootStatus, &cmd)) {
@@ -749,9 +782,9 @@ int NX_SDMMC_Init(SDBOOTSTATUS *pSDXCBootStatus)
     register NX_SDMMC_RegisterSet * const pSDXCReg = pgSDXCReg[i];
 
 #ifdef DEBUG
-    _dprintf("<<bootrom>> Init start\n");
-    _dprintf("<<bootrom>> Init: pSDXCBootStatus = 0x%x\n",pSDXCBootStatus);
-    _dprintf("<<bootrom>> Init: pSDXCReg = 0x%x\n",pSDXCReg);
+    _dprintf("<<bootrom>> Init start \r\n");
+    _dprintf("<<bootrom>> Init: pSDXCBootStatus = 0x%x \r\n",pSDXCBootStatus);
+    _dprintf("<<bootrom>> Init: pSDXCReg = 0x%x \r\n",pSDXCReg);
 #endif
 
     //nxSetDeviceClock(&sdmmcclk[i][0], 2, 1);
@@ -1349,17 +1382,14 @@ unsigned int iSDBOOT(unsigned int option)
     SDBOOTSTATUS SDXCBootStatus, *pSDXCBootStatus;
     int	result = 0;
 
-/* #ifdef DEBUG     */
-/*     _dprintf("<<bootrom>>%s, start with boot option = 0x%x\n",__func__,option); */
-/* #endif */
 #ifdef DEBUG
-    _dprintf("<<bootrom>> iSDBOOT start\n");
+    _dprintf("<<bootrom>> iSDBOOT start \r\n");
 #endif
     pSDXCBootStatus = &SDXCBootStatus;
 
 #ifdef DEBUG
-    _dprintf("<<bootrom>> pSDXCBootStatus = 0x%x\n",pSDXCBootStatus);
-#endif    
+    _dprintf("<<bootrom>> pSDXCBootStatus = 0x%x \r\n",pSDXCBootStatus);
+#endif
     pSDXCBootStatus->SDPort = 0;
     pSDXCBootStatus->bHighSpeed = 0;
     

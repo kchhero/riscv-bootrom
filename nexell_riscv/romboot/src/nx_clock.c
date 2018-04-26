@@ -41,8 +41,9 @@ void nxSetClockInit(void)
     nx_cpuif_reg_write_one(PLL_INFO_0_CPUIF, PLL_MUX_PLL_FOUT);
     nx_cpuif_reg_write_one(PLL_INFO_1_CPUIF, PLL_MUX_PLL_FOUT);
 
-    _dprintf("<<bootrom>>%s: Clock Init Done\n",__func__);
-    
+#ifdef DEBUG
+    _dprintf("<<bootrom>>nxSetClockInit: Clock Init Done\n");
+#endif
     /* NX_PLL_SetOSCMUX(INDEX_PLL_0, PLL_MUX_PLL_FOUT); */
     /* NX_PLL_SetOSCMUX(INDEX_PLL_1, PLL_MUX_PLL_FOUT); */
     //            __asm__ __volatile__ ("dmb");

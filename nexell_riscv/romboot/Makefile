@@ -52,6 +52,8 @@ else	#not QEMU, REAL
 SYS_OBJS	 = 	head.o
 ifeq ($(SIM), y)
 SYS_OBJS	+=	nx_qemu_sim_printf.o
+SYS_OBJS	+=	nx_clint_test.o
+#SYS_OBJS	+=	nx_plictest.o
 else
 SYS_OBJS	+=	nx_swallow_printf.o
 ifeq ($(DEBUG), y)

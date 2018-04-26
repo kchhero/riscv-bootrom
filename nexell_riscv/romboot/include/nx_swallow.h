@@ -24,7 +24,7 @@
 
 #ifdef QEMU_RISCV
 #define SRAM_ADDR (0xFFFF0000)
-#define SRAM_SIZE (0x10000) //64KB
+#define SRAM_SIZE (0x8000) //64KB
 #else
 #define SRAM_ADDR _AC(0x40000000,UL)
 #define SRAM_SIZE _AC(0x8000,UL) //32KB

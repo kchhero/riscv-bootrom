@@ -6,7 +6,7 @@ MEMORY
   debug_ctrl (rwx) : ORIGIN = 0x0, LENGTH = 0x100
   error_mem (rw) : ORIGIN = 0x3000, LENGTH = 0x1000
   test_ctrl (rw) : ORIGIN = 0x4000, LENGTH = 0x1000
-  maskrom_mem (rx) : ORIGIN = 0x10000, LENGTH = 0x10000
+  maskrom_mem (rx) : ORIGIN = 0x10000, LENGTH = 0x8000
   clint_ctrl (rw) : ORIGIN = 0x2000000, LENGTH = 0x10000
   plic_ctrl (rw) : ORIGIN = 0xc000000, LENGTH = 0x4000000
   gpio0_ctrl (rw) : ORIGIN = 0x20700000, LENGTH = 0x1000
@@ -24,6 +24,8 @@ MEMORY
   spi0_ctrl  (rw) : ORIGIN = 0x20800000, LENGTH = 0x1000
   spi1_ctrl  (rw) : ORIGIN = 0x20810000, LENGTH = 0x1000
   spi2_ctrl  (rw) : ORIGIN = 0x20820000, LENGTH = 0x1000
+  pwm0_ctrl  (rw) : ORIGIN = 0x208E0000, LENGTH = 0x10000
+  pwm1_ctrl  (rw) : ORIGIN = 0x208F0000, LENGTH = 0x10000
   tricbox_ctrl (rw) : ORIGIN = 0x20A00000, LENGTH = 0x100000
   sdmmc0_ctrl (rw) : ORIGIN = 0x20930000, LENGTH = 0x10000
   sdmmc1_ctrl (rw) : ORIGIN = 0x20940000, LENGTH = 0x10000

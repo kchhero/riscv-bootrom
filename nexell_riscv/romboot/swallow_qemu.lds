@@ -4,7 +4,7 @@ ENTRY(_prog_start)
 MEMORY
 {
   debug_ctrl (rwx) : ORIGIN = 0x0, LENGTH = 0x100
-  maskrom_mem (rx) : ORIGIN = 0x1000, LENGTH = 0x10000
+  maskrom_mem (rx) : ORIGIN = 0x1000, LENGTH = 0x8000
   clint_ctrl (rw) : ORIGIN = 0x2000000, LENGTH = 0x10000
   plic_ctrl (rw) : ORIGIN = 0xC000000, LENGTH = 0x4000000
   gpio0_ctrl (rw) : ORIGIN = 0x20700000, LENGTH = 0x1000
@@ -14,7 +14,7 @@ MEMORY
   sdmmc0_ctrl (rw) : ORIGIN = 0x20930000, LENGTH = 0x10000
   sdmmc1_ctrl (rw) : ORIGIN = 0x20940000, LENGTH = 0x10000
   memory_dmem (rwx) : ORIGIN = 0x80000000, LENGTH = 0x10000000
-  memory_mem (rwx) : ORIGIN = 0xFFFF0000, LENGTH = 0x10000
+  memory_mem (rwx) : ORIGIN = 0xFFFF0000, LENGTH = 0x8000
 }
 
 
