@@ -23,8 +23,10 @@
 
 #define SDXC_CLKDIV		        (1)	/* PLL2 / 1 / 4 = 25 MHz */
 
-#define	SDCLK_DIVIDER_ENUM		(1)	/* Internal Clock Enable 0:Stop, 1:Oscillate */
+#define	SDCLK_DIVIDER_ENUM		(16) //1	/* Internal Clock Enable 0:Stop, 1:Oscillate */
 #define	SDCLK_DIVIDER_WORK		(1)	/* Base Clock */
+#define SDCLK_DIVIDER_400KHZ      	(64)	/* PLL0 / 125 / 4 = 1600KHz */
+#define SDCLK_DIVIDER_NORMAL            (1)
 
 #define BLOCK_LENGTH			(512)
 
@@ -36,6 +38,12 @@
 #else
 	#define INFINTE_LOOP()
 #endif
+
+#define HEADER_ID                               \
+                ((((unsigned int)'N')<< 0) |    \
+                 (((unsigned int)'S')<< 8) |    \
+                 (((unsigned int)'I')<<16) |    \
+                 (((unsigned int)'H')<<24))
 
 /*----------------------------------------------------------------------------*/
 #define	NX_SDMMC_STATUS_NOERROR		0

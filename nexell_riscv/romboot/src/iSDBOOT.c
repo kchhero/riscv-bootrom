@@ -66,7 +66,7 @@ const union nxpad sdmmcpad[2][6] = {
 }};
 
 //------------------------------------------------------------------------------
-int NX_SDMMC_SetClock(SDBOOTSTATUS *pSDXCBootStatus, int enb)
+int NX_SDMMC_SetClock(SDBOOTSTATUS *pSDXCBootStatus, int enb, int divider)
 {
 #ifdef QEMU_RISCV
     _dprintf("<<bootrom>>%s : nxSetDeviceClock cannot setting on QEMU mode\n", __func__);
@@ -112,9 +112,13 @@ int NX_SDMMC_SetClock(SDBOOTSTATUS *pSDXCBootStatus, int enb)
     pSDXCReg->CLKENA |= NX_SDXC_CLKENA_LOWPWR;
     pSDXCReg->CLKENA &= ~NX_SDXC_CLKENA_CLKENB;
     //    nxSetDeviceClock(&sdmmcclk[i][1], 1, 1);
-    
-    pSDXCReg->CLKENA &= ~NX_SDXC_CLKENA_LOWPWR;	// low power mode & clock disable
 
+    if (divider == SDCLK_DIVIDER_400KHZ)
+        pSDXCReg->CLKSRC = 0;
+    else
+        pSDXCReg->CLKSRC = 1;
+
+    pSDXCReg->CLKENA &= ~NX_SDXC_CLKENA_LOWPWR;	// low power mode & clock disable
 
     //--------------------------------------------------------------------------
     // 4. Start a command with NX_SDXC_CMDFLAG_UPDATECLKONLY flag.
@@ -465,7 +469,7 @@ int NX_SDMMC_IdentifyCard(SDBOOTSTATUS *pSDXCBootStatus)
     _dprintf("<<bootrom>> pSDXCBootStatus = 0x%x\n",pSDXCBootStatus);
 #endif
         
-    if (0 == NX_SDMMC_SetClock(pSDXCBootStatus,1))
+    if (0 == NX_SDMMC_SetClock(pSDXCBootStatus,1,SDCLK_DIVIDER_400KHZ))
         return 0;
 
     // Data Bus Width : 0(1-bit), 1(4-bit)
@@ -887,7 +891,7 @@ int NX_SDMMC_Open(SDBOOTSTATUS *pSDXCBootStatus, unsigned int option)
 
     //--------------------------------------------------------------------------
     // data transfer mode : Stand-by state
-    if (0 == NX_SDMMC_SetClock(pSDXCBootStatus, 1)) {
+    if (0 == NX_SDMMC_SetClock(pSDXCBootStatus, 1, SDCLK_DIVIDER_NORMAL)) {
         //        _dprintf("Card Clk rst fail\r\n");
         return 0;
     }
@@ -916,7 +920,7 @@ int NX_SDMMC_Open(SDBOOTSTATUS *pSDXCBootStatus, unsigned int option)
 //------------------------------------------------------------------------------
 int NX_SDMMC_Close(SDBOOTSTATUS *pSDXCBootStatus)
 {
-    NX_SDMMC_SetClock(pSDXCBootStatus, 0);
+    NX_SDMMC_SetClock(pSDXCBootStatus, 0, SDCLK_DIVIDER_400KHZ);
 
 /* #ifdef DEBUG */
 /*     _dprintf("<<bootrom>> %s Done\n",__func__); */
@@ -1290,15 +1294,16 @@ int SDMMCBOOT(SDBOOTSTATUS *pSDXCBootStatus, unsigned int option)
     /* 				iv, sizeof(struct nx_bootinfo)); */
     /* 	} */
 
-    /* 	if (pbi->signature != HEADER_ID) { */
-    /* 		_dprintf("not bootable image(%08x).\r\n", */
-    /* 				pbi->signature); */
-    /* 		return 0; */
-    /* 	} */
-    /* #endif */
-
     struct nx_bootinfo *pbi = &(pbm)->bi;
     unsigned int BootSize = pbi->LoadSize;
+
+    if (pbi->signature != HEADER_ID) {
+        _dprintf("not bootable image(%08x).\r\n",
+                 pbi->signature);
+        return 0;
+    }
+    /* #endif */
+
 /* #ifdef DEBUG */
 /*     _dprintf("<<bootrom>> %s pbi addr : 0x%x \n",__func__, pbi); */
 /*     _dprintf("<<bootrom>> %s LoadAddr:%x LoadSize:%x StartAddr:%x\r\n",__func__, */
@@ -1308,11 +1313,12 @@ int SDMMCBOOT(SDBOOTSTATUS *pSDXCBootStatus, unsigned int option)
         BootSize = INTERNAL_SRAM_SIZE - SECONDBOOT_STACK;
 
 
-    unsigned int sectorsize = (BootSize - 256 + BLOCK_LENGTH - 1) / BLOCK_LENGTH;
-    unsigned int tdata[1024 / 4];
+    //unsigned int sectorsize = (BootSize - 256 + BLOCK_LENGTH - 1) / BLOCK_LENGTH;
+    unsigned int sectorsize = (BootSize + BLOCK_LENGTH - 1) / BLOCK_LENGTH;
+    //    unsigned int tdata[1024 / 4];
     unsigned int *pdata = (unsigned int *)(pbm)->image;
-    result = NX_SDMMC_ReadSectors(pSDXCBootStatus, rsn, 2, tdata);
-    rsn += 2;
+    //    result = NX_SDMMC_ReadSectors(pSDXCBootStatus, rsn, 2, tdata);
+    //    rsn += 2;
 
     /* nx_memcpy(&(*pbm)->rsa_public, tdata, sizeof(struct asymmetrickey)); */
     /* nx_memcpy(pdata, tdata, 1024 - sizeof(struct asymmetrickey)); */
@@ -1348,8 +1354,10 @@ int SDMMCBOOT(SDBOOTSTATUS *pSDXCBootStatus, unsigned int option)
     /* 	} */
     /* #endif */
 
+    /* result = NX_SDMMC_ReadSectors(pSDXCBootStatus, */
+    /*                                       rsn, sectorsize, &pdata[256]); */
     result = NX_SDMMC_ReadSectors(pSDXCBootStatus,
-                                          rsn, sectorsize, &pdata[256]);
+                                          rsn, sectorsize, pdata);
 
     /* 	if (option & 1 << DECRYPT) { */
     /* #if 1 */

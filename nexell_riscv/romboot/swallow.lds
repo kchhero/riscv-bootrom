@@ -29,6 +29,7 @@ MEMORY
   tricbox_ctrl (rw) : ORIGIN = 0x20A00000, LENGTH = 0x100000
   sdmmc0_ctrl (rw) : ORIGIN = 0x20930000, LENGTH = 0x10000
   sdmmc1_ctrl (rw) : ORIGIN = 0x20940000, LENGTH = 0x10000
+  temp_ctrl (rw) : ORIGIN = 0x21000000, LENGTH = 0x01000000
   memory_mem (rwx) : ORIGIN = 0x40000000, LENGTH = 0x8000
 }
 

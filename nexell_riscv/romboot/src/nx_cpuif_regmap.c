@@ -26,7 +26,7 @@ void nx_cpuif_reg_write_one_notread( __nx_cpuif_symbol__ symbol, unsigned int  r
 
     reg = (unsigned int*) reg_addr;
 
-    reg_val = 0;
+    reg_val = (unsigned int)0;
 
     reg_mask = reg_bitwidth < 32 ? ((1<<(reg_bitwidth))-1) << reg_startbit : ~0;
 
@@ -47,11 +47,12 @@ void nx_cpuif_reg_write_one_notread( __nx_cpuif_symbol__ symbol, unsigned int  r
     reg_val = reg_val & (~reg_mask);
     reg_val = reg_val | reg_writeval;
 
-    WriteIODW(reg, reg_val);
-#ifdef CPUIF_REGMAP_DEBUG
-    nx_cpuif_debug_print("\n[DEBUG] reg_val = 0x%x(%d)", reg_val, reg_val );
-    nx_cpuif_debug_print("\n[DEBUG] ===============================================");
-    nx_cpuif_debug_print("\n");
+    reg = (unsigned int)reg_val;
+    //    WriteIODW(reg, reg_val);
+#ifdef DEBUG
+    _dprintf("\n[DEBUG] reg_val = 0x%x(%d)", reg_val, reg_val );
+    _dprintf("\n[DEBUG] ===============================================");
+    _dprintf("\n");
 #endif
 
 }
@@ -80,7 +81,7 @@ void nx_cpuif_reg_write_one(__nx_cpuif_symbol__ symbol, unsigned int  regval)
     if( reg_bitwidth == 32 ) {
         reg_val  = 0;
     } else {
-        reg_val  = ReadIODW(reg);
+        reg_val  = *reg;//ReadIODW(reg);
     }
 
     reg_mask = reg_bitwidth < 32 ? ((1<<(reg_bitwidth))-1) << reg_startbit : ~0;
@@ -107,7 +108,8 @@ void nx_cpuif_reg_write_one(__nx_cpuif_symbol__ symbol, unsigned int  regval)
     reg_val = reg_val & (~reg_mask);
     reg_val = reg_val | reg_writeval;
 
-    WriteIODW(reg, reg_val);
+    reg = (unsigned int)reg_val;
+    //    WriteIODW(reg, reg_val);
 #ifdef QEMU_RISCV
     _dprintf("\n[DEBUG] reg_val = 0x%x(%d)", reg_val, reg_val );
     _dprintf("\n[DEBUG] ===============================================");
@@ -132,7 +134,7 @@ unsigned int nx_cpuif_reg_read_one(__nx_cpuif_symbol__ symbol, unsigned int * re
     reg_bitwidth = symbol.bitwidth;
 
     reg = (unsigned int*) reg_addr;
-    reg_val  = ReadIODW(reg);
+    reg_val  = *reg;//ReadIODW(reg);
 /* #ifdef DEBUG */
 /*     _dprintf("\n[DEBUG] reg_val = 0x%x(%d), reg_addr = 0x%x", reg_val, reg_val, reg_addr); */
 /* #endif */
@@ -160,3 +162,4 @@ unsigned int nx_cpuif_reg_read_one(__nx_cpuif_symbol__ symbol, unsigned int * re
 /* #endif */
     return reg_readval;
 }
+

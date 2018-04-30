@@ -42,7 +42,7 @@ struct nx_bootinfo {
 
 struct nx_bootmm {
 	struct nx_bootinfo bi;
-	unsigned int image[(32768 - 512 - 3 * 256) / 4];
+	unsigned int image[32768 / 4];
 };
 
 /* ========================= rst cfg =====================*/

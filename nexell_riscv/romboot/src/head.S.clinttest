@@ -5,16 +5,22 @@
 .section .text.start, "ax", @progbits
 .globl _start
 _start:
-	smp_pause(s1, s2)        
+	smp_pause(s1, s2)
+
+        ;; csrr a0, mhartid
+        ;; bnez a0, stop_and_go
+        
         li sp, (SRAM_ADDR + SRAM_SIZE)
-//        csrr a0, mhartid
-//        bnez a0, stop_and_go
 
-	li a0,22        //boot mode, temporary bootoption value=22
+//	li a0,22        //boot mode, temporary bootoption value=22
 
-        call romboot
+        call clint_test_main
+//        call romboot
 
       	smp_resume(s1, s2)
+
+        call clint_test_main2
+        
         li s1, SRAM_ADDR
 	jr s1
 
