@@ -21,6 +21,7 @@ catch {group new -name {Group 2} -overlay 0}
 catch {group new -name CPU1 -overlay 0}
 catch {group new -name CPU0 -overlay 0}
 catch {group new -name PLIC -overlay 0}
+catch {group new -name {Group 6} -overlay 0}
 
 group using {Group 1}
 group set -overlay 0
@@ -185,7 +186,6 @@ group insert \
     [subst  {[format {t.u_top_switch_wrap.u_top.u_CORE.OSDMMC_0.APB__PWRITE}]} ] \
     [subst  {[format {t.u_top_switch_wrap.u_top.u_CORE.OSDMMC_0.CLK__AHB_CLK}]} ] \
     [subst  {[format {t.u_top_switch_wrap.u_top.u_CORE.OSDMMC_0.CLK__CORE_CLK}]} ] \
-    [subst  {[format {t.u_top_switch_wrap.u_top.u_CORE.OSDMMC_0.IO__CARD_WritePrt}]} ] \
     [subst  {[format {t.u_top_switch_wrap.u_top.u_CORE.OSDMMC_0.IO__CARD_nDetect}]} ] \
     [subst  {[format {t.u_top_switch_wrap.u_top.u_CORE.OSDMMC_0.IO__CCLK}]} ] \
     [subst  {[format {t.u_top_switch_wrap.u_top.u_CORE.OSDMMC_0.IO__CDATA_A[3:0]}]} ] \
@@ -205,7 +205,6 @@ group set -comment {}
 group clear 0 end
 
 group insert \
-    [subst  {[format {t.u_top_switch_wrap.u_top.u_CORE.CPU_0.CPU_0.tile_1.core.csr_io_pc[39:0]}]} ] \
     [subst  {[format {t.u_top_switch_wrap.u_top.u_CORE.CPU_0.CPU_0.tile_1.core.ex_pc_valid}]} ]
 
 group using CPU0
@@ -214,7 +213,6 @@ group set -comment {}
 group clear 0 end
 
 group insert \
-    [subst  {[format {t.u_top_switch_wrap.u_top.u_CORE.CPU_0.CPU_0.tile.core.csr_io_pc[39:0]}]} ] \
     [subst  {[format {t.u_top_switch_wrap.u_top.u_CORE.CPU_0.CPU_0.tile.core.ex_pc_valid}]} ]
 
 group using PLIC
@@ -223,7 +221,117 @@ group set -comment {}
 group clear 0 end
 
 group insert \
-    [subst  {[format {t.u_top_switch_wrap.u_top.u_CORE.CPU_0.CPU_0.plic.Queue.initvar}]} ]
+    [subst  {[format {t.u_top_switch_wrap.u_top.u_CORE.CPU_0.CPU_0.plic.auto_int_out_3_0}]} ] \
+    [subst  {[format {t.u_top_switch_wrap.u_top.u_CORE.CPU_0.CPU_0.plic.auto_int_out_2_0}]} ] \
+    [subst  {[format {t.u_top_switch_wrap.u_top.u_CORE.CPU_0.CPU_0.plic.auto_int_out_1_0}]} ] \
+    [subst  {[format {t.u_top_switch_wrap.u_top.u_CORE.CPU_0.CPU_0.plic.auto_int_out_0_0}]} ] \
+    [subst  {[format {t.u_top_switch_wrap.u_top.u_CORE.CPU_0.CPU_0.plic.auto_int_in_4}]} ] \
+    [subst  {[format {t.u_top_switch_wrap.u_top.u_CORE.CPU_0.CPU_0.plic.auto_int_in_3}]} ] \
+    [subst  {[format {t.u_top_switch_wrap.u_top.u_CORE.CPU_0.CPU_0.plic.auto_int_in_2}]} ] \
+    [subst  {[format {t.u_top_switch_wrap.u_top.u_CORE.CPU_0.CPU_0.plic.auto_int_in_1}]} ] \
+    [subst  {[format {t.u_top_switch_wrap.u_top.u_CORE.CPU_0.CPU_0.plic.auto_int_in_0}]} ] \
+    [subst  {[format {t.u_top_switch_wrap.u_top.u_CORE.CPU_0.CPU_0.plic.auto_in_d_valid}]} ] \
+    [subst  {[format {t.u_top_switch_wrap.u_top.u_CORE.CPU_0.CPU_0.plic.auto_in_d_ready}]} ] \
+    [subst  {[format {t.u_top_switch_wrap.u_top.u_CORE.CPU_0.CPU_0.plic.auto_in_d_bits_source[6:0]}]} ] \
+    [subst  {[format {t.u_top_switch_wrap.u_top.u_CORE.CPU_0.CPU_0.plic.auto_in_d_bits_size[1:0]}]} ] \
+    [subst  {[format {t.u_top_switch_wrap.u_top.u_CORE.CPU_0.CPU_0.plic.auto_in_d_bits_opcode[2:0]}]} ] \
+    [subst  {[format {t.u_top_switch_wrap.u_top.u_CORE.CPU_0.CPU_0.plic.auto_in_d_bits_data[63:0]}]} ] \
+    [subst  {[format {t.u_top_switch_wrap.u_top.u_CORE.CPU_0.CPU_0.plic.auto_in_a_valid}]} ] \
+    [subst  {[format {t.u_top_switch_wrap.u_top.u_CORE.CPU_0.CPU_0.plic.auto_in_a_ready}]} ] \
+    [subst  {[format {t.u_top_switch_wrap.u_top.u_CORE.CPU_0.CPU_0.plic.auto_in_a_bits_source[6:0]}]} ] \
+    [subst  {[format {t.u_top_switch_wrap.u_top.u_CORE.CPU_0.CPU_0.plic.auto_in_a_bits_size[1:0]}]} ] \
+    [subst  {[format {t.u_top_switch_wrap.u_top.u_CORE.CPU_0.CPU_0.plic.auto_in_a_bits_param[2:0]}]} ] \
+    [subst  {[format {t.u_top_switch_wrap.u_top.u_CORE.CPU_0.CPU_0.plic.auto_in_a_bits_opcode[2:0]}]} ] \
+    [subst  {[format {t.u_top_switch_wrap.u_top.u_CORE.CPU_0.CPU_0.plic.auto_in_a_bits_mask[7:0]}]} ] \
+    [subst  {[format {t.u_top_switch_wrap.u_top.u_CORE.CPU_0.CPU_0.plic.auto_in_a_bits_data[63:0]}]} ] \
+    [subst  {[format {t.u_top_switch_wrap.u_top.u_CORE.CPU_0.CPU_0.plic.auto_in_a_bits_address[27:0]}]} ]
+
+group using {Group 6}
+group set -overlay 0
+group set -comment {}
+group clear 0 end
+
+group insert \
+    [subst  {[format {t.u_top_switch_wrap.u_top.u_CORE.CPU_0.CPU_0__AXI__MEM_AWPROT[2:0]}]} ] \
+    [subst  {[format {t.u_top_switch_wrap.u_top.u_CORE.CPU_0.CPU_0__AXI__MEM_AWQOS[3:0]}]} ] \
+    [subst  {[format {t.u_top_switch_wrap.u_top.u_CORE.CPU_0.CPU_0__AXI__MEM_AWREADY}]} ] \
+    [subst  {[format {t.u_top_switch_wrap.u_top.u_CORE.CPU_0.CPU_0__AXI__MEM_AWSIZE[2:0]}]} ] \
+    [subst  {[format {t.u_top_switch_wrap.u_top.u_CORE.CPU_0.CPU_0__AXI__MEM_AWVALID}]} ] \
+    [subst  {[format {t.u_top_switch_wrap.u_top.u_CORE.CPU_0.CPU_0__AXI__MEM_BID[3:0]}]} ] \
+    [subst  {[format {t.u_top_switch_wrap.u_top.u_CORE.CPU_0.CPU_0__AXI__MEM_BREADY}]} ] \
+    [subst  {[format {t.u_top_switch_wrap.u_top.u_CORE.CPU_0.CPU_0__AXI__MEM_BRESP[1:0]}]} ] \
+    [subst  {[format {t.u_top_switch_wrap.u_top.u_CORE.CPU_0.CPU_0__AXI__MEM_BVALID}]} ] \
+    [subst  {[format {t.u_top_switch_wrap.u_top.u_CORE.CPU_0.CPU_0__AXI__MEM_RDATA[63:0]}]} ] \
+    [subst  {[format {t.u_top_switch_wrap.u_top.u_CORE.CPU_0.CPU_0__AXI__MEM_RID[3:0]}]} ] \
+    [subst  {[format {t.u_top_switch_wrap.u_top.u_CORE.CPU_0.CPU_0__AXI__MEM_RLAST}]} ] \
+    [subst  {[format {t.u_top_switch_wrap.u_top.u_CORE.CPU_0.CPU_0__AXI__MEM_RREADY}]} ] \
+    [subst  {[format {t.u_top_switch_wrap.u_top.u_CORE.CPU_0.CPU_0__AXI__MEM_RRESP[1:0]}]} ] \
+    [subst  {[format {t.u_top_switch_wrap.u_top.u_CORE.CPU_0.CPU_0__AXI__MEM_RVALID}]} ] \
+    [subst  {[format {t.u_top_switch_wrap.u_top.u_CORE.CPU_0.CPU_0__AXI__MEM_WDATA[63:0]}]} ] \
+    [subst  {[format {t.u_top_switch_wrap.u_top.u_CORE.CPU_0.CPU_0__AXI__MEM_WID[3:0]}]} ] \
+    [subst  {[format {t.u_top_switch_wrap.u_top.u_CORE.CPU_0.CPU_0__AXI__MEM_WLAST}]} ] \
+    [subst  {[format {t.u_top_switch_wrap.u_top.u_CORE.CPU_0.CPU_0__AXI__MEM_WREADY}]} ] \
+    [subst  {[format {t.u_top_switch_wrap.u_top.u_CORE.CPU_0.CPU_0__AXI__MEM_WSTRB[7:0]}]} ] \
+    [subst  {[format {t.u_top_switch_wrap.u_top.u_CORE.CPU_0.CPU_0__AXI__MEM_WVALID}]} ] \
+    [subst  {[format {t.u_top_switch_wrap.u_top.u_CORE.CPU_0.CPU_0__AXI__MMIO_ARADDR[29:0]}]} ] \
+    [subst  {[format {t.u_top_switch_wrap.u_top.u_CORE.CPU_0.CPU_0__AXI__MMIO_ARBURST[1:0]}]} ] \
+    [subst  {[format {t.u_top_switch_wrap.u_top.u_CORE.CPU_0.CPU_0__AXI__MMIO_ARCACHE[3:0]}]} ] \
+    [subst  {[format {t.u_top_switch_wrap.u_top.u_CORE.CPU_0.CPU_0__AXI__MMIO_ARID[3:0]}]} ] \
+    [subst  {[format {t.u_top_switch_wrap.u_top.u_CORE.CPU_0.CPU_0__AXI__MMIO_ARLEN[3:0]}]} ] \
+    [subst  {[format {t.u_top_switch_wrap.u_top.u_CORE.CPU_0.CPU_0__AXI__MMIO_ARLOCK}]} ] \
+    [subst  {[format {t.u_top_switch_wrap.u_top.u_CORE.CPU_0.CPU_0__AXI__MMIO_ARPROT[2:0]}]} ] \
+    [subst  {[format {t.u_top_switch_wrap.u_top.u_CORE.CPU_0.CPU_0__AXI__MMIO_ARQOS[3:0]}]} ] \
+    [subst  {[format {t.u_top_switch_wrap.u_top.u_CORE.CPU_0.CPU_0__AXI__MMIO_ARREADY}]} ] \
+    [subst  {[format {t.u_top_switch_wrap.u_top.u_CORE.CPU_0.CPU_0__AXI__MMIO_ARSIZE[2:0]}]} ] \
+    [subst  {[format {t.u_top_switch_wrap.u_top.u_CORE.CPU_0.CPU_0__AXI__MMIO_ARVALID}]} ] \
+    [subst  {[format {t.u_top_switch_wrap.u_top.u_CORE.CPU_0.CPU_0__AXI__MMIO_AWADDR[29:0]}]} ] \
+    [subst  {[format {t.u_top_switch_wrap.u_top.u_CORE.CPU_0.CPU_0__AXI__MMIO_AWBURST[1:0]}]} ] \
+    [subst  {[format {t.u_top_switch_wrap.u_top.u_CORE.CPU_0.CPU_0__AXI__MMIO_AWCACHE[3:0]}]} ] \
+    [subst  {[format {t.u_top_switch_wrap.u_top.u_CORE.CPU_0.CPU_0__AXI__MMIO_AWID[3:0]}]} ] \
+    [subst  {[format {t.u_top_switch_wrap.u_top.u_CORE.CPU_0.CPU_0__AXI__MMIO_AWLEN[3:0]}]} ] \
+    [subst  {[format {t.u_top_switch_wrap.u_top.u_CORE.CPU_0.CPU_0__AXI__MMIO_AWLOCK}]} ] \
+    [subst  {[format {t.u_top_switch_wrap.u_top.u_CORE.CPU_0.CPU_0__AXI__MMIO_AWPROT[2:0]}]} ] \
+    [subst  {[format {t.u_top_switch_wrap.u_top.u_CORE.CPU_0.CPU_0__AXI__MMIO_AWQOS[3:0]}]} ] \
+    [subst  {[format {t.u_top_switch_wrap.u_top.u_CORE.CPU_0.CPU_0__AXI__MMIO_AWREADY}]} ] \
+    [subst  {[format {t.u_top_switch_wrap.u_top.u_CORE.CPU_0.CPU_0__AXI__MMIO_AWSIZE[2:0]}]} ] \
+    [subst  {[format {t.u_top_switch_wrap.u_top.u_CORE.CPU_0.CPU_0__AXI__MMIO_AWVALID}]} ] \
+    [subst  {[format {t.u_top_switch_wrap.u_top.u_CORE.CPU_0.CPU_0__AXI__MMIO_BID[3:0]}]} ] \
+    [subst  {[format {t.u_top_switch_wrap.u_top.u_CORE.CPU_0.CPU_0__AXI__MMIO_BREADY}]} ] \
+    [subst  {[format {t.u_top_switch_wrap.u_top.u_CORE.CPU_0.CPU_0__AXI__MMIO_BRESP[1:0]}]} ] \
+    [subst  {[format {t.u_top_switch_wrap.u_top.u_CORE.CPU_0.CPU_0__AXI__MMIO_BVALID}]} ] \
+    [subst  {[format {t.u_top_switch_wrap.u_top.u_CORE.CPU_0.CPU_0__AXI__MMIO_RDATA[63:0]}]} ] \
+    [subst  {[format {t.u_top_switch_wrap.u_top.u_CORE.CPU_0.CPU_0__AXI__MMIO_RID[3:0]}]} ] \
+    [subst  {[format {t.u_top_switch_wrap.u_top.u_CORE.CPU_0.CPU_0__AXI__MMIO_RLAST}]} ] \
+    [subst  {[format {t.u_top_switch_wrap.u_top.u_CORE.CPU_0.CPU_0__AXI__MMIO_RREADY}]} ] \
+    [subst  {[format {t.u_top_switch_wrap.u_top.u_CORE.CPU_0.CPU_0__AXI__MMIO_RRESP[1:0]}]} ] \
+    [subst  {[format {t.u_top_switch_wrap.u_top.u_CORE.CPU_0.CPU_0__AXI__MMIO_RVALID}]} ] \
+    [subst  {[format {t.u_top_switch_wrap.u_top.u_CORE.CPU_0.CPU_0__AXI__MMIO_WDATA[63:0]}]} ] \
+    [subst  {[format {t.u_top_switch_wrap.u_top.u_CORE.CPU_0.CPU_0__AXI__MMIO_WID[3:0]}]} ] \
+    [subst  {[format {t.u_top_switch_wrap.u_top.u_CORE.CPU_0.CPU_0__AXI__MMIO_WLAST}]} ] \
+    [subst  {[format {t.u_top_switch_wrap.u_top.u_CORE.CPU_0.CPU_0__AXI__MMIO_WREADY}]} ] \
+    [subst  {[format {t.u_top_switch_wrap.u_top.u_CORE.CPU_0.CPU_0__AXI__MMIO_WSTRB[7:0]}]} ] \
+    [subst  {[format {t.u_top_switch_wrap.u_top.u_CORE.CPU_0.CPU_0__AXI__MMIO_WVALID}]} ] \
+    [subst  {[format {t.u_top_switch_wrap.u_top.u_CORE.CPU_0.CPU_0.mem_axi4_0_r_bits_data[63:0]}]} ] \
+    [subst  {[format {t.u_top_switch_wrap.u_top.u_CORE.CPU_0.CPU_0.mem_axi4_0_w_bits_data[63:0]}]} ] \
+    [subst  {[format {t.u_top_switch_wrap.u_top.u_CORE.CPU_0.CPU_0.mmio_axi4_0_r_bits_data[63:0]}]} ] \
+    [subst  {[format {t.u_top_switch_wrap.u_top.u_CORE.CPU_0.CPU_0.mmio_axi4_0_w_bits_data[63:0]}]} ] \
+    [subst  {[format {t.u_top_switch_wrap.u_top.u_CORE.CPU_0.CPU_0__AXI__MEM_AWLOCK}]} ] \
+    [subst  {[format {t.u_top_switch_wrap.u_top.u_CORE.CPU_0.CPU_0__AXI__MEM_AWLEN[3:0]}]} ] \
+    [subst  {[format {t.u_top_switch_wrap.u_top.u_CORE.CPU_0.CPU_0__AXI__MEM_AWID[3:0]}]} ] \
+    [subst  {[format {t.u_top_switch_wrap.u_top.u_CORE.CPU_0.CPU_0__AXI__MEM_AWCACHE[3:0]}]} ] \
+    [subst  {[format {t.u_top_switch_wrap.u_top.u_CORE.CPU_0.CPU_0__AXI__MEM_AWBURST[1:0]}]} ] \
+    [subst  {[format {t.u_top_switch_wrap.u_top.u_CORE.CPU_0.CPU_0__AXI__MEM_AWADDR[31:0]}]} ] \
+    [subst  {[format {t.u_top_switch_wrap.u_top.u_CORE.CPU_0.CPU_0__AXI__MEM_ARVALID}]} ] \
+    [subst  {[format {t.u_top_switch_wrap.u_top.u_CORE.CPU_0.CPU_0__AXI__MEM_ARSIZE[2:0]}]} ] \
+    [subst  {[format {t.u_top_switch_wrap.u_top.u_CORE.CPU_0.CPU_0__AXI__MEM_ARREADY}]} ] \
+    [subst  {[format {t.u_top_switch_wrap.u_top.u_CORE.CPU_0.CPU_0__AXI__MEM_ARQOS[3:0]}]} ] \
+    [subst  {[format {t.u_top_switch_wrap.u_top.u_CORE.CPU_0.CPU_0__AXI__MEM_ARPROT[2:0]}]} ] \
+    [subst  {[format {t.u_top_switch_wrap.u_top.u_CORE.CPU_0.CPU_0__AXI__MEM_ARLOCK}]} ] \
+    [subst  {[format {t.u_top_switch_wrap.u_top.u_CORE.CPU_0.CPU_0__AXI__MEM_ARLEN[3:0]}]} ] \
+    [subst  {[format {t.u_top_switch_wrap.u_top.u_CORE.CPU_0.CPU_0__AXI__MEM_ARID[3:0]}]} ] \
+    [subst  {[format {t.u_top_switch_wrap.u_top.u_CORE.CPU_0.CPU_0__AXI__MEM_ARCACHE[3:0]}]} ] \
+    [subst  {[format {t.u_top_switch_wrap.u_top.u_CORE.CPU_0.CPU_0__AXI__MEM_ARBURST[1:0]}]} ] \
+    [subst  {[format {t.u_top_switch_wrap.u_top.u_CORE.CPU_0.CPU_0__AXI__MEM_ARADDR[31:0]}]} ]
 
 set groupId0 [waveform add -groups {{Group 1}}]
 waveform hierarchy collapse $groupId0
@@ -257,9 +365,14 @@ set id [waveform add -signals [subst  {
 set id [waveform add -signals [subst  {
 	{[format {t.u_top_switch_wrap.u_top.u_CORE.CPU_0.CPU_0.tile.core.csr.io_pc[39:0]}]}
 	} ]]
-waveform format $id -color #ffff00
 set id [waveform add -signals [subst  {
 	{[format {t.u_top_switch_wrap.u_top.u_CORE.CPU_0.CPU_0.tile.core.csr.io_cause[63:0]}]}
+	} ]]
+set id [waveform add -signals [subst  {
+	{[format {t.u_top_switch_wrap.u_top.u_CORE.CPU_0.CPU_0.tile.core.csr.io_exception}]}
+	} ]]
+set id [waveform add -signals [subst  {
+	{[format {t.u_top_switch_wrap.u_top.u_CORE.CPU_0.CPU_0.tile.core.csr.io_trace_0_exception}]}
 	} ]]
 set id [waveform add -signals [subst  {
 	{[format {t.u_top_switch_wrap.u_top.u_CORE.CPU_0.CPU_0.tile.core.csr.io_pmp_4_cfg_r}]}
@@ -283,9 +396,14 @@ set id [waveform add -signals [subst  {
 set id [waveform add -signals [subst  {
 	{[format {t.u_top_switch_wrap.u_top.u_CORE.CPU_0.CPU_0.tile_1.core.csr.io_pc[39:0]}]}
 	} ]]
-waveform format $id -color #ffff00
 set id [waveform add -signals [subst  {
 	{[format {t.u_top_switch_wrap.u_top.u_CORE.CPU_0.CPU_0.tile_1.core.csr.io_cause[63:0]}]}
+	} ]]
+set id [waveform add -signals [subst  {
+	{[format {t.u_top_switch_wrap.u_top.u_CORE.CPU_0.CPU_0.tile_1.core.csr.io_exception}]}
+	} ]]
+set id [waveform add -signals [subst  {
+	{[format {t.u_top_switch_wrap.u_top.u_CORE.CPU_0.CPU_0.tile_1.core.csr.io_trace_0_exception}]}
 	} ]]
 set id [waveform add -cdivider divider]
 set id [waveform add -signals [subst  {
@@ -293,52 +411,485 @@ set id [waveform add -signals [subst  {
 	} ]]
 set id [waveform add -cdivider divider]
 set id [waveform add -signals [subst  {
-	{[format {t.u_top_switch_wrap.u_top.u_CORE.CPU_0.CPU_0.clint.auto_in_a_bits_address[25:0]}]}
+	{[format {t.u_top_switch_wrap.u_top.u_CORE.CPU_0.CPU_0__AXI__MMIO_AWVALID}]}
 	} ]]
 set id [waveform add -signals [subst  {
-	{[format {t.u_top_switch_wrap.u_top.u_CORE.CPU_0.CPU_0.clint.auto_in_a_bits_data[63:0]}]}
+	{[format {t.u_top_switch_wrap.u_top.u_CORE.CPU_0.CPU_0__AXI__MMIO_AWADDR[29:0]}]}
 	} ]]
 set id [waveform add -signals [subst  {
-	{[format {t.u_top_switch_wrap.u_top.u_CORE.CPU_0.CPU_0.clint.auto_in_a_bits_mask[7:0]}]}
+	{[format {t.u_top_switch_wrap.u_top.u_CORE.CPU_0.CPU_0__AXI__MMIO_AWADDR[29:0]}]}
 	} ]]
 set id [waveform add -signals [subst  {
-	{[format {t.u_top_switch_wrap.u_top.u_CORE.CPU_0.CPU_0.clint.auto_in_a_bits_source[6:0]}]}
+	{[format {t.u_top_switch_wrap.u_top.u_CORE.CPU_0.CPU_0__AXI__MMIO_AWBURST[1:0]}]}
 	} ]]
 set id [waveform add -signals [subst  {
-	{[format {t.u_top_switch_wrap.u_top.u_CORE.CPU_0.CPU_0.clint.auto_in_d_bits_data[63:0]}]}
+	{[format {t.u_top_switch_wrap.u_top.u_CORE.CPU_0.CPU_0__AXI__MMIO_AWCACHE[3:0]}]}
 	} ]]
 set id [waveform add -signals [subst  {
-	{[format {t.u_top_switch_wrap.u_top.u_CORE.CPU_0.CPU_0.clint.auto_in_d_bits_opcode[2:0]}]}
+	{[format {t.u_top_switch_wrap.u_top.u_CORE.CPU_0.CPU_0__AXI__MMIO_AWID[3:0]}]}
 	} ]]
 set id [waveform add -signals [subst  {
-	{[format {t.u_top_switch_wrap.u_top.u_CORE.CPU_0.CPU_0.clint.auto_in_d_bits_source[6:0]}]}
+	{[format {t.u_top_switch_wrap.u_top.u_CORE.CPU_0.CPU_0__AXI__MMIO_AWLEN[3:0]}]}
+	} ]]
+set id [waveform add -signals [subst  {
+	{[format {t.u_top_switch_wrap.u_top.u_CORE.CPU_0.CPU_0__AXI__MMIO_AWLOCK}]}
+	} ]]
+set id [waveform add -signals [subst  {
+	{[format {t.u_top_switch_wrap.u_top.u_CORE.CPU_0.CPU_0__AXI__MMIO_AWPROT[2:0]}]}
+	} ]]
+set id [waveform add -signals [subst  {
+	{[format {t.u_top_switch_wrap.u_top.u_CORE.CPU_0.CPU_0__AXI__MMIO_AWQOS[3:0]}]}
+	} ]]
+set id [waveform add -signals [subst  {
+	{[format {t.u_top_switch_wrap.u_top.u_CORE.CPU_0.CPU_0__AXI__MMIO_AWREADY}]}
+	} ]]
+set id [waveform add -signals [subst  {
+	{[format {t.u_top_switch_wrap.u_top.u_CORE.CPU_0.CPU_0__AXI__MMIO_AWSIZE[2:0]}]}
+	} ]]
+set id [waveform add -signals [subst  {
+	{[format {t.u_top_switch_wrap.u_top.u_CORE.CPU_0.CPU_0__AXI__MMIO_AWVALID}]}
+	} ]]
+set id [waveform add -signals [subst  {
+	{[format {t.u_top_switch_wrap.u_top.u_CORE.CPU_0.CPU_0__AXI__MMIO_WDATA[63:0]}]}
+	} ]]
+set id [waveform add -signals [subst  {
+	{[format {t.u_top_switch_wrap.u_top.u_CORE.CPU_0.CPU_0__AXI__MMIO_WID[3:0]}]}
+	} ]]
+set id [waveform add -signals [subst  {
+	{[format {t.u_top_switch_wrap.u_top.u_CORE.CPU_0.CPU_0__AXI__MMIO_WLAST}]}
+	} ]]
+set id [waveform add -signals [subst  {
+	{[format {t.u_top_switch_wrap.u_top.u_CORE.CPU_0.CPU_0__AXI__MMIO_WREADY}]}
+	} ]]
+set id [waveform add -signals [subst  {
+	{[format {t.u_top_switch_wrap.u_top.u_CORE.CPU_0.CPU_0__AXI__MMIO_WSTRB[7:0]}]}
+	} ]]
+set id [waveform add -signals [subst  {
+	{[format {t.u_top_switch_wrap.u_top.u_CORE.CPU_0.CPU_0__AXI__MMIO_WVALID}]}
 	} ]]
 set id [waveform add -cdivider divider]
 set id [waveform add -signals [subst  {
-	{[format {t.u_top_switch_wrap.u_top.u_CORE.CPU_0.CPU_0.clint.TLMonitor_io_in_a_bits_opcode[2:0]}]}
+	{[format {t.u_top_switch_wrap.u_top.u_CORE.CPU_0.CPU_0__AXI__MMIO_ARADDR[29:0]}]}
 	} ]]
 set id [waveform add -signals [subst  {
-	{[format {t.u_top_switch_wrap.u_top.u_CORE.CPU_0.CPU_0.clint.TLMonitor_io_in_d_bits_opcode[2:0]}]}
+	{[format {t.u_top_switch_wrap.u_top.u_CORE.CPU_0.CPU_0__AXI__MMIO_ARBURST[1:0]}]}
 	} ]]
 set id [waveform add -signals [subst  {
-	{[format {t.u_top_switch_wrap.u_top.u_CORE.CPU_0.CPU_0.clint._T_31_d_bits_opcode[2:0]}]}
+	{[format {t.u_top_switch_wrap.u_top.u_CORE.CPU_0.CPU_0__AXI__MMIO_ARCACHE[3:0]}]}
 	} ]]
 set id [waveform add -signals [subst  {
-	{[format {t.u_top_switch_wrap.u_top.u_CORE.CPU_0.CPU_0.clint.auto_in_a_bits_opcode[2:0]}]}
+	{[format {t.u_top_switch_wrap.u_top.u_CORE.CPU_0.CPU_0__AXI__MMIO_ARID[3:0]}]}
 	} ]]
 set id [waveform add -signals [subst  {
-	{[format {t.u_top_switch_wrap.u_top.u_CORE.CPU_0.CPU_0.clint.auto_in_d_bits_opcode[2:0]}]}
+	{[format {t.u_top_switch_wrap.u_top.u_CORE.CPU_0.CPU_0__AXI__MMIO_ARLEN[3:0]}]}
 	} ]]
+set id [waveform add -signals [subst  {
+	{[format {t.u_top_switch_wrap.u_top.u_CORE.CPU_0.CPU_0__AXI__MMIO_ARLOCK}]}
+	} ]]
+set id [waveform add -signals [subst  {
+	{[format {t.u_top_switch_wrap.u_top.u_CORE.CPU_0.CPU_0__AXI__MMIO_ARPROT[2:0]}]}
+	} ]]
+set id [waveform add -signals [subst  {
+	{[format {t.u_top_switch_wrap.u_top.u_CORE.CPU_0.CPU_0__AXI__MMIO_ARQOS[3:0]}]}
+	} ]]
+set id [waveform add -signals [subst  {
+	{[format {t.u_top_switch_wrap.u_top.u_CORE.CPU_0.CPU_0__AXI__MMIO_ARREADY}]}
+	} ]]
+set id [waveform add -signals [subst  {
+	{[format {t.u_top_switch_wrap.u_top.u_CORE.CPU_0.CPU_0__AXI__MMIO_ARSIZE[2:0]}]}
+	} ]]
+set id [waveform add -signals [subst  {
+	{[format {t.u_top_switch_wrap.u_top.u_CORE.CPU_0.CPU_0__AXI__MMIO_ARVALID}]}
+	} ]]
+set id [waveform add -signals [subst  {
+	{[format {t.u_top_switch_wrap.u_top.u_CORE.CPU_0.CPU_0__AXI__MMIO_RDATA[63:0]}]}
+	} ]]
+waveform hierarchy collapse $id
+set id [waveform add -signals [subst  {
+	{[format {t.u_top_switch_wrap.u_top.u_CORE.CPU_0.CPU_0__AXI__MMIO_RID[3:0]}]}
+	} ]]
+set id [waveform add -signals [subst  {
+	{[format {t.u_top_switch_wrap.u_top.u_CORE.CPU_0.CPU_0__AXI__MMIO_RLAST}]}
+	} ]]
+set id [waveform add -signals [subst  {
+	{[format {t.u_top_switch_wrap.u_top.u_CORE.CPU_0.CPU_0__AXI__MMIO_RREADY}]}
+	} ]]
+set id [waveform add -signals [subst  {
+	{[format {t.u_top_switch_wrap.u_top.u_CORE.CPU_0.CPU_0__AXI__MMIO_RRESP[1:0]}]}
+	} ]]
+set id [waveform add -signals [subst  {
+	{[format {t.u_top_switch_wrap.u_top.u_CORE.CPU_0.CPU_0__AXI__MMIO_RVALID}]}
+	} ]]
+set id [waveform add -signals [subst  {
+	{[format {t.u_top_switch_wrap.u_top.u_CORE.CPU_0.w_CPU_0__AXI__MMIO_RDATA[63:0]}]}
+	} ]]
+waveform hierarchy collapse $id
+set id [waveform add -cdivider divider]
+set id [waveform add -signals [subst  {
+	{[format {t.u_top_switch_wrap.u_top.u_CORE.OSDMMC_0.APB__PADDR[15:0]}]}
+	} ]]
+set id [waveform add -signals [subst  {
+	{[format {t.u_top_switch_wrap.u_top.u_CORE.OSDMMC_0.APB__PENABLE}]}
+	} ]]
+set id [waveform add -signals [subst  {
+	{[format {t.u_top_switch_wrap.u_top.u_CORE.OSDMMC_0.APB__PRDATA[31:0]}]}
+	} ]]
+set id [waveform add -signals [subst  {
+	{[format {t.u_top_switch_wrap.u_top.u_CORE.OSDMMC_0.APB__PREADY}]}
+	} ]]
+set id [waveform add -signals [subst  {
+	{[format {t.u_top_switch_wrap.u_top.u_CORE.OSDMMC_0.APB__PSEL}]}
+	} ]]
+set id [waveform add -signals [subst  {
+	{[format {t.u_top_switch_wrap.u_top.u_CORE.OSDMMC_0.APB__PSLVERR}]}
+	} ]]
+set id [waveform add -signals [subst  {
+	{[format {t.u_top_switch_wrap.u_top.u_CORE.OSDMMC_0.APB__PWDATA[31:0]}]}
+	} ]]
+set id [waveform add -signals [subst  {
+	{[format {t.u_top_switch_wrap.u_top.u_CORE.OSDMMC_0.APB__PWRITE}]}
+	} ]]
+set id [waveform add -cdivider divider]
+set id [waveform add -signals [subst  {
+	{[format {t.u_top_switch_wrap.u_top.u_CORE.OSDMMC_0.u_SDMMC_CORE.u_sdmmc_tieoff.stExtDone}]}
+	} ]]
+set id [waveform add -cdivider divider]
+set id [waveform add -signals [subst  {
+	{[format {t.u_top_switch_wrap.u_top.u_CORE.CPU_0.CPU_0__AXI__MEM_RDATA[63:0]}]}
+	} ]]
+set id [waveform add -signals [subst  {
+	{[format {t.u_top_switch_wrap.u_top.u_CORE.CPU_0.w_CPU_0__AXI__MEM_RDATA[63:0]}]}
+	} ]]
+set id [waveform add -signals [subst  {
+	{[format {t.u_top_switch_wrap.u_top.u_CORE.OSDMMC_0.u_SDMMC_CORE.u_sdmmc_tieoff.fetExtPRDATA[31:0]}]}
+	} ]]
+waveform hierarchy expand $id
+set id [waveform add -signals [subst  {
+	{[format {t.u_top_switch_wrap.u_top.u_CORE.OSDMMC_0.u_SDMMC_CORE.Inst_DWC_mobile_storage.prdata[2]}]}
+	} ]]
+set id [waveform add -signals [subst  {
+	{[format {t.u_top_switch_wrap.u_top.u_CORE.OSDMMC_0.u_SDMMC_CORE.Inst_DWC_mobile_storage.U2658.outA}]}
+	} ]]
+set id [waveform add -signals [subst  {
+	{[format {t.u_top_switch_wrap.u_top.u_CORE.OSDMMC_0.u_SDMMC_CORE.Inst_DWC_mobile_storage.U2658.outB}]}
+	} ]]
+set id [waveform add -signals [subst  {
+	{[format {t.u_top_switch_wrap.u_top.u_CORE.OSDMMC_0.u_SDMMC_CORE.Inst_DWC_mobile_storage.U2658.B0}]}
+	} ]]
+set id [waveform add -signals [subst  {
+	{[format {t.u_top_switch_wrap.u_top.u_CORE.OSDMMC_0.u_SDMMC_CORE.Inst_DWC_mobile_storage.U2658.B1}]}
+	} ]]
+set id [waveform add -signals [subst  {
+	{[format {t.u_top_switch_wrap.u_top.u_CORE.OSDMMC_0.u_SDMMC_CORE.Inst_DWC_mobile_storage.U_DWC_mobile_storage_biu.prdata[2]}]}
+	} ]]
+set id [waveform add -signals [subst  {
+	{[format {t.u_top_switch_wrap.u_top.u_CORE.OSDMMC_0.u_SDMMC_CORE.Inst_DWC_mobile_storage.U_DWC_mobile_storage_biu.U165.U2.outA}]}
+	} ]]
+set id [waveform add -signals [subst  {
+	{[format {t.u_top_switch_wrap.u_top.u_CORE.OSDMMC_0.u_SDMMC_CORE.Inst_DWC_mobile_storage.U_DWC_mobile_storage_biu.U165.U2.outB}]}
+	} ]]
+set id [waveform add -signals [subst  {
+	{[format {t.u_top_switch_wrap.u_top.u_CORE.OSDMMC_0.u_SDMMC_CORE.Inst_DWC_mobile_storage.U_DWC_mobile_storage_biu.U165.U2.B0}]}
+	} ]]
+set id [waveform add -signals [subst  {
+	{[format {t.u_top_switch_wrap.u_top.u_CORE.OSDMMC_0.u_SDMMC_CORE.Inst_DWC_mobile_storage.U_DWC_mobile_storage_biu.U165.U2.B1}]}
+	} ]]
+set id [waveform add -signals [subst  {
+	{[format {t.u_top_switch_wrap.u_top.u_CORE.OSDMMC_0.u_SDMMC_CORE.Inst_DWC_mobile_storage.U_DWC_mobile_storage_biu.U_DWC_mobile_storage_regb.regb_rdata_reg_2_.CK}]}
+	} ]]
+set id [waveform add -signals [subst  {
+	{[format {t.u_top_switch_wrap.u_top.u_CORE.OSDMMC_0.u_SDMMC_CORE.Inst_DWC_mobile_storage.U_DWC_mobile_storage_biu.U_DWC_mobile_storage_regb.regb_rdata_reg_2_.D}]}
+	} ]]
+set id [waveform add -signals [subst  {
+	{[format {t.u_top_switch_wrap.u_top.u_CORE.OSDMMC_0.u_SDMMC_CORE.Inst_DWC_mobile_storage.U_DWC_mobile_storage_biu.U_DWC_mobile_storage_regb.regb_rdata_reg_2_.R}]}
+	} ]]
+set id [waveform add -signals [subst  {
+	{[format {t.u_top_switch_wrap.u_top.u_CORE.OSDMMC_0.u_SDMMC_CORE.Inst_DWC_mobile_storage.U_DWC_mobile_storage_biu.U_DWC_mobile_storage_regb.U1382.A}]}
+	} ]]
+set id [waveform add -signals [subst  {
+	{[format {t.u_top_switch_wrap.u_top.u_CORE.OSDMMC_0.u_SDMMC_CORE.Inst_DWC_mobile_storage.U_DWC_mobile_storage_biu.U_DWC_mobile_storage_regb.U1382.B}]}
+	} ]]
+set id [waveform add -signals [subst  {
+	{[format {t.u_top_switch_wrap.u_top.u_CORE.OSDMMC_0.u_SDMMC_CORE.Inst_DWC_mobile_storage.U_DWC_mobile_storage_biu.U_DWC_mobile_storage_regb.U1382.C}]}
+	} ]]
+set id [waveform add -signals [subst  {
+	{[format {t.u_top_switch_wrap.u_top.u_CORE.OSDMMC_0.u_SDMMC_CORE.Inst_DWC_mobile_storage.U_DWC_mobile_storage_biu.U_DWC_mobile_storage_regb.U1382.D}]}
+	} ]]
+set id [waveform add -signals [subst  {
+	{[format {t.u_top_switch_wrap.u_top.u_CORE.OSDMMC_0.u_SDMMC_CORE.Inst_DWC_mobile_storage.U_DWC_mobile_storage_biu.U_DWC_mobile_storage_regb.U1365.outA}]}
+	} ]]
+set id [waveform add -signals [subst  {
+	{[format {t.u_top_switch_wrap.u_top.u_CORE.OSDMMC_0.u_SDMMC_CORE.Inst_DWC_mobile_storage.U_DWC_mobile_storage_biu.U_DWC_mobile_storage_regb.U1365.outB}]}
+	} ]]
+set id [waveform add -signals [subst  {
+	{[format {t.u_top_switch_wrap.u_top.u_CORE.OSDMMC_0.u_SDMMC_CORE.Inst_DWC_mobile_storage.U_DWC_mobile_storage_biu.U_DWC_mobile_storage_regb.U1365.B0}]}
+	} ]]
+set id [waveform add -signals [subst  {
+	{[format {t.u_top_switch_wrap.u_top.u_CORE.OSDMMC_0.u_SDMMC_CORE.Inst_DWC_mobile_storage.U_DWC_mobile_storage_biu.U_DWC_mobile_storage_regb.U1365.B1}]}
+	} ]]
+set id [waveform add -signals [subst  {
+	{[format {t.u_top_switch_wrap.u_top.u_CORE.OSDMMC_0.u_SDMMC_CORE.Inst_DWC_mobile_storage.U_DWC_mobile_storage_biu.U_DWC_mobile_storage_regb.rawints_reg_2_.n0}]}
+	} ]]
+set id [waveform add -signals [subst  {
+	{[format {t.u_top_switch_wrap.u_top.u_CORE.OSDMMC_0.u_SDMMC_CORE.Inst_DWC_mobile_storage.U_DWC_mobile_storage_biu.U_DWC_mobile_storage_regb.clk}]}
+	} ]]
+set id [waveform add -signals [subst  {
+	{[format {t.u_top_switch_wrap.u_top.u_CORE.OSDMMC_0.u_SDMMC_CORE.Inst_DWC_mobile_storage.U_DWC_mobile_storage_biu.U_DWC_mobile_storage_regb.n720}]}
+	} ]]
+set id [waveform add -signals [subst  {
+	{[format {t.u_top_switch_wrap.u_top.u_CORE.OSDMMC_0.u_SDMMC_CORE.Inst_DWC_mobile_storage.U_DWC_mobile_storage_biu.U_DWC_mobile_storage_regb.n1279}]}
+	} ]]
+set id [waveform add -signals [subst  {
+	{[format {t.u_top_switch_wrap.u_top.u_CORE.OSDMMC_0.u_SDMMC_CORE.Inst_DWC_mobile_storage.U_DWC_mobile_storage_biu.U_DWC_mobile_storage_regb.U291.U1.C0}]}
+	} ]]
+set id [waveform add -signals [subst  {
+	{[format {t.u_top_switch_wrap.u_top.u_CORE.OSDMMC_0.u_SDMMC_CORE.Inst_DWC_mobile_storage.U_DWC_mobile_storage_biu.U_DWC_mobile_storage_regb.U291.U1.outB}]}
+	} ]]
+set id [waveform add -signals [subst  {
+	{[format {t.u_top_switch_wrap.u_top.u_CORE.OSDMMC_0.u_SDMMC_CORE.Inst_DWC_mobile_storage.U_DWC_mobile_storage_biu.U_DWC_mobile_storage_regb.U291.U1.outA}]}
+	} ]]
+set id [waveform add -cdivider divider]
+set id [waveform add -signals [subst  {
+	{[format {t.u_top_switch_wrap.u_top.u_CORE.OSDMMC_0.AHB__HBURST[2:0]}]}
+	} ]]
+set id [waveform add -signals [subst  {
+	{[format {t.u_top_switch_wrap.u_top.u_CORE.OSDMMC_0.IO__nRST}]}
+	} ]]
+set id [waveform add -signals [subst  {
+	{[format {t.u_top_switch_wrap.u_top.u_CORE.OSDMMC_0.RST__AHB_RSTN}]}
+	} ]]
+set id [waveform add -signals [subst  {
+	{[format {t.u_top_switch_wrap.u_top.u_CORE.OSDMMC_0.AHB__HRDATA[31:0]}]}
+	} ]]
+set id [waveform add -signals [subst  {
+	{[format {t.u_top_switch_wrap.u_top.u_CORE.OSDMMC_0.AHB__HREADY}]}
+	} ]]
+set id [waveform add -signals [subst  {
+	{[format {t.u_top_switch_wrap.u_top.u_CORE.OSDMMC_0.AHB__HRESP[1:0]}]}
+	} ]]
+set id [waveform add -signals [subst  {
+	{[format {t.u_top_switch_wrap.u_top.u_CORE.OSDMMC_0.APB__PADDR[15:0]}]}
+	} ]]
+set id [waveform add -signals [subst  {
+	{[format {t.u_top_switch_wrap.u_top.u_CORE.OSDMMC_0.APB__PENABLE}]}
+	} ]]
+set id [waveform add -signals [subst  {
+	{[format {t.u_top_switch_wrap.u_top.u_CORE.OSDMMC_0.APB__PSEL}]}
+	} ]]
+set id [waveform add -signals [subst  {
+	{[format {t.u_top_switch_wrap.u_top.u_CORE.OSDMMC_0.APB__PWDATA[31:0]}]}
+	} ]]
+set id [waveform add -signals [subst  {
+	{[format {t.u_top_switch_wrap.u_top.u_CORE.OSDMMC_0.APB__PWRITE}]}
+	} ]]
+set id [waveform add -signals [subst  {
+	{[format {t.u_top_switch_wrap.u_top.u_CORE.OSDMMC_0.CLK__AHB_CLK}]}
+	} ]]
+set id [waveform add -signals [subst  {
+	{[format {t.u_top_switch_wrap.u_top.u_CORE.OSDMMC_0.CLK__CORE_CLK}]}
+	} ]]
+set id [waveform add -signals [subst  {
+	{[format {t.u_top_switch_wrap.u_top.u_CORE.OSDMMC_0.IO__CARD_WritePrt}]}
+	} ]]
+set id [waveform add -signals [subst  {
+	{[format {t.u_top_switch_wrap.u_top.u_CORE.OSDMMC_0.IO__CARD_nDetect}]}
+	} ]]
+set id [waveform add -signals [subst  {
+	{[format {t.u_top_switch_wrap.u_top.u_CORE.OSDMMC_0.IO__CDATA_Y[3:0]}]}
+	} ]]
+set id [waveform add -signals [subst  {
+	{[format {t.u_top_switch_wrap.u_top.u_CORE.OSDMMC_0.IO__CMD_Y}]}
+	} ]]
+set id [waveform add -signals [subst  {
+	{[format {t.u_top_switch_wrap.u_top.u_CORE.OSDMMC_0.RST__AHB_RSTN}]}
+	} ]]
+set id [waveform add -signals [subst  {
+	{[format {t.u_test_device_wrap.DEV_Inst_SDMMC_0_NX_SDMMC_devmodel.io_CARD_CMD}]}
+	} ]]
+set id [waveform add -signals [subst  {
+	{[format {t.u_test_device_wrap.DEV_Inst_SDMMC_0_NX_SDMMC_devmodel.io_CARD_DATA[7:0]}]}
+	} ]]
+set id [waveform add -signals [subst  {
+	{[format {t.u_test_device_wrap.DEV_Inst_SDMMC_0_NX_SDMMC_devmodel.o_CARD_DSTRB}]}
+	} ]]
+set id [waveform add -cdivider divider]
+set id [waveform add -signals [subst  {
+	{[format {t.u_test_device_wrap.DEV_Inst_SDMMC_0_NX_SDMMC_devmodel.i_CARD_CLK}]}
+	} ]]
+set id [waveform add -signals [subst  {
+	{[format {t.u_test_device_wrap.DEV_Inst_SDMMC_0_NX_SDMMC_devmodel.i_CARD_nRST}]}
+	} ]]
+set id [waveform add -signals [subst  {
+	{[format {t.u_test_device_wrap.DEV_Inst_SDMMC_0_NX_SDMMC_devmodel.io_CARD_CMD}]}
+	} ]]
+set id [waveform add -signals [subst  {
+	{[format {t.u_test_device_wrap.DEV_Inst_SDMMC_0_NX_SDMMC_devmodel.io_CARD_DATA[7:0]}]}
+	} ]]
+set id [waveform add -signals [subst  {
+	{[format {t.u_test_device_wrap.DEV_Inst_SDMMC_0_NX_SDMMC_devmodel.o_CARD_DSTRB}]}
+	} ]]
+set id [waveform add -signals [subst  {
+	{[format {t.u_test_device_wrap.DEV_Inst_SDMMC_0_NX_SDMMC_devmodel.o_CARD_WPROT}]}
+	} ]]
+set id [waveform add -signals [subst  {
+	{[format {t.u_test_device_wrap.DEV_Inst_SDMMC_0_NX_SDMMC_devmodel.o_CARD_nDET}]}
+	} ]]
+set id [waveform add -signals [subst  {
+	{[format {t.u_test_device_wrap.DEV_Inst_SDMMC_0_NX_SDMMC_devmodel.o_CARD_nINT}]}
+	} ]]
+set id [waveform add -cdivider divider]
+set id [waveform add -signals [subst  {
+	{[format {t.u_top_switch_wrap.PAD_INDEX__u_OSDMMC_0__CARD_WritePrt}]}
+	} ]]
+set id [waveform add -signals [subst  {
+	{[format {t.u_top_switch_wrap.PAD_INDEX__u_OSDMMC_0__CARD_nDetect}]}
+	} ]]
+set id [waveform add -signals [subst  {
+	{[format {t.u_top_switch_wrap.PAD_INDEX__u_OSDMMC_0__CCLK}]}
+	} ]]
+set id [waveform add -signals [subst  {
+	{[format {t.u_top_switch_wrap.PAD_INDEX__u_OSDMMC_0__CDATA0}]}
+	} ]]
+set id [waveform add -signals [subst  {
+	{[format {t.u_top_switch_wrap.PAD_INDEX__u_OSDMMC_0__CDATA1}]}
+	} ]]
+set id [waveform add -signals [subst  {
+	{[format {t.u_top_switch_wrap.PAD_INDEX__u_OSDMMC_0__CDATA2}]}
+	} ]]
+set id [waveform add -signals [subst  {
+	{[format {t.u_top_switch_wrap.PAD_INDEX__u_OSDMMC_0__CDATA3}]}
+	} ]]
+set id [waveform add -signals [subst  {
+	{[format {t.u_top_switch_wrap.PAD_INDEX__u_OSDMMC_0__CMD}]}
+	} ]]
+set id [waveform add -signals [subst  {
+	{[format {t.u_top_switch_wrap.PAD_INDEX__u_OSDMMC_0__nRST}]}
+	} ]]
+set id [waveform add -signals [subst  {
+	{[format {t.u_top_switch_wrap.ALT_INDEX__u_OSDMMC_0__CARD_WritePrt}]}
+	} ]]
+set id [waveform add -signals [subst  {
+	{[format {t.u_top_switch_wrap.ALT_INDEX__u_OSDMMC_0__CARD_nDetect}]}
+	} ]]
+set id [waveform add -signals [subst  {
+	{[format {t.u_top_switch_wrap.ALT_INDEX__u_OSDMMC_0__CCLK}]}
+	} ]]
+set id [waveform add -signals [subst  {
+	{[format {t.u_top_switch_wrap.ALT_INDEX__u_OSDMMC_0__CDATA0}]}
+	} ]]
+set id [waveform add -signals [subst  {
+	{[format {t.u_top_switch_wrap.ALT_INDEX__u_OSDMMC_0__CDATA1}]}
+	} ]]
+set id [waveform add -signals [subst  {
+	{[format {t.u_top_switch_wrap.ALT_INDEX__u_OSDMMC_0__CDATA2}]}
+	} ]]
+set id [waveform add -signals [subst  {
+	{[format {t.u_top_switch_wrap.ALT_INDEX__u_OSDMMC_0__CDATA3}]}
+	} ]]
+set id [waveform add -signals [subst  {
+	{[format {t.u_top_switch_wrap.ALT_INDEX__u_OSDMMC_0__CMD}]}
+	} ]]
+set id [waveform add -signals [subst  {
+	{[format {t.u_top_switch_wrap.ALT_INDEX__u_OSDMMC_0__nRST}]}
+	} ]]
+set id [waveform add -signals [subst  {
+	{[format {t.u_top_switch_wrap.SWITCH_INDEX__u_OSDMMC_0__CARD_WritePrt}]}
+	} ]]
+set id [waveform add -signals [subst  {
+	{[format {t.u_top_switch_wrap.SWITCH_INDEX__u_OSDMMC_0__CARD_nDetect}]}
+	} ]]
+set id [waveform add -signals [subst  {
+	{[format {t.u_top_switch_wrap.SWITCH_INDEX__u_OSDMMC_0__CCLK}]}
+	} ]]
+set id [waveform add -signals [subst  {
+	{[format {t.u_top_switch_wrap.SWITCH_INDEX__u_OSDMMC_0__CDATA0}]}
+	} ]]
+set id [waveform add -signals [subst  {
+	{[format {t.u_top_switch_wrap.SWITCH_INDEX__u_OSDMMC_0__CDATA1}]}
+	} ]]
+set id [waveform add -signals [subst  {
+	{[format {t.u_top_switch_wrap.SWITCH_INDEX__u_OSDMMC_0__CDATA2}]}
+	} ]]
+set id [waveform add -signals [subst  {
+	{[format {t.u_top_switch_wrap.SWITCH_INDEX__u_OSDMMC_0__CDATA3}]}
+	} ]]
+set id [waveform add -signals [subst  {
+	{[format {t.u_top_switch_wrap.SWITCH_INDEX__u_OSDMMC_0__CMD}]}
+	} ]]
+set id [waveform add -signals [subst  {
+	{[format {t.u_top_switch_wrap.SWITCH_INDEX__u_OSDMMC_0__nRST}]}
+	} ]]
+set id [waveform add -cdivider divider]
+set id [waveform add -signals [subst  {
+	{[format {t.u_top_switch_wrap.u_top.u_CORE.SYS_BUS_0.AXISRAM_0__AXI__RDATA[63:0]}]}
+	} ]]
+set id [waveform add -signals [subst  {
+	{[format {t.u_top_switch_wrap.u_top.u_CORE.SYS_BUS_0.CODA_0__AXI__RDATA[63:0]}]}
+	} ]]
+set id [waveform add -signals [subst  {
+	{[format {t.u_top_switch_wrap.u_top.u_CORE.SYS_BUS_0.CPU_0__AXI__MEM_RDATA[63:0]}]}
+	} ]]
+set id [waveform add -signals [subst  {
+	{[format {t.u_top_switch_wrap.u_top.u_CORE.SYS_BUS_0.CPU_0__AXI__MMIO_RDATA[63:0]}]}
+	} ]]
+set id [waveform add -signals [subst  {
+	{[format {t.u_top_switch_wrap.u_top.u_CORE.SYS_BUS_0.DDRC_0__AXI__RDATA[63:0]}]}
+	} ]]
+set id [waveform add -signals [subst  {
+	{[format {t.u_top_switch_wrap.u_top.u_CORE.SYS_BUS_0.DMA_0__AXI__RDATA[31:0]}]}
+	} ]]
+set id [waveform add -signals [subst  {
+	{[format {t.u_top_switch_wrap.u_top.u_CORE.SYS_BUS_0.DMA_1__AXI__RDATA[31:0]}]}
+	} ]]
+set id [waveform add -signals [subst  {
+	{[format {t.u_top_switch_wrap.u_top.u_CORE.SYS_BUS_0.HOVER_0__AXI__RDATA[63:0]}]}
+	} ]]
+set id [waveform add -signals [subst  {
+	{[format {t.u_top_switch_wrap.u_top.u_CORE.SYS_BUS_0.SCALER_0__AXI__RDATA[127:0]}]}
+	} ]]
+set id [waveform add -signals [subst  {
+	{[format {t.u_top_switch_wrap.u_top.u_CORE.SYS_BUS_0.VIP_0__AXI__RDATA[127:0]}]}
+	} ]]
+set id [waveform add -signals [subst  {
+	{[format {t.u_top_switch_wrap.u_top.u_CORE.SYS_BUS_0.OSDMMC_0__APB__PRDATA[31:0]}]}
+	} ]]
+set id [waveform add -signals [subst  {
+	{[format {t.u_top_switch_wrap.u_top.u_CORE.SYS_BUS_0.OSDMMC_1__APB__PRDATA[31:0]}]}
+	} ]]
+set id [waveform add -cdivider divider]
+set id [waveform add -signals [subst  {
+	{[format {t.u_top_switch_wrap.u_top.u_CORE.SYS_BUS_0.OSDMMC_0__APB__PADDR[15:0]}]}
+	} ]]
+set id [waveform add -signals [subst  {
+	{[format {t.u_top_switch_wrap.u_top.u_CORE.SYS_BUS_0.OSDMMC_0__APB__PENABLE}]}
+	} ]]
+set id [waveform add -signals [subst  {
+	{[format {t.u_top_switch_wrap.u_top.u_CORE.SYS_BUS_0.OSDMMC_0__APB__PPROT[2:0]}]}
+	} ]]
+set id [waveform add -signals [subst  {
+	{[format {t.u_top_switch_wrap.u_top.u_CORE.SYS_BUS_0.OSDMMC_0__APB__PRDATA[31:0]}]}
+	} ]]
+waveform hierarchy expand $id
+set id [waveform add -signals [subst  {
+	{[format {t.u_top_switch_wrap.u_top.u_CORE.SYS_BUS_0.OSDMMC_0__APB__PREADY}]}
+	} ]]
+set id [waveform add -signals [subst  {
+	{[format {t.u_top_switch_wrap.u_top.u_CORE.SYS_BUS_0.OSDMMC_0__APB__PSEL}]}
+	} ]]
+set id [waveform add -signals [subst  {
+	{[format {t.u_top_switch_wrap.u_top.u_CORE.SYS_BUS_0.OSDMMC_0__APB__PSLVERR}]}
+	} ]]
+set id [waveform add -signals [subst  {
+	{[format {t.u_top_switch_wrap.u_top.u_CORE.SYS_BUS_0.OSDMMC_0__APB__PWDATA[31:0]}]}
+	} ]]
+set id [waveform add -signals [subst  {
+	{[format {t.u_top_switch_wrap.u_top.u_CORE.SYS_BUS_0.OSDMMC_0__APB__PWRITE}]}
+	} ]]
+set id [waveform add -cdivider divider]
 set id [waveform add -cdivider divider]
 
 set groupId0 [waveform add -groups PLIC]
 
-set id [waveform add -signals [subst  {
-	{[format {t.u_top_switch_wrap.u_top.u_CORE.CPU_0.CPU_0.plic.Queue.io_deq_valid}]}
-	} ]]
-set id [waveform add -signals [subst  {
-	{[format {t.u_top_switch_wrap.u_top.u_CORE.CPU_0.CPU_0.plic.TLMonitor.io_in_a_bits_address[27:0]}]}
-	} ]]
 set id [waveform add -cdivider divider]
 set id [waveform add -signals [subst  {
 	{[format {t.u_top_switch_wrap.u_top.u_CORE.CPU_0.CPU_0__CLK__CLK}]}
@@ -366,9 +917,91 @@ waveform hierarchy collapse $groupId0
 set id [waveform add -cdivider divider]
 
 set groupId0 [waveform add -groups {{Group 2}}]
+
+set id [waveform add -signals [subst  {
+	{[format {t.u_test_device_wrap.DEV_Inst_SDMMC_0_NX_SDMMC_devmodel.i_CARD_CLK}]}
+	} ]]
+set id [waveform add -signals [subst  {
+	{[format {t.u_test_device_wrap.DEV_Inst_SDMMC_0_NX_SDMMC_devmodel.i_CARD_nRST}]}
+	} ]]
+set id [waveform add -signals [subst  {
+	{[format {t.u_test_device_wrap.DEV_Inst_SDMMC_0_NX_SDMMC_devmodel.io_CARD_CMD}]}
+	} ]]
+set id [waveform add -signals [subst  {
+	{[format {t.u_test_device_wrap.DEV_Inst_SDMMC_0_NX_SDMMC_devmodel.io_CARD_DATA[7:0]}]}
+	} ]]
+set id [waveform add -signals [subst  {
+	{[format {t.u_test_device_wrap.DEV_Inst_SDMMC_0_NX_SDMMC_devmodel.o_CARD_DSTRB}]}
+	} ]]
+set id [waveform add -signals [subst  {
+	{[format {t.u_test_device_wrap.DEV_Inst_SDMMC_0_NX_SDMMC_devmodel.o_CARD_WPROT}]}
+	} ]]
+set id [waveform add -signals [subst  {
+	{[format {t.u_test_device_wrap.DEV_Inst_SDMMC_0_NX_SDMMC_devmodel.o_CARD_nDET}]}
+	} ]]
+set id [waveform add -signals [subst  {
+	{[format {t.u_test_device_wrap.DEV_Inst_SDMMC_0_NX_SDMMC_devmodel.o_CARD_nINT}]}
+	} ]]
+set id [waveform add -signals [subst  {
+	{[format {t.u_test_device_wrap.DEV_Inst_SDMMC_0_NX_SDMMC_devmodel.io_CARD_CMD}]}
+	} ]]
+set id [waveform add -signals [subst  {
+	{[format {t.u_test_device_wrap.DEV_Inst_SDMMC_0_NX_SDMMC_devmodel.io_CARD_DATA[7:0]}]}
+	} ]]
+set id [waveform add -signals [subst  {
+	{[format {t.u_test_device_wrap.DEV_Inst_SDMMC_0_NX_SDMMC_devmodel.o_CARD_DSTRB}]}
+	} ]]
+set id [waveform add -signals [subst  {
+	{[format {t.u_test_device_wrap.DEV_Inst_SDMMC_0_NX_SDMMC_devmodel.o_CARD_WPROT}]}
+	} ]]
+set id [waveform add -signals [subst  {
+	{[format {t.u_test_device_wrap.DEV_Inst_SDMMC_0_NX_SDMMC_devmodel.o_CARD_nDET}]}
+	} ]]
+set id [waveform add -signals [subst  {
+	{[format {t.u_test_device_wrap.DEV_Inst_SDMMC_0_NX_SDMMC_devmodel.o_CARD_nINT}]}
+	} ]]
+set id [waveform add -signals [subst  {
+	{[format {t.u_top_switch_wrap.u_top.u_CORE.OSDMMC_0.CLK__CORE_CLK}]}
+	} ]]
+set id [waveform add -signals [subst  {
+	{[format {t.u_top_switch_wrap.u_top.u_IOMUX.GPIOA.i_GPIO_6_AltFnSelDefault}]}
+	} ]]
+set id [waveform add -signals [subst  {
+	{[format {t.u_top_switch_wrap.u_top.u_IOMUX.GPIOA.o_GPIO_6_AltFnSel}]}
+	} ]]
+set id [waveform add -signals [subst  {
+	{[format {t.u_top_switch_wrap.u_top.u_IOMUX.GPIOA.GPIO_AltFnSel[31:0]}]}
+	} ]]
+waveform hierarchy collapse $id
+set id [waveform add -signals [subst  {
+	{[format {t.u_top_switch_wrap.u_top.u_IOMUX.PAD__SD0_CMD__FUNC_MUX.FUNCTION__A[1:0]}]}
+	} ]]
+set id [waveform add -signals [subst  {
+	{[format {t.u_top_switch_wrap.u_top.u_IOMUX.PAD__SD0_CMD__FUNC_MUX.FUNCTION__EN[1:0]}]}
+	} ]]
+set id [waveform add -signals [subst  {
+	{[format {t.u_top_switch_wrap.u_top.u_IOMUX.PAD__SD0_CMD__FUNC_MUX.FUNCTION__SEL[0:0]}]}
+	} ]]
+set id [waveform add -signals [subst  {
+	{[format {t.u_top_switch_wrap.u_top.u_IOMUX.PAD__SD0_CMD__FUNC_MUX.FUNCTION__Y[1:0]}]}
+	} ]]
+set id [waveform add -signals [subst  {
+	{[format {t.u_top_switch_wrap.u_top.u_IOMUX.PAD__SD0_CMD__FUNC_MUX.PAD__A}]}
+	} ]]
+set id [waveform add -signals [subst  {
+	{[format {t.u_top_switch_wrap.u_top.u_IOMUX.PAD__SD0_CMD__FUNC_MUX.PAD__EN}]}
+	} ]]
+set id [waveform add -signals [subst  {
+	{[format {t.u_top_switch_wrap.u_top.u_IOMUX.PAD__SD0_CMD__FUNC_MUX.PAD__Y}]}
+	} ]]
+set id [waveform add -signals [subst  {
+	{[format {t.u_top_switch_wrap.u_top.SD0_CMD}]}
+	} ]]
+set id [waveform add -cdivider divider]
+
+set groupId0 [waveform add -groups {{Group 6}}]
 waveform hierarchy collapse $groupId0
 
-set id [waveform add -cdivider divider]
 set id [waveform add -cdivider divider]
 set id [waveform add -label ------------ -comment {}]
 set id [waveform add -signals [subst  {
@@ -417,6 +1050,8 @@ set id [waveform add -label ------------ -comment {}]
 set id [waveform add -label ------------ -comment {}]
 set id [waveform add -label ------------ -comment {}]
 
-waveform xview limits 296770.654ns 328817.796ns
+waveform xview limits 154589.317ns 6758871.589ns
 waveform set -signalfilterentry *pc*
-waveform set -signalfilter *reg*
+waveform set -signalfilterentry *reg*
+waveform set -signalfilterentry *int*
+waveform set -signalfilter *Alt*

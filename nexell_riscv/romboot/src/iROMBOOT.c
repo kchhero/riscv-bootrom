@@ -35,7 +35,7 @@ int romboot(int bootmode)
 {
     int option = bootmode;
 #ifndef QEMU_RISCV
-    _dprintf("<<bootrom>>romboot start\n");
+    _dprintf("<<bootrom>>romboot start with option = 0x%x\n",bootmode);
     nxSetClockInit();
 
     //todo
@@ -43,6 +43,7 @@ int romboot(int bootmode)
     
     do {
         int Result = 0;
+        //unsigned int * sramaddr = (unsigned int*)0x40000000;
         switch (option) {
             /* case XIPBOOT: */
             /* 	break; */
@@ -58,6 +59,9 @@ int romboot(int bootmode)
             break;
 
         //        _dprintf("update boot\r\n");
+        /* for (int i=0; i < 1024; i++) */
+        /*     *sramaddr++ = 11; */
+        
         Result = iSDBOOT(option);
 
         if (Result)

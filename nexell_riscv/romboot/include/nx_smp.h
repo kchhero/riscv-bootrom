@@ -31,6 +31,21 @@ hart0_entry:
  *    smp_resume(reg1, reg2)
  *    ... multi-threaded work ...
  */
+  /* li t0, 0x20948888             ;\ */
+  /* csrw mtvec, t0                ;\ */
+  
+  /* li t1, 0x1808                 ;\ */
+  /* csrw mstatus, t1              ;\ */
+
+// clinttest
+/* #define smp_pause(reg1, reg2)	 \ */
+/*   li reg2, 0x8			;\ */
+/*   csrw mie, reg2		;\ */
+/*   li t0, 0x20948888             ;\ */
+/*   csrw mtvec, t0                ;\ */
+/*   li   reg1, NONSMP_HART	;\ */
+/*   csrr reg2, mhartid		;\ */
+/*   bne  reg1, reg2, 42f */
 
 #define smp_pause(reg1, reg2)	 \
   li reg2, 0x8			;\
@@ -38,7 +53,7 @@ hart0_entry:
   li   reg1, NONSMP_HART	;\
   csrr reg2, mhartid		;\
   bne  reg1, reg2, 42f
-
+    
 #ifdef CLINT1_CTRL_ADDR
 // If a second CLINT exists, then make sure we:
 // 1) Trigger a software interrupt on all harts of both CLINTs.
