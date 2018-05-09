@@ -37,11 +37,17 @@
 	#define INFINTE_LOOP()
 #endif
 
+/* #define HEADER_ID                               \ */
+/*                 ((((unsigned int)'N')<< 0) |    \ */
+/*                  (((unsigned int)'S')<< 8) |    \ */
+/*                  (((unsigned int)'I')<<16) |    \ */
+/*                  (((unsigned int)'H')<<24)) */
+
 #define HEADER_ID                               \
-                ((((unsigned int)'N')<< 0) |    \
-                 (((unsigned int)'S')<< 8) |    \
-                 (((unsigned int)'I')<<16) |    \
-                 (((unsigned int)'H')<<24))
+                ((((unsigned int)'H')<< 0) |    \
+                 (((unsigned int)'I')<< 8) |    \
+                 (((unsigned int)'S')<<16) |    \
+                 (((unsigned int)'N')<<24))
 
 /*----------------------------------------------------------------------------*/
 #define	NX_SDMMC_STATUS_NOERROR		0

@@ -38,10 +38,13 @@ void GPIOSetAltFunction(const struct nxpadi *pad, int setalt)
 	if (!pad->flag)
 		return;
 
-	regvalue = pGPIOReg[pad->grp]->RWGPIO.GPIOx_ALTFN[pad->pin >> 4];
-	pGPIOReg[pad->grp]->RWGPIO.GPIOx_ALTFN[pad->pin >> 4] =
-		(regvalue & ~(3 << ((pad->pin & 0xF) * 2))) |
-			(alt << ((pad->pin & 0xF) * 2));
+	/* regvalue = pGPIOReg[pad->grp]->RWGPIO.GPIOx_ALTFN[pad->pin >> 4]; */
+	/* pGPIOReg[pad->grp]->RWGPIO.GPIOx_ALTFN[pad->pin >> 4] = */
+	/* 	(regvalue & ~(3 << ((pad->pin & 0xF) * 2))) | */
+	/* 		(alt << ((pad->pin & 0xF) * 2)); */
+        
+       	regvalue = pGPIOReg[pad->grp]->RWGPIO.GPIOx_ALTFN[0];
+	pGPIOReg[pad->grp]->RWGPIO.GPIOx_ALTFN[0] = (regvalue & ~(1 << pad->pin)) | (alt << pad->pin);
 }
 
 void GPIOSetDrvSt(const struct nxpadi *pad, NX_GPIO_DRVSTRENGTH str)

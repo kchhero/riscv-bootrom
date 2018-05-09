@@ -219,7 +219,6 @@ unsigned int NX_SDMMC_SendCommandInternal(
                 goto End;
             }
         }
-        _dprintf(".*");
     } while (pSDXCReg->RINTSTS & NX_SDXC_RINTSTS_HLE);
 #else
     do {
@@ -549,8 +548,9 @@ int NX_SDMMC_IdentifyCard(SDBOOTSTATUS *pSDXCBootStatus)
             }
         }
 #endif
-        //        _dprintf("SD ");
-
+#ifdef DEBUG
+        _dprintf("---- SD ----\n");
+#endif
         CardType	= NX_SDMMC_CARDTYPE_SDMEM;
         RCA		= 0;
     } else {
@@ -583,8 +583,9 @@ int NX_SDMMC_IdentifyCard(SDBOOTSTATUS *pSDXCBootStatus)
             /* Wait until card has finished the power up routine */
         } while (0==(cmd.response[0] & (1UL << 31)));
 #endif
-        //        _dprintf("MMC ");
+
 #if defined(DEBUG)
+        _dprintf("---- MMC ----\n");
         //        _dprintf("--> SEND_OP_COND Response = 0x%X\n", cmd.response[0]);
 #endif
 
@@ -634,6 +635,11 @@ int NX_SDMMC_IdentifyCard(SDBOOTSTATUS *pSDXCBootStatus)
 
     pSDXCBootStatus->CardType = CardType;
 
+#if defined(DEBUG)
+    _dprintf("<<bootrom>> CardType = 0x%x\n",CardType);
+        //        _dprintf("--> SEND_OP_COND Response = 0x%X\n", cmd.response[0]);
+#endif
+    
     return 1;
 }
 
@@ -688,16 +694,14 @@ int NX_SDMMC_SetBusWidth(SDBOOTSTATUS *pSDXCBootStatus,
 {
     unsigned int status;
     NX_SDMMC_COMMAND cmd;
-    register NX_SDMMC_RegisterSet * const pSDXCReg =
-        pgSDXCReg[pSDXCBootStatus->SDPort];
-
-/* #ifdef DEBUG */
-/*     _dprintf("<<bootrom>> %s start\n",__func__); */
-/* #endif */
+    register NX_SDMMC_RegisterSet * const pSDXCReg = pgSDXCReg[pSDXCBootStatus->SDPort];
 
     NX_ASSERT( buswidth==1 || buswidth==4 );
 
     if (pSDXCBootStatus->CardType == NX_SDMMC_CARDTYPE_SDMEM) {
+#ifdef DEBUG
+    _dprintf("<<bootrom>> BootStatus CardType NX_SDMMC_CARDTYPE_SDMEM\n");
+#endif
         cmd.cmdidx	= SET_BUS_WIDTH;
         cmd.arg		= (buswidth >> 1);
         cmd.flag	= NX_SDXC_CMDFLAG_STARTCMD |
@@ -706,6 +710,9 @@ int NX_SDMMC_SetBusWidth(SDBOOTSTATUS *pSDXCBootStatus,
             NX_SDXC_CMDFLAG_SHORTRSP;
         status = NX_SDMMC_SendAppCommand(pSDXCBootStatus, &cmd);
     } else {
+#ifdef DEBUG
+    _dprintf("<<bootrom>> BootStatus CardType another\n");
+#endif
         /* ExtCSD[183] : BUS_WIDTH <= 0 : 1-bit, 1 : 4-bit, 2 : 8-bit */
         cmd.cmdidx	= SWITCH_FUNC;
         cmd.arg		=		  (3 << 24) |
@@ -725,10 +732,6 @@ int NX_SDMMC_SetBusWidth(SDBOOTSTATUS *pSDXCBootStatus,
     /* 0 : 1-bit mode, 1 : 4-bit mode */
     pSDXCReg->CTYPE = buswidth >> 2;
     pSDXCReg->TIEMODE = buswidth >> 2;
-
-/* #ifdef DEBUG */
-/*     _dprintf("<<bootrom>> %s end\n",__func__); */
-/* #endif */
 
     return 1;
 }
@@ -875,7 +878,7 @@ int NX_SDMMC_Open(SDBOOTSTATUS *pSDXCBootStatus, unsigned int option)
     //--------------------------------------------------------------------------
     // card identification mode : Identify & Initialize
     if (0 == NX_SDMMC_IdentifyCard(pSDXCBootStatus)) {
-        //        _dprintf("Identify Fail\r\n");
+        _dprintf("Identify Fail\r\n");
         return 0;
     }
 
@@ -886,11 +889,11 @@ int NX_SDMMC_Open(SDBOOTSTATUS *pSDXCBootStatus, unsigned int option)
     //--------------------------------------------------------------------------
     // data transfer mode : Stand-by state
     if (0 == NX_SDMMC_SetClock(pSDXCBootStatus, 1, SDCLK_DIVIDER_NORMAL)) {
-        //        _dprintf("Card Clk rst fail\r\n");
+        _dprintf("Card Clk rst fail\r\n");
         return 0;
     }
     if (0 == NX_SDMMC_SelectCard(pSDXCBootStatus)) {
-        //        _dprintf("Card Sel Fail\r\n");
+        _dprintf("Card Sel Fail\r\n");
         return 0;
     }
 
@@ -902,12 +905,12 @@ int NX_SDMMC_Open(SDBOOTSTATUS *pSDXCBootStatus, unsigned int option)
 
     if (0 == NX_SDMMC_SetBlockLength(pSDXCBootStatus,
                                                   BLOCK_LENGTH)) {
-        //        _dprintf("Set Blk Lng Fail\r\n");
+        _dprintf("Set Blk Lng Fail\r\n");
         return 0;
     }
 
     //2018/05/08 EBE error
-    //NX_SDMMC_SetBusWidth(pSDXCBootStatus, 4);
+    NX_SDMMC_SetBusWidth(pSDXCBootStatus, 4);
 
     return 1;
 }
@@ -1253,7 +1256,7 @@ int SDMMCBOOT(SDBOOTSTATUS *pSDXCBootStatus, unsigned int option)
 
 #ifdef DEBUG
     for (unsigned int i = 0; i < 128; i++) {
-        _dprintf("%x ",*psector+i);
+        _dprintf("%x ",*(psector+i));
     }
 #endif
         
@@ -1264,16 +1267,14 @@ int SDMMCBOOT(SDBOOTSTATUS *pSDXCBootStatus, unsigned int option)
 #endif
     
     ret = is_gpt_part((unsigned char *)psector);
+#ifdef DEBUG
+    _dprintf("<<bootrom>> Header type = 0x%x\n", ret ? "Boot" : "GPT");
+#endif
 
     if (NX_SDMMC_ReadSectors(pSDXCBootStatus, rsn++, 1, psector) == 0) {
-        _dprintf("<<bootrom>> Header read fail\r\n", ret ? "Boot" : "GPT");
+        //_dprintf("<<bootrom>> Header read fail\n", ret ? "Boot" : "GPT");
     	goto error;
     }
-#ifdef DEBUG
-    for (unsigned int i = 512; i < 512+128; i++) {
-        _dprintf("%x ",*psector+i);
-    }
-#endif
     
 #ifdef DEBUG
     _dprintf("\n<<bootrom>>+++++++++++++++++++++++++++++++++++++++++++++\n");
@@ -1285,18 +1286,17 @@ int SDMMCBOOT(SDBOOTSTATUS *pSDXCBootStatus, unsigned int option)
     	ret = is_gpt_valid((unsigned char *)psector);
     	if (!ret) {
     		rsn = get_first_empty_lba((unsigned char *)psector);
-                //    		_dprintf("read bootimage from sector %d.\r\n", rsn);
-    		if (NX_SDMMC_ReadSectors(pSDXCBootStatus, rsn++, 1,
-    				psector) == 0) {
-                    //    			_dprintf("Boot Header read fail.\r\n");
+                _dprintf("read bootimage from sector %d.\n", rsn);
+    		if (NX_SDMMC_ReadSectors(pSDXCBootStatus, rsn++, 1, psector) == 0) {
+                        _dprintf("Boot Header read fail.\n");
     			goto error;
     		}
     	}
         else {
-            ;//            _dprintf("invalid GPT.\r\n");
+            _dprintf("invalid GPT.\r\n");
         }
     } else {
-        ;//        _dprintf("<<bootrom>>not GPT, read header from sector 1.\r\n");
+        _dprintf("<<bootrom>>not GPT, read header from sector 1.\r\n");
     }
 
     /* unsigned int iv[4]; */
@@ -1318,20 +1318,31 @@ int SDMMCBOOT(SDBOOTSTATUS *pSDXCBootStatus, unsigned int option)
     struct nx_bootinfo *pbi = &(pbm)->bi;
     unsigned int BootSize = pbi->LoadSize;
 
+    //2018/05/09
+    //endian check!!!
     if (pbi->signature != HEADER_ID) {
-        _dprintf("not bootable image(0x%x)\n", pbi->signature);
+#ifdef DEBUG        
+        _dprintf("<<bootrom>> pbi sifnature addr = %x\n", &(pbi->signature));
+        _dprintf("<<bootrom>> expected HEADER_ID = %x\n", HEADER_ID);
+        _dprintf("<<bootrom>> not bootable image(0x%x)\n", pbi->signature);
+#endif        
         return 0;
     }
     /* #endif */
 
-/* #ifdef DEBUG */
-/*     _dprintf("<<bootrom>> %s pbi addr : 0x%x \n",__func__, pbi); */
-/*     _dprintf("<<bootrom>> %s LoadAddr:%x LoadSize:%x StartAddr:%x\r\n",__func__, */
-/*                      pbi->LoadAddr, pbi->LoadSize, pbi->StartAddr); */
-/* #endif */
-    if (BootSize > INTERNAL_SRAM_SIZE - SECONDBOOT_STACK)
-        BootSize = INTERNAL_SRAM_SIZE - SECONDBOOT_STACK;
+#ifdef DEBUG
+    _dprintf("<<bootrom>> pbi addr : 0x%x \n", pbi);
+    _dprintf("<<bootrom>> LoadAddr:%x LoadSize:%x StartAddr:%x\r\n",
+                     pbi->LoadAddr, pbi->LoadSize, pbi->StartAddr);
+    
+    _dprintf("\n<<bootrom>>+++++++++++++++++++++++++++++++++++++++++++++\n");
+    _dprintf("<<bootrom>> 4th Real Image Load to SRAM \n");
+    _dprintf("<<bootrom>>+++++++++++++++++++++++++++++++++++++++++++++\n");
+#endif
 
+    if (BootSize > INTERNAL_SRAM_SIZE - SECONDBOOT_STACK) {
+        BootSize = INTERNAL_SRAM_SIZE - SECONDBOOT_STACK;
+    }
 
     //unsigned int sectorsize = (BootSize - 256 + BLOCK_LENGTH - 1) / BLOCK_LENGTH;
     unsigned int sectorsize = (BootSize + BLOCK_LENGTH - 1) / BLOCK_LENGTH;
@@ -1388,6 +1399,24 @@ int SDMMCBOOT(SDBOOTSTATUS *pSDXCBootStatus, unsigned int option)
     /* 				iv, (*pbm)->bi.LoadSize); */
     /* #endif */
     /* 	} */
+#ifdef DEBUG
+    _dprintf("<<bootrom>> pbm->image addr = %x\n", pdata);
+    _dprintf("<<bootrom>> sectorsize = %x\n", sectorsize);
+    {
+        unsigned int* temp = (unsigned int*)(BASEADDR_SRAM+0x200);
+        _dprintf("SRAM Addr = 0x%x\n",temp);
+        _dprintf("First 128byte values are below ---\n");
+        for (unsigned int i = 0; i < 128; i++) {
+            _dprintf("%x ",*(temp+i));
+        }
+        _dprintf("SRAM data 256byte Done\n\n");
+        for (unsigned int i = 0; i < 128; i++) {
+            _dprintf("%x ",*(pdata+i));
+        }
+        _dprintf("pdata 256byte Done\n\n");
+    }
+#endif
+    
     return result;
     
  error:
