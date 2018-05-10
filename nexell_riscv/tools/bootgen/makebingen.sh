@@ -26,3 +26,8 @@ dd if=bl1.bin >> sdboot.bin
 
 #Convert from ascii to hex
 python converthex.py
+
+mv sdboot.hex sdboot_${BINTYPE}.hex
+
+cp sdboot_dos.hex ~/RISC-V/nexell/soc-reference/SOC/board/drone_soc/chip/drone_soc/evt0/design/RISCV/sim/l4_rtl/bootrom_test/compile/build/
+cp sdboot_gpt.hex ~/RISC-V/nexell/soc-reference/SOC/board/drone_soc/chip/drone_soc/evt0/design/RISCV/sim/l4_rtl/bootrom_test/compile/build/

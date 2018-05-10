@@ -2,8 +2,9 @@ import binascii
 
 def converthex():
     srcFilePath = "sdboot.bin"
+    hexFileName = "sdboot.hex"
 
-    genFile = file("sdboot.hex",'wb')
+    genFile = file(hexFileName,'wb')
     # temp = []
     
     with open(srcFilePath, 'rb') as data :
@@ -12,7 +13,7 @@ def converthex():
             if not byte_s :
                 break
 
-            print binascii.hexlify(byte_s) + ' ',
+            # print binascii.hexlify(byte_s) + ' ',
             genFile.write(binascii.hexlify(byte_s)+"\n")
     
     genFile.close()

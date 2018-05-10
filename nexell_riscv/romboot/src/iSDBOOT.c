@@ -201,7 +201,6 @@ unsigned int NX_SDMMC_SendCommandInternal(
         pSDXCReg->CMD		= cmd | flag | NX_SDXC_CMDFLAG_USE_HOLD_REG;
 
         while (pSDXCReg->CMD & NX_SDXC_CMDFLAG_STARTCMD) {
-            _dprintf("*.");
             if (++timeout > NX_SDMMC_TIMEOUT) {
                 //#ifndef SOC_SIM                
                 _dprintf("TO send cmd\r\n");
@@ -582,9 +581,9 @@ int NX_SDMMC_IdentifyCard(SDBOOTSTATUS *pSDXCBootStatus)
     pSDXCBootStatus->bHighCapacity =
         (cmd.response[0] & (1 << 30)) ? 1 : 0;
 
-#ifdef DEBUG
-    _dprintf("%sCard.\r\n", (pSDXCBootStatus->bHighCapacity) ? "High Capacity " : "");
-#endif
+/* #ifdef DEBUG */
+/*     _dprintf("%sCard.\r\n", (pSDXCBootStatus->bHighCapacity) ? "High Capacity " : ""); */
+/* #endif */
 
     //--------------------------------------------------------------------------
     // Get CID
@@ -952,46 +951,56 @@ int NX_SDMMC_ReadSectorData(
 		unsigned int *pdwBuffer)
 {
     unsigned int		count;
+    volatile unsigned int       temp = 0;
+    unsigned int                _cnt = 0;
+    
     register NX_SDMMC_RegisterSet * const pSDXCReg = pgSDXCReg[pSDXCBootStatus->SDPort];
 #ifdef DEBUG    
-    _dprintf("ReadSectorData : pSDXCReg = 0x%x\n",pSDXCReg);
-    _dprintf("ReadSectorData : pdwBuffer= 0x%x\n",pdwBuffer);
     _dprintf("ReadSectorData : numberOfSector= 0x%x\n",numberOfSector);
     _dprintf("ReadSectorData : BLOCK_LENGTH = 0x%x\n",BLOCK_LENGTH);    
 #endif
     NX_ASSERT(0 == ((unsigned int)pdwBuffer & 3));
 
     count = numberOfSector * BLOCK_LENGTH;
+    _dprintf("ReadSectorData : total count = 0x%x\n",count);
+    
     NX_ASSERT(0 == (count % 32));
 
     while (0 < count) {
-        _dprintf("ReadSectorData : count = 0x%x\n",count);
+        _dprintf("ReadSectorData : Try 0x%x\n",_cnt++);        
         if ((pSDXCReg->RINTSTS & NX_SDXC_RINTSTS_RXDR) || (pSDXCReg->RINTSTS & NX_SDXC_RINTSTS_DTO)) {            
             unsigned int FSize, Timeout = NX_SDMMC_TIMEOUT;
-            _dprintf("ReadSectorData : Timeout = 0x%x\n",Timeout);
+
             while ((pSDXCReg->STATUS & NX_SDXC_STATUS_FIFOEMPTY) && Timeout--) {
                 pSDXCReg->STATUS;
             }
-            if (0 == Timeout)
+            if (0 == Timeout) {
+                _dprintf("ReadSectorData : Timeout 0!!\n");
                 break;
+            }
             FSize = (pSDXCReg->STATUS & NX_SDXC_STATUS_FIFOCOUNT) >> 17;
             _dprintf("ReadSectorData : FSize = 0x%x\n",FSize);
+
             count -= (FSize * 4);
+            _dprintf("ReadSectorData : left count = 0x%x\n",count);
+            
             while (FSize) {
                 *pdwBuffer++ = pSDXCReg->DATA;
                 FSize--;
             }
-            _dprintf("\n");
             pSDXCReg->RINTSTS = NX_SDXC_RINTSTS_RXDR;
         }
-        
+
+        temp = pSDXCReg->RINTSTS;
+
         // Check Errors
-        if (pSDXCReg->RINTSTS & (NX_SDXC_RINTSTS_DRTO |
+        if (temp & (NX_SDXC_RINTSTS_DRTO |
                                  NX_SDXC_RINTSTS_EBE |
                                  NX_SDXC_RINTSTS_SBE |
                                  NX_SDXC_RINTSTS_DCRC)) {
-#if defined(DEBUG)            
-            _dprintf("Read left = %x\r\n", count);
+#if DEBUG
+            _dprintf("Read left = %x\n", count);
+
             if (pSDXCReg->RINTSTS & NX_SDXC_RINTSTS_DRTO)
                 _dprintf("DRTO\r\n");
             if (pSDXCReg->RINTSTS & NX_SDXC_RINTSTS_EBE)
@@ -1204,7 +1213,7 @@ int SDMMCBOOT(SDBOOTSTATUS *pSDXCBootStatus, unsigned int option)
     unsigned int rsn = 0;
 
 #ifdef DEBUG
-    _dprintf("[ROM-DEBUG]++++++++++++++++++++++\n");
+    _dprintf("\n[ROM-DEBUG]++++++++++++++++++++++\n");
     _dprintf("[ROM-DEBUG] 1st MBR Read\n");
     _dprintf("[ROM-DEBUG]++++++++++++++++++++++\n");
 #endif
@@ -1214,11 +1223,11 @@ int SDMMCBOOT(SDBOOTSTATUS *pSDXCBootStatus, unsigned int option)
         goto error;
     }
 
-#ifdef DEBUG
-    for (unsigned int i = 0; i < 128; i++) {
-        _dprintf("%x ",*(psector+i));
-    }
-#endif
+/* #ifdef DEBUG */
+/*     for (unsigned int i = 0; i < 128; i++) { */
+/*         _dprintf("%x ",*(psector+i)); */
+/*     } */
+/* #endif */
         
 #ifdef DEBUG
     _dprintf("\n[ROM-DEBUG]++++++++++++++++++++++++++++\n");
@@ -1228,7 +1237,7 @@ int SDMMCBOOT(SDBOOTSTATUS *pSDXCBootStatus, unsigned int option)
     
     ret = is_gpt_part((unsigned char *)psector);
 #ifdef DEBUG
-    _dprintf("[ROM-DEBUG] Header type = 0x%x\n", ret ? "Boot" : "GPT");
+    _dprintf("[ROM-DEBUG] Header type = %s, ret = 0x%x\n", ret ? "Boot" : "GPT", ret);
 #endif
 
     if (NX_SDMMC_ReadSectors(pSDXCBootStatus, rsn++, 1, psector) == 0) {
@@ -1262,7 +1271,6 @@ int SDMMCBOOT(SDBOOTSTATUS *pSDXCBootStatus, unsigned int option)
     struct nx_bootinfo *pbi = &(pbm)->bi;
     unsigned int BootSize = pbi->LoadSize;
 
-
     if (pbi->signature != HEADER_ID) {
 #ifdef DEBUG        
         _dprintf("[ROM-DEBUG] pbi sifnature addr = %x\n", &(pbi->signature));
@@ -1273,7 +1281,6 @@ int SDMMCBOOT(SDBOOTSTATUS *pSDXCBootStatus, unsigned int option)
     }
 
 #ifdef DEBUG
-    _dprintf("[ROM-DEBUG] pbi addr : 0x%x \n", pbi);
     _dprintf("[ROM-DEBUG] aLoadAddr:%x aLoadSize:%x aStartAddr:%x\r\n",
              &(pbi->LoadAddr), &(pbi->LoadSize), &(pbi->StartAddr));
     _dprintf("[ROM-DEBUG] LoadAddr:%x LoadSize:%x StartAddr:%x\r\n",
@@ -1294,24 +1301,27 @@ int SDMMCBOOT(SDBOOTSTATUS *pSDXCBootStatus, unsigned int option)
     unsigned int *pdata = (unsigned int *)(pbm)->image;
     
     result = NX_SDMMC_ReadSectors(pSDXCBootStatus, rsn, sectorsize, pdata);
+    /* for (int i = 0; i < sectorsize; i++) { */
+    /*     result = NX_SDMMC_ReadSectors(pSDXCBootStatus, rsn++, 1, pdata+(i*BLOCK_LENGTH)/4); */
+    /* } */
 
-/* #ifdef DEBUG */
-/*     _dprintf("[ROM-DEBUG] pbm->image addr = %x\n", pdata); */
-/*     _dprintf("[ROM-DEBUG] sectorsize = %x\n", sectorsize); */
-/*     { */
-/*         unsigned int* temp = (unsigned int*)(BASEADDR_SRAM+0x200); */
-/*         _dprintf("SRAM Addr = 0x%x\n",temp); */
-/*         _dprintf("First 128byte values are below ---\n"); */
-/*         for (unsigned int i = 0; i < 128; i++) { */
-/*             _dprintf("%x ",*(temp+i)); */
-/*         } */
-/*         _dprintf("SRAM data 256byte Done\n\n"); */
-/*         for (unsigned int i = 0; i < 128; i++) { */
-/*             _dprintf("%x ",*(pdata+i)); */
-/*         } */
-/*         _dprintf("pdata 256byte Done\n\n"); */
-/*     } */
-/* #endif */
+#if 0//def DEBUG
+    _dprintf("[ROM-DEBUG] pbm->image addr = %x\n", pdata);
+    _dprintf("[ROM-DEBUG] sectorsize = %x\n", sectorsize);
+    {
+        unsigned int* temp = (unsigned int*)(BASEADDR_SRAM+0x200);
+        _dprintf("SRAM Addr = 0x%x\n",temp);
+        _dprintf("First 128byte values are below ---\n");
+        for (unsigned int i = 0; i < 512; i++) {
+            _dprintf("%x ",*(temp+i));
+        }
+        _dprintf("SRAM data 256byte Done\n\n");
+        for (unsigned int i = 0; i < 512; i++) {
+            _dprintf("%x ",*(pdata+i));
+        }
+        _dprintf("pdata 256byte Done\n\n");
+    }
+#endif
 
     return result;
     

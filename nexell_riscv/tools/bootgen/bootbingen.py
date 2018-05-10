@@ -36,7 +36,7 @@ def nsihgen():
         temp2.append(i[0])
         temp2.append(i[1])
 
-        print "".join(temp2)
+        #print "".join(temp2)
 
         genFile.write(binascii.unhexlify("".join(temp2)))
 

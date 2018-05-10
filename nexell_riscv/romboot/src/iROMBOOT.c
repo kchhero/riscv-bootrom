@@ -37,12 +37,12 @@ void __riscv_synch_thread(void) {
     __asm__ volatile ("fence");
 }
 
-//struct nx_bootmm *const pbm = (struct nx_bootmm * const)BASEADDR_OF_PBM;
+
 //------------------------------------------------------------------------------
-int romboot(int bootmode)
+int romboot(void)
 {
-    int option = bootmode;
     int result = 0;
+    int option = getBootMode();
 
 #ifdef DEBUG
     _dprintf("ROMBOOT Start\n");
@@ -83,9 +83,13 @@ int romboot(int bootmode)
 
 #ifdef DEBUG
     _dprintf(">> fence.i doing ... <<\n\n");
-#endif    
+#endif
     cache_flush();
-
+#ifdef DEBUG
+    _dprintf(">> fence.i done! <<\n\n");
+    _dprintf(">> sdboot result = 0x%x <<\n",result);
+#endif
+    
     if (result) {
         struct nx_bootinfo *pbi = (struct nx_bootinfo *)BASEADDR_SRAM;
 #ifdef DEBUG
@@ -96,4 +100,21 @@ int romboot(int bootmode)
 
     while(1);
     return 0;
+}
+
+//------------------------------------------------------------------------------
+unsigned int getBootMode(void)
+{
+    volatile unsigned int* pSysConReg = (unsigned int*)PHY_BASEADDR_SYS_CON0_MODULE;
+
+    unsigned int oneReg = *pSysConReg+0;
+    unsigned int bootMode = (oneReg & 0x00000008) >> 3;
+#ifdef DEBUG
+    if (bootMode == 0) {
+        _dprintf("SDMMC Boot Mode\n");
+    } else {
+        _dprintf("SPI Boot Mode\n");
+    }
+#endif
+    return bootMode;
 }

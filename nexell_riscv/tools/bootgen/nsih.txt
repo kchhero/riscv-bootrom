@@ -41,7 +41,7 @@ f1402573    // 0x008     csrr   a0, mhartid
 //------------------------------------------------------------------------------
 // Main Bootloader Load Info
 //------------------------------------------------------------------------------
-00000290    // 0x040 : Load Size for 2ndboot.
+00000800    // 0x040 : Load Size for 2ndboot.
 00008000    // 0x044 : CRC32 //X:Device Read Address from 2ndboot Device.
 40000200    // 0x048 : Load Address for 2ndboot.
 40000200    // 0x04C : Launch Address for 2ndboot.

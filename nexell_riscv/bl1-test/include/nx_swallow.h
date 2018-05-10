@@ -1,12 +1,6 @@
 #ifndef NX_SWALLOW_H
 #define NX_SWALLOW_H
 
-#ifdef QEMU_RISCV
-#include "nx_qemu_platform.h"
-#else
-#include "nx_swallow_platform.h"
-#endif
-
 //--------------------------------------------------------------------------    
 // RISC-V
 //--------------------------------------------------------------------------
@@ -24,7 +18,7 @@
 
 #ifdef QEMU_RISCV
 #define SRAM_ADDR (0xFFFF0000)
-#define SRAM_SIZE (0x8000) //32KB
+#define SRAM_SIZE (0x8000) //64KB
 #else
 #define SRAM_ADDR _AC(0x40000000,UL)
 #define SRAM_SIZE _AC(0x8000,UL) //32KB
@@ -33,7 +27,7 @@
 #endif
 
 #define DRAM_ADDR _AC(0x80000000,UL)
-#define DRAM_SIZE _AC(0x40000000,uL)
+#define DRAM_SIZE _AC(0x40000000,uL) //64KB
 
 #define USBD_VID		0x2375
 #define USBD_PID		0x0322

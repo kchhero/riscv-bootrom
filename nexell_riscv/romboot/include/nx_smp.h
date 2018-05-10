@@ -52,8 +52,19 @@ hart0_entry:
   csrw mie, reg2		;\
   li   reg1, NONSMP_HART	;\
   csrr reg2, mhartid		;\
-  bne  reg1, reg2, 42f
-    
+  beq  reg1, reg2, 40f          ;\
+  li    a0, _AC(0x40007000,UL)  ;\
+  csrw  mtvec, a0               ;\
+  csrwi mip, 0                  ;\
+  csrwi mstatus, 8              ;\
+  csrwi mie, 8                  ;\
+  csrr  reg1, mideleg           ;\
+  li    reg2, _AC(0xfffffff7,UL);\
+  and   reg1, reg1, reg2        ;\
+  csrw  mideleg, reg1           ;\
+  wfi    			;\
+40:                             ;\
+
 #ifdef CLINT1_CTRL_ADDR
 // If a second CLINT exists, then make sure we:
 // 1) Trigger a software interrupt on all harts of both CLINTs.
