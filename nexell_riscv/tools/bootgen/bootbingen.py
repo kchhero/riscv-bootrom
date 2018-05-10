@@ -21,16 +21,24 @@ def nsihgen():
             temp.append((line.split(' '))[0].strip().lower())
 
     for i in temp :
-        temp2 = 0
         if (len(i) != 8) :
             print "ERROR"
-#            binascii.
             break
 
-        #for j in i :
-        print binascii.unhexlify(i)
-        genFile.write(binascii.unhexlify(i))
-          #  print binascii.unhexlify(hex(int(j,16)))
+        temp2 = []
+        #i : 01 23 45 67
+        temp2.append(i[6])
+        temp2.append(i[7])
+        temp2.append(i[4])
+        temp2.append(i[5])
+        temp2.append(i[2])
+        temp2.append(i[3])
+        temp2.append(i[0])
+        temp2.append(i[1])
+
+        print "".join(temp2)
+
+        genFile.write(binascii.unhexlify("".join(temp2)))
 
     genFile.close()
 

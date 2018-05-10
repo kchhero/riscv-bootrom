@@ -29,60 +29,71 @@
 #include <nx_swallow_printf.h>
 #endif
 
+void cache_flush(void) {
+    __asm__ __volatile__ ("fence.i" : : : "memory");
+    //    __asm__ volatile ("fence.i");
+}
+void __riscv_synch_thread(void) {
+    __asm__ volatile ("fence");
+}
+
 //struct nx_bootmm *const pbm = (struct nx_bootmm * const)BASEADDR_OF_PBM;
 //------------------------------------------------------------------------------
 int romboot(int bootmode)
 {
     int option = bootmode;
-#ifndef QEMU_RISCV
-    _dprintf("<<bootrom>>romboot start with option = 0x%x\n",bootmode);
-    nxSetClockInit();
+    int result = 0;
 
-    //todo
-    // DDR1 setup
+#ifdef DEBUG
+    _dprintf("ROMBOOT Start\n");
+    _dprintf("<<bootrom>>romboot start with option = 0x%x\n",bootmode);    
+#endif
+
+#ifndef QEMU_RISCV
+    nxSetClockInit();
     
     do {
-        int Result = 0;
-        //unsigned int * sramaddr = (unsigned int*)0x40000000;
         switch (option) {
-            /* case XIPBOOT: */
-            /* 	break; */
-        case SDBOOT:	// iSDHCBOOT (SD/MMC/eSD/eMMC)
-            Result = iSDBOOT(option);
+        case XIPBOOT:
             break;
-        default:
+        case SDBOOT:	// iSDHCBOOT (SD/MMC/eSD/eMMC)
+            result = iSDBOOT(option);
+            break;
+        default: //default bootmode is sdcard
+            result = iSDBOOT(option);
             //            _dprintf("no support boot mode(%x)\r\n", option);
             break;
         }
 
-        if (Result)
-            break;
-
-        //        _dprintf("update boot\r\n");
-        /* for (int i=0; i < 1024; i++) */
-        /*     *sramaddr++ = 11; */
-        
-        Result = iSDBOOT(option);
-
-        if (Result)
+        if (result)
             break;
 
     } while (0);
-#else
-    /* struct nx_bootinfo *pbi = (struct nx_bootinfo *)BASEADDR_OF_PBM; */
-    unsigned int result;
-    _dprintf("ROMBOOT Start\n");
-    nxSetClockInit();
-    _dprintf("<<bootrom>> option %s = 0x%x\n", __func__, option); 
-    if (option != 0) {
-        _dprintf("<<bootrom>> iSDBOOT go\n");            
-        result = iSDBOOT(option);
 
+#else
+
+    nxSetClockInit();
+
+    if (option != 0) {
+        result = iSDBOOT(option);
     }
     else
         _dprintf("<<bootrom>> boot option is strange!\n");
-#endif        
-    __asm__ __volatile__ ("fence.i" : : : "memory");
+#endif
 
-    return 1;
+#ifdef DEBUG
+    _dprintf(">> fence.i doing ... <<\n\n");
+#endif    
+    cache_flush();
+
+    if (result) {
+        struct nx_bootinfo *pbi = (struct nx_bootinfo *)BASEADDR_SRAM;
+#ifdef DEBUG
+        _dprintf(">> Launch to 0x%x\n", pbi->StartAddr);
+#endif
+        return pbi->StartAddr;
+    }
+
+    while(1);
+    return 0;
 }

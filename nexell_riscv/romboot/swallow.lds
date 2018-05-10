@@ -6,7 +6,7 @@ MEMORY
   debug_ctrl (rwx) : ORIGIN = 0x0, LENGTH = 0x100
   error_mem (rw) : ORIGIN = 0x3000, LENGTH = 0x1000
   test_ctrl (rw) : ORIGIN = 0x4000, LENGTH = 0x1000
-  maskrom_mem (rx) : ORIGIN = 0x10000, LENGTH = 0x8000
+  maskrom_mem (r) : ORIGIN = 0x10000, LENGTH = 0x8000
   clint_ctrl (rw) : ORIGIN = 0x2000000, LENGTH = 0x10000
   plic_ctrl (rw) : ORIGIN = 0xc000000, LENGTH = 0x4000000
   gpio0_ctrl (rw) : ORIGIN = 0x20700000, LENGTH = 0x1000

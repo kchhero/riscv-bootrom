@@ -28,7 +28,10 @@
 #else
 #define SRAM_ADDR _AC(0x40000000,UL)
 #define SRAM_SIZE _AC(0x8000,UL) //32KB
+#define VECTOR_ADDR _AC(0x40007000,UL)
+#define VECTOR_SIZE _AC(0x1000,UL) //4KB
 #endif
+
 #define DRAM_ADDR _AC(0x80000000,UL)
 #define DRAM_SIZE _AC(0x40000000,uL) //64KB
 
@@ -44,8 +47,11 @@
 
 #define SECONDBOOT_FSIZENCRC	(64*1024)
 #define SECONDBOOT_FSIZE	(SECONDBOOT_FSIZENCRC-(128/8))
-#define SECONDBOOT_STACK	0x2000
+#define SECONDBOOT_STACK	0x2000 //8KB
 
+#define GPIO_ALT_BITWIDTH_2BIT 2
+#define GPIO_ALT_BITWIDTH_3BIT 3
+#define GPIO_ALT_BITWIDTH       GPIO_ALT_BITWIDTH_2BIT 
 //--------------------------------------------------------------------------
 //  Base Address
 //--------------------------------------------------------------------------
