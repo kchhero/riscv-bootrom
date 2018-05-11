@@ -29,12 +29,8 @@
 #include <nx_swallow_printf.h>
 #endif
 
-void cache_flush(void) {
-    __asm__ __volatile__ ("fence.i" : : : "memory");
-    //    __asm__ volatile ("fence.i");
-}
 void __riscv_synch_thread(void) {
-    __asm__ volatile ("fence");
+    __asm__ __volatile__ ("fence" : : : "memory");
 }
 
 
@@ -46,7 +42,7 @@ int romboot(void)
 
 #ifdef DEBUG
     _dprintf("ROMBOOT Start\n");
-    _dprintf("<<bootrom>>romboot start with option = 0x%x\n",bootmode);    
+    _dprintf("<<bootrom>>romboot start with option = 0x%x\n",option);
 #endif
 
 #ifndef QEMU_RISCV
@@ -54,10 +50,11 @@ int romboot(void)
     
     do {
         switch (option) {
-        case XIPBOOT:
-            break;
         case SDBOOT:	// iSDHCBOOT (SD/MMC/eSD/eMMC)
             result = iSDBOOT(option);
+            break;
+        case SPIBOOT:
+            _dprintf("SPIBOOT welcome\n");
             break;
         default: //default bootmode is sdcard
             result = iSDBOOT(option);
@@ -81,12 +78,9 @@ int romboot(void)
         _dprintf("<<bootrom>> boot option is strange!\n");
 #endif
 
+    __riscv_synch_thread();
+
 #ifdef DEBUG
-    _dprintf(">> fence.i doing ... <<\n\n");
-#endif
-    cache_flush();
-#ifdef DEBUG
-    _dprintf(">> fence.i done! <<\n\n");
     _dprintf(">> sdboot result = 0x%x <<\n",result);
 #endif
     
@@ -95,7 +89,7 @@ int romboot(void)
 #ifdef DEBUG
         _dprintf(">> Launch to 0x%x\n", pbi->StartAddr);
 #endif
-        return pbi->StartAddr;
+        return pbi->StartAddr; //0x40000200
     }
 
     while(1);
@@ -103,12 +97,12 @@ int romboot(void)
 }
 
 //------------------------------------------------------------------------------
-unsigned int getBootMode(void)
+int getBootMode(void)
 {
     volatile unsigned int* pSysConReg = (unsigned int*)PHY_BASEADDR_SYS_CON0_MODULE;
 
     unsigned int oneReg = *pSysConReg+0;
-    unsigned int bootMode = (oneReg & 0x00000008) >> 3;
+    unsigned int bootMode = (oneReg & 0x00000020) >> 5;
 #ifdef DEBUG
     if (bootMode == 0) {
         _dprintf("SDMMC Boot Mode\n");

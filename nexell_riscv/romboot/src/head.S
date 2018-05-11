@@ -14,6 +14,8 @@ _start:
         addi s3, a0, 0
         
         //smp_resume(s1, s2) //        ;; li a0, 0 //SRAM_ADDR //        ;; jr a0
+        fence.i
+
 	jr s3
 
 stop_and_go:

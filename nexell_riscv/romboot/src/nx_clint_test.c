@@ -38,7 +38,7 @@ void clint_test_main(void)
     /* read_mip(); */
 
     /* _dprintf("----------------------------\n"); */
-    /* csr_write(mip, 0x8); */
+    /* csr_write(mip, 0x8); */ 
     /* //    WriteIODW(0x02000004, 1); */
 
     /* read_mstatus(); */

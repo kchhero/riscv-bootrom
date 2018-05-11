@@ -6,11 +6,6 @@
 bl1start:
         call bl1main
 
-        li s3, 0
-        addi s3, a0, 0
-
-	jr s3
-
 stop_and_go:
         j stop_and_go
 
@@ -18,7 +13,3 @@ stop_and_go:
 .globl _hang
 _hang:
         csrr a0, mhartid
-
-1:
-        wfi
-        j 1b

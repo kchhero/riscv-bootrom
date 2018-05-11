@@ -16,30 +16,6 @@
 #ifndef __NX_UART_H__
 #define __NX_UART_H__
 
-#ifdef QEMU_RISCV
-/* Register offsets */
-#define UART_REG_TXFIFO         0x00
-#define UART_REG_RXFIFO         0x04
-#define UART_REG_TXCTRL         0x08
-#define UART_REG_RXCTRL         0x0c
-#define UART_REG_IE             0x10
-#define UART_REG_IP             0x14
-#define UART_REG_DIV            0x18
-
-/* TXCTRL register */
-#define UART_TXEN               0x1
-#define UART_TXNSTOP            0x2
-#define UART_TXWM(x)            (((x) & 0xffff) << 16)
-
-/* RXCTRL register */
-#define UART_RXEN               0x1
-#define UART_RXWM(x)            (((x) & 0xffff) << 16)
-
-/* IP register */
-#define UART_IP_TXWM            0x1
-#define UART_IP_RXWM            0x2
-
-#else
 struct NX_UART_RegisterSet
 {
 	volatile unsigned int    RBR_DLL_THR;    /* 0x00 receive buf, divisor latch, tx holding */
@@ -84,5 +60,5 @@ struct NX_UART_RegisterSet
 	volatile unsigned int    UCV;            /* 0xF8 uart component version */
 	volatile unsigned int    CTR;            /* 0xFC component type */
 };
-#endif // QEMU_RISCV
+
 #endif // __NX_UART_H__

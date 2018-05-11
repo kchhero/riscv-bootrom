@@ -34,7 +34,7 @@ LDFLAGS	=	-static -nostdlib -L ./ -T$(LDS_NAME) \
 
 
 SYS_OBJS	=	head.o
-SYS_OBJS	+=	bl1_main.o nx_debug.o nx_swallow_printf.o
+SYS_OBJS	+=	bl1_main.o nx_qemu_sim_printf.o
 
 SYS_OBJS_LIST	= 	$(addprefix $(DIR_OBJOUTPUT)/,$(SYS_OBJS))
 

@@ -18,9 +18,9 @@
 //		2018-01-15	Hans sim done
 ////////////////////////////////////////////////////////////////////////////////
 #include <nx_swallow.h>
-#include <nx_debug.h>
-#include <nx_swallow_printf.h>
+#include <nx_qemu_sim_printf.h>
 
+#ifndef __ASSEMBLY__
 #define csr_write(csr, val)					\
 ({								\
 	unsigned long __v = (unsigned long)(val);		\
@@ -28,14 +28,17 @@
 			      : : "rK" (__v)			\
 			      : "memory");			\
 })
-
+#endif
 
 int bl1main()
 {
-    _dprintf("BL1-TEST Good\n");
+    //    volatile unsigned int* pCLINT0Reg = (unsigned int*)(0x02000000);
+    volatile unsigned int* pCLINT1Reg = (unsigned int*)(0x02000004);
+    _dprintf("BL1-TEST Good2\n");
+    *pCLINT1Reg = 0x1;
 
-    csr_write(mepc, 0x55667799);
-    
+
+   
     while(1);
-    return 0;
+    return ;
 }

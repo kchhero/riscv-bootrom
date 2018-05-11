@@ -1305,22 +1305,21 @@ int SDMMCBOOT(SDBOOTSTATUS *pSDXCBootStatus, unsigned int option)
     /*     result = NX_SDMMC_ReadSectors(pSDXCBootStatus, rsn++, 1, pdata+(i*BLOCK_LENGTH)/4); */
     /* } */
 
-#if 0//def DEBUG
+#ifdef DEBUG
     _dprintf("[ROM-DEBUG] pbm->image addr = %x\n", pdata);
-    _dprintf("[ROM-DEBUG] sectorsize = %x\n", sectorsize);
-    {
-        unsigned int* temp = (unsigned int*)(BASEADDR_SRAM+0x200);
-        _dprintf("SRAM Addr = 0x%x\n",temp);
-        _dprintf("First 128byte values are below ---\n");
-        for (unsigned int i = 0; i < 512; i++) {
-            _dprintf("%x ",*(temp+i));
-        }
-        _dprintf("SRAM data 256byte Done\n\n");
-        for (unsigned int i = 0; i < 512; i++) {
-            _dprintf("%x ",*(pdata+i));
-        }
-        _dprintf("pdata 256byte Done\n\n");
-    }
+    /* { */
+    /*     unsigned int* temp = (unsigned int*)(BASEADDR_SRAM+0x200); */
+    /*     _dprintf("SRAM Addr = 0x%x\n",temp); */
+    /*     _dprintf("First 128byte values are below ---\n"); */
+    /*     for (unsigned int i = 0; i < 512; i++) { */
+    /*         _dprintf("%x ",*(temp+i)); */
+    /*     } */
+    /*     _dprintf("SRAM data 256byte Done\n\n"); */
+    /*     for (unsigned int i = 0; i < 512; i++) { */
+    /*         _dprintf("%x ",*(pdata+i)); */
+    /*     } */
+    /*     _dprintf("pdata 256byte Done\n\n"); */
+    /* } */
 #endif
 
     return result;

@@ -16,28 +16,10 @@
 
 #include "nx_const.h"
 
-/* Status register flags */
-/* #define SR_IE   _AC(0x00000002, UL) /\* Interrupt Enable *\/ */
-/* #define SR_PIE  _AC(0x00000020, UL) /\* Previous IE *\/ */
-/* #define SR_PS   _AC(0x00000100, UL) /\* Previously Supervisor *\/ */
-/* #define SR_SUM  _AC(0x00040000, UL) /\* Supervisor may access User Memory *\/ */
-
 //Machine Mode Register Flags
 #define MSR_IE   _AC(0x00000008, UL) /* Interrupt Enable */
 #define MSR_PIE  _AC(0x00000080, UL) /* Previous IE */
 #define MSR_PS   _AC(0x00001800, UL) /* Previously Supervisor */
-
-/* #define SR_FS           _AC(0x00006000, UL) /\* Floating-point Status *\/ */
-/* #define SR_FS_OFF       _AC(0x00000000, UL) */
-/* #define SR_FS_INITIAL   _AC(0x00002000, UL) */
-/* #define SR_FS_CLEAN     _AC(0x00004000, UL) */
-/* #define SR_FS_DIRTY     _AC(0x00006000, UL) */
-
-/* #define SR_XS           _AC(0x00018000, UL) /\* Extension Status *\/ */
-/* #define SR_XS_OFF       _AC(0x00000000, UL) */
-/* #define SR_XS_INITIAL   _AC(0x00008000, UL) */
-/* #define SR_XS_CLEAN     _AC(0x00010000, UL) */
-/* #define SR_XS_DIRTY     _AC(0x00018000, UL) */
 
 #ifndef CONFIG_64BIT
 #define SR_SD   _AC(0x80000000, UL) /* FS/XS dirty */
@@ -55,20 +37,6 @@
 #define SPTBR_MODE_39 _AC(0x8000000000000000, UL)
 #define SPTBR_MODE    SPTBR_MODE_39
 #endif
-
-/* Interrupt Enable and Interrupt Pending flags */
-/* #define SIE_SSIE _AC(0x00000002, UL) /\* Software Interrupt Enable *\/ */
-/* #define SIE_STIE _AC(0x00000020, UL) /\* Timer Interrupt Enable *\/ */
-
-/* #define EXC_INST_MISALIGNED     0 */
-/* #define EXC_INST_ACCESS         1 */
-/* #define EXC_BREAKPOINT          3 */
-/* #define EXC_LOAD_ACCESS         5 */
-/* #define EXC_STORE_ACCESS        7 */
-/* #define EXC_SYSCALL             8 */
-/* #define EXC_INST_PAGE_FAULT     12 */
-/* #define EXC_LOAD_PAGE_FAULT     13 */
-/* #define EXC_STORE_PAGE_FAULT    15 */
 
 #ifndef __ASSEMBLY__
 

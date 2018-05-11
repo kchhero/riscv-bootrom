@@ -46,12 +46,10 @@ struct nx_bootmm {
 };
 
 /* ========================= rst cfg =====================*/
-#define BOOTMODE		0	// 1, 2
+#define SDBOOT			0
+#define SPIBOOT			1
 
-#define XIPBOOT			1
-#define SDBOOT			2	// data sector boot
-
-#define UARTBAUDRATE		3	// 0: 115200, 1:921600
+#define UARTBAUDRATE		3 // 0: 115200, 1:921600
 #define UARTPORT		4 // 5, 6	// 0 ~ 6 port
 
 /*
