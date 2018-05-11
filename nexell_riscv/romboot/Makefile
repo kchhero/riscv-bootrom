@@ -55,10 +55,10 @@ SYS_OBJS	+=	nx_qemu_sim_printf.o
 #SYS_OBJS	+=	nx_clint_test.o
 #SYS_OBJS	+=	nx_pwmtest.o
 else
-SYS_OBJS	+=	nx_swallow_printf.o
 ifeq ($(DEBUG), y)
+SYS_OBJS	+=	nx_swallow_printf.o
 SYS_OBJS	+=	nx_debug.o
-endif   #DEBUG
+endif
 endif	#SIM
 endif   #QEMU
 
@@ -67,7 +67,7 @@ SYS_OBJS	+=	nx_clock.o \
 
 #nx_chip_sfr.o
 
-SYS_OBJS	+= 	iROMBOOT.o iSDBOOT.o
+SYS_OBJS	+= 	iROMBOOT.o iSDBOOT.o iSPIBOOT.o
 SYS_OBJS	+= 	nx_gpio.o nx_gpt.o nx_lib.o
 
 SYS_OBJS_LIST	= 	$(addprefix $(DIR_OBJOUTPUT)/,$(SYS_OBJS))

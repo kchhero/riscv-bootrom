@@ -44,8 +44,6 @@ struct	NX_GPIO_RegisterSet
 	volatile unsigned int GPIOx_INPUTENB;			// 0x074
 	volatile unsigned int GPIOx_INPUTENB_DISABLE_DEFAULT;	// 0x078
 	volatile unsigned int GPIOx_ALTFN_2;			// 0x07C
-
-	unsigned char __Reserved_MID0[0x80];
 };
 
 struct NX_GPIO
@@ -53,7 +51,7 @@ struct NX_GPIO
 	struct NX_GPIO_RegisterSet RWGPIO;
 	struct NX_GPIO_RegisterSet SGPIO;
 	struct NX_GPIO_RegisterSet CGPIO;
-	unsigned char __Rev[0x1000 - 3 * sizeof(struct NX_GPIO_RegisterSet)];
+	unsigned char __Rev[0x10000 - 3 * sizeof(struct NX_GPIO_RegisterSet)];
 };
 
 ///@brief	GPIO Interrupts for interrupt interface
@@ -149,6 +147,8 @@ void GPIOSetAltFunction(const struct nxpadi *pad, int setalt);
 void GPIOSetDrvSt(const struct nxpadi *pad, NX_GPIO_DRVSTRENGTH str);
 void GPIOSetPullup(const struct nxpadi *pad, NX_GPIO_PULL pull);
 void GPIOReleasePAD(const struct nxpadi *pad);
+void GPIOSetIO(const struct nxpadi *pad, int inout);
+void GPIOSetOutput(const struct nxpadi *pad, int outvalue);
 void setpad(const union nxpad *const ppad, int num, int enable);
 
 #endif //__NX_GPIO_H__

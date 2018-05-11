@@ -98,6 +98,30 @@ void GPIOSetPullup(const struct nxpadi *pad, NX_GPIO_PULL pull)
     }
 }
 
+void GPIOSetIO(const struct nxpadi *pad, int inout)   /* 0: out, 1: in */
+{
+	struct NX_GPIO *pGPIOxReg = pGPIOReg[pad->grp];
+	if (!pad->flag)
+		return;
+
+	if (inout)
+		pGPIOxReg->CGPIO.GPIOx_OUTENB = 1 << pad->pin;
+	else
+		pGPIOxReg->SGPIO.GPIOx_OUTENB = 1 << pad->pin;
+}
+
+void GPIOSetOutput(const struct nxpadi *pad, int outvalue)
+{
+	struct NX_GPIO *pGPIOxReg = pGPIOReg[pad->grp];
+
+	if (!pad->flag)
+		return;
+
+	if (outvalue)
+		pGPIOxReg->SGPIO.GPIOx_OUT = 1 << pad->pin;
+	else
+		pGPIOxReg->CGPIO.GPIOx_OUT = 1 << pad->pin;
+}
 
 void setpad(const union nxpad *const ppad, int num, int enable)
 {

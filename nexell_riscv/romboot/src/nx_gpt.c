@@ -162,7 +162,9 @@ int is_gpt_valid(unsigned char *psector)
         };
 	unsigned char *a = (unsigned char *)&gpt->signature;
 	if (nx_memcmp(a, gpths, 8) != 0) {
+#ifdef DEBUG
 		_dprintf("wrong gpt signature : 0x%x\r\n", gpt->signature);
+#endif
 		return -1;
 	} else {
 //		printf("%s\n", (char *)&gpt->signature);
@@ -172,8 +174,10 @@ int is_gpt_valid(unsigned char *psector)
 
 	unsigned int calcrc = crc32(0, (void *)gpt, gpt->header_size);
 	if (calcrc != crc_backup) {
+#ifdef DEBUG
 		_dprintf("!!!Wrong CRC calc crc : %x, crc : %x\r\n",
 				calcrc, crc_backup);
+#endif
 		return -1;
 	}
 	return 0;

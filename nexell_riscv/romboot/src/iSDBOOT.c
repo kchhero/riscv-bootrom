@@ -82,7 +82,7 @@ int NX_SDMMC_SetClock(SDBOOTSTATUS *pSDXCBootStatus, int enb, int divider)
     // 1. Confirm that no card is engaged in any transaction.
     //	If there's a transaction, wait until it has been finished.
 
-#if defined(DEBUG) && !defined(SOC_SIM)
+#if defined(DEBUG)
     _dprintf("[ROM-DEBUG] %s start\n",__func__);
     if (pSDXCReg->STATUS & (NX_SDXC_STATUS_DATABUSY | NX_SDXC_STATUS_FSMBUSY))
     {
@@ -202,9 +202,9 @@ unsigned int NX_SDMMC_SendCommandInternal(
 
         while (pSDXCReg->CMD & NX_SDXC_CMDFLAG_STARTCMD) {
             if (++timeout > NX_SDMMC_TIMEOUT) {
-                //#ifndef SOC_SIM                
+#ifdef DEBUG
                 _dprintf("TO send cmd\r\n");
-                //#endif
+#endif
                 status |= NX_SDMMC_STATUS_CMDBUSY;
                 INFINTE_LOOP();
                 goto End;
@@ -228,9 +228,9 @@ unsigned int NX_SDMMC_SendCommandInternal(
             break;
 
         if (++timeout > NX_SDMMC_TIMEOUT) {
-            //#ifndef SOC_SIM
+#ifdef DEBUG
             _dprintf("TO cmd done\r\n");
-            //#endif
+#endif
             status |= NX_SDMMC_STATUS_CMDTOUT;
             INFINTE_LOOP();
             goto End;
@@ -274,7 +274,7 @@ unsigned int NX_SDMMC_SendCommandInternal(
             timeout = 0;
             do {
                 if (++timeout > NX_SDMMC_TIMEOUT) {
-#ifndef SOC_SIM
+#ifdef DEBUG
                     _dprintf("TO card data ready\r\n");
 #endif
                     status |= NX_SDMMC_STATUS_DATABUSY;
@@ -840,7 +840,9 @@ int NX_SDMMC_Open(SDBOOTSTATUS *pSDXCBootStatus, unsigned int option)
     //--------------------------------------------------------------------------
     // card identification mode : Identify & Initialize
     if (0 == NX_SDMMC_IdentifyCard(pSDXCBootStatus)) {
+#ifdef DEBUG        
         _dprintf("Identify Fail\r\n");
+#endif
         return 0;
     }
 
@@ -851,11 +853,11 @@ int NX_SDMMC_Open(SDBOOTSTATUS *pSDXCBootStatus, unsigned int option)
     //--------------------------------------------------------------------------
     // data transfer mode : Stand-by state
     if (0 == NX_SDMMC_SetClock(pSDXCBootStatus, 1, SDCLK_DIVIDER_NORMAL)) {
-        _dprintf("Card Clk rst fail\r\n");
+        //_dprintf("Card Clk rst fail\r\n");
         return 0;
     }
     if (0 == NX_SDMMC_SelectCard(pSDXCBootStatus)) {
-        _dprintf("Card Sel Fail\r\n");
+        //_dprintf("Card Sel Fail\r\n");
         return 0;
     }
 
@@ -867,7 +869,7 @@ int NX_SDMMC_Open(SDBOOTSTATUS *pSDXCBootStatus, unsigned int option)
 
     if (0 == NX_SDMMC_SetBlockLength(pSDXCBootStatus,
                                                   BLOCK_LENGTH)) {
-        _dprintf("Set Blk Lng Fail\r\n");
+        //_dprintf("Set Blk Lng Fail\r\n");
         return 0;
     }
 
@@ -937,8 +939,10 @@ int NX_SDMMC_ReadSectorData(
     
     pSDXCReg->RINTSTS = NX_SDXC_RINTSTS_DTO;
 
+#ifdef DEBUG
     _dprintf("*************************************\n",__func__);
     _dprintf("\n[ROM-DEBUG] %s ---- end ----\n\n",__func__);
+#endif
 
     return 1;
 }
@@ -952,22 +956,25 @@ int NX_SDMMC_ReadSectorData(
 {
     unsigned int		count;
     volatile unsigned int       temp = 0;
-    unsigned int                _cnt = 0;
     
     register NX_SDMMC_RegisterSet * const pSDXCReg = pgSDXCReg[pSDXCBootStatus->SDPort];
-#ifdef DEBUG    
+#ifdef DEBUG
+    unsigned int                _cnt = 0;
+
     _dprintf("ReadSectorData : numberOfSector= 0x%x\n",numberOfSector);
     _dprintf("ReadSectorData : BLOCK_LENGTH = 0x%x\n",BLOCK_LENGTH);    
 #endif
     NX_ASSERT(0 == ((unsigned int)pdwBuffer & 3));
 
     count = numberOfSector * BLOCK_LENGTH;
-    _dprintf("ReadSectorData : total count = 0x%x\n",count);
+    //_dprintf("ReadSectorData : total count = 0x%x\n",count);
     
     NX_ASSERT(0 == (count % 32));
 
     while (0 < count) {
-        _dprintf("ReadSectorData : Try 0x%x\n",_cnt++);        
+#ifdef DEBUG
+        _dprintf("ReadSectorData : Try 0x%x\n",_cnt++);
+#endif
         if ((pSDXCReg->RINTSTS & NX_SDXC_RINTSTS_RXDR) || (pSDXCReg->RINTSTS & NX_SDXC_RINTSTS_DTO)) {            
             unsigned int FSize, Timeout = NX_SDMMC_TIMEOUT;
 
@@ -975,14 +982,17 @@ int NX_SDMMC_ReadSectorData(
                 pSDXCReg->STATUS;
             }
             if (0 == Timeout) {
-                _dprintf("ReadSectorData : Timeout 0!!\n");
+                //_dprintf("ReadSectorData : Timeout 0!!\n");
                 break;
             }
             FSize = (pSDXCReg->STATUS & NX_SDXC_STATUS_FIFOCOUNT) >> 17;
+#ifdef DEBUG            
             _dprintf("ReadSectorData : FSize = 0x%x\n",FSize);
-
+#endif
             count -= (FSize * 4);
+#ifdef DEBUG
             _dprintf("ReadSectorData : left count = 0x%x\n",count);
+#endif
             
             while (FSize) {
                 *pdwBuffer++ = pSDXCReg->DATA;
@@ -1046,8 +1056,9 @@ int NX_SDMMC_ReadSectors(SDBOOTSTATUS *pSDXCBootStatus,
     register NX_SDMMC_RegisterSet * const pSDXCReg = pgSDXCReg[pSDXCBootStatus->SDPort];
         
     NX_ASSERT(0 == ((unsigned int)pdwBuffer & 3));
-
+#ifdef DEBUG
     _dprintf("[ROM-DEBUG] ReadSectors enter\n");
+#endif
     // wait while data busy or data transfer busy
     while (pSDXCReg->STATUS & (1 << 9 | 1 << 10))
         pSDXCReg->STATUS;
@@ -1063,7 +1074,7 @@ int NX_SDMMC_ReadSectors(SDBOOTSTATUS *pSDXCBootStatus,
             NX_SDXC_CMDFLAG_SHORTRSP;
         status = NX_SDMMC_SendCommand(pSDXCBootStatus, &cmd);
         if (NX_SDMMC_STATUS_NOERROR != status) {
-            _dprintf("[ROM-DEBUG] NX_SDMMC_STATUS_NOERROR != status\n");
+            //_dprintf("[ROM-DEBUG] NX_SDMMC_STATUS_NOERROR != status\n");
             goto End;
         }
     } while (!((cmd.response[0] & (1 << 8)) &&
@@ -1111,13 +1122,13 @@ int NX_SDMMC_ReadSectors(SDBOOTSTATUS *pSDXCBootStatus,
 
 #ifndef QEMU_RISCV
     if (NX_SDMMC_STATUS_NOERROR != status) {
-        _dprintf("[ROM-DEBUG] NX_SDMMC_STATUS_NOERROR != status 2\n");
+        //_dprintf("[ROM-DEBUG] NX_SDMMC_STATUS_NOERROR != status 2\n");
         goto End;
     }
     //--------------------------------------------------------------------------
     // Read data
     if (1 != NX_SDMMC_ReadSectorData(pSDXCBootStatus, numberOfSector, pdwBuffer)) {
-        _dprintf("[ROM-DEBUG] ReadSectorData Fail\n");
+        //_dprintf("[ROM-DEBUG] ReadSectorData Fail\n");
         goto End;
     }
 #else
@@ -1192,7 +1203,7 @@ int SDMMCBOOT(SDBOOTSTATUS *pSDXCBootStatus, unsigned int option)
 #endif
 
     if (1 != NX_SDMMC_Open(pSDXCBootStatus, option)) {
-        _dprintf("device open fail\r\n");
+        //_dprintf("device open fail\r\n");
         goto error;
     }
 
@@ -1219,7 +1230,7 @@ int SDMMCBOOT(SDBOOTSTATUS *pSDXCBootStatus, unsigned int option)
 #endif
     
     if (NX_SDMMC_ReadSectors(pSDXCBootStatus, rsn++, 1, psector) == 0) {
-        _dprintf("[ROM-DEBUG] MBR read fail.\n");
+        //_dprintf("[ROM-DEBUG] MBR read fail.\n");
         goto error;
     }
 
@@ -1255,18 +1266,27 @@ int SDMMCBOOT(SDBOOTSTATUS *pSDXCBootStatus, unsigned int option)
     	ret = is_gpt_valid((unsigned char *)psector);
     	if (!ret) {
     		rsn = get_first_empty_lba((unsigned char *)psector);
+#ifdef DEBUG
                 _dprintf("read bootimage from sector %d.\n", rsn);
+#endif
     		if (NX_SDMMC_ReadSectors(pSDXCBootStatus, rsn++, 1, psector) == 0) {
+#ifdef DEBUG                    
                         _dprintf("Boot Header read fail.\n");
+#endif
     			goto error;
     		}
     	}
+#ifdef DEBUG
         else {
             _dprintf("invalid GPT.\r\n");
         }
-    } else {
+#endif
+    }
+#ifdef DEBUG
+    else {
         _dprintf("[ROM-DEBUG]not GPT, read header from sector 1.\r\n");
     }
+#endif
 
     struct nx_bootinfo *pbi = &(pbm)->bi;
     unsigned int BootSize = pbi->LoadSize;

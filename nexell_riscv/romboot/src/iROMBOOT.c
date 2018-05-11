@@ -22,6 +22,7 @@
 #include <nx_clock.h>
 #include <nx_debug.h>
 #include <iSDBOOT.h>
+#include <iSPIBOOT.h>
 
 #if defined(QEMU_RISCV) || defined(SOC_SIM)
 #include <nx_qemu_sim_printf.h>
@@ -33,12 +34,13 @@ void __riscv_synch_thread(void) {
     __asm__ __volatile__ ("fence" : : : "memory");
 }
 
+static unsigned int getBootMode(void);
 
 //------------------------------------------------------------------------------
 int romboot(void)
 {
     int result = 0;
-    int option = getBootMode();
+    unsigned int option = getBootMode();
 
 #ifdef DEBUG
     _dprintf("ROMBOOT Start\n");
@@ -54,7 +56,7 @@ int romboot(void)
             result = iSDBOOT(option);
             break;
         case SPIBOOT:
-            _dprintf("SPIBOOT welcome\n");
+            result = iSPIBOOT();
             break;
         default: //default bootmode is sdcard
             result = iSDBOOT(option);
@@ -74,8 +76,11 @@ int romboot(void)
     if (option != 0) {
         result = iSDBOOT(option);
     }
-    else
+#ifdef DEBUG    
+    else {
         _dprintf("<<bootrom>> boot option is strange!\n");
+    }
+#endif       
 #endif
 
     __riscv_synch_thread();
@@ -97,7 +102,7 @@ int romboot(void)
 }
 
 //------------------------------------------------------------------------------
-int getBootMode(void)
+static unsigned int getBootMode(void)
 {
     volatile unsigned int* pSysConReg = (unsigned int*)PHY_BASEADDR_SYS_CON0_MODULE;
 
