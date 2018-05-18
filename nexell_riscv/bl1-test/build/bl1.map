@@ -1,0 +1,93 @@
+
+Memory Configuration
+
+Name             Origin             Length             Attributes
+*default*        0x0000000000000000 0xffffffffffffffff
+
+Linker script and memory map
+
+LOAD obj/head.o
+LOAD obj/bl1_main.o
+LOAD obj/nx_qemu_sim_printf.o
+                0x0000000040000200                . = 0x40000200
+                0x0000000040000200                . = ALIGN (0x4)
+
+.text           0x0000000040000200      0x210
+ obj/head.o(.text)
+ .text          0x0000000040000200        0x0 obj/head.o
+ obj/bl1_main.o(.text)
+ .text          0x0000000040000200       0x24 obj/bl1_main.o
+                0x0000000040000200                bl1main
+ obj/nx_*.o(.text)
+ .text          0x0000000040000224      0x1ec obj/nx_qemu_sim_printf.o
+                0x0000000040000224                kputc
+                0x0000000040000230                _kputs
+                0x0000000040000260                kputs
+                0x0000000040000294                _dprintf
+ *(.init.text)
+ *(.init.data)
+ *(.init.code)
+ *(.text)
+
+.text.start     0x0000000040000410        0x8
+ .text.start    0x0000000040000410        0x8 obj/head.o
+                0x0000000040000410                bl1start
+
+.text.hang      0x0000000040000418        0x4
+ .text.hang     0x0000000040000418        0x4 obj/head.o
+                0x0000000040000418                _hang
+                0x000000004000041c                . = ALIGN (0x4)
+
+.rodata         0x0000000040000420       0x68
+ *(.rodata*)
+ .rodata.str1.8
+                0x0000000040000420       0x10 obj/bl1_main.o
+ .rodata        0x0000000040000430       0x58 obj/nx_qemu_sim_printf.o
+                0x0000000040000488                . = ALIGN (0x4)
+
+.data           0x0000000040000488        0x0
+ *(.data*)
+ .data          0x0000000040000488        0x0 obj/head.o
+ .data          0x0000000040000488        0x0 obj/bl1_main.o
+ .data          0x0000000040000488        0x0 obj/nx_qemu_sim_printf.o
+                0x0000000040000488                . = ALIGN (0x4)
+
+.got
+ *(.got)
+                0x0000000040000488                _end = .
+                0x0000000040000488                __bss_start__ = .
+
+.bss_start      0x0000000040000488        0x0
+ *(.__bss_start)
+                0x0000000040000488                __bss_base = .
+
+.bss            0x0000000040000488        0x0
+ *(.bss*)
+ .bss           0x0000000040000488        0x0 obj/head.o
+ .bss           0x0000000040000488        0x0 obj/bl1_main.o
+ .bss           0x0000000040000488        0x0 obj/nx_qemu_sim_printf.o
+                0x0000000040000488                . = ALIGN (0x4)
+                0x0000000040000488                __bss_limit = .
+
+.bss_end
+ *(.__bss_end)
+                0x0000000040000488                __bss_end__ = .
+OUTPUT(build/bl1.elf elf64-littleriscv)
+
+.comment        0x0000000000000000       0x11
+ .comment       0x0000000000000000       0x11 obj/bl1_main.o
+                                         0x12 (size before relaxing)
+ .comment       0x0000000000000011       0x12 obj/nx_qemu_sim_printf.o
+
+Cross Reference Table
+
+Symbol                                            File
+_dprintf                                          obj/nx_qemu_sim_printf.o
+                                                  obj/bl1_main.o
+_hang                                             obj/head.o
+_kputs                                            obj/nx_qemu_sim_printf.o
+bl1main                                           obj/bl1_main.o
+                                                  obj/head.o
+bl1start                                          obj/head.o
+kputc                                             obj/nx_qemu_sim_printf.o
+kputs                                             obj/nx_qemu_sim_printf.o

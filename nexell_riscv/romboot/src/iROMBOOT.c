@@ -53,9 +53,15 @@ int romboot(void)
     do {
         switch (option) {
         case SDBOOT:	// iSDHCBOOT (SD/MMC/eSD/eMMC)
+#ifdef DEBUG
+            _dprintf("SDBOOT mode\n");
+#endif    
             result = iSDBOOT(option);
             break;
         case SPIBOOT:
+#ifdef DEBUG
+            _dprintf("SPIBOOT mode\n");
+#endif    
             result = iSPIBOOT();
             break;
         default: //default bootmode is sdcard
